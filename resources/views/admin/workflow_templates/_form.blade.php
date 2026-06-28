@@ -1,0 +1,4 @@
+<div class="mb-3"><label class="form-label">Name</label><input name="name" class="form-control" value="{{ old('name', $workflowTemplate->name ?? '') }}" required></div>
+<div class="mb-3"><label class="form-label">Form Template</label><select name="form_template_id" class="form-select" required>@foreach($formTemplates as $template)<option value="{{ $template->id }}" @selected(old('form_template_id', $workflowTemplate->form_template_id ?? '') == $template->id)>{{ $template->name }}</option>@endforeach</select></div>
+<div class="form-check mb-3"><input type="hidden" name="is_active" value="0"><input class="form-check-input" type="checkbox" name="is_active" value="1" id="is_active" @checked(old('is_active', $workflowTemplate->is_active ?? true))><label class="form-check-label" for="is_active">Active</label></div>
+<button class="btn btn-primary">Save</button><a href="{{ route('admin.workflow-templates.index') }}" class="btn btn-light">Back</a>
