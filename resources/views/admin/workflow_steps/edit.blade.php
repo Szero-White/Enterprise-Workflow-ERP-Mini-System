@@ -1,2 +1,9 @@
-@extends('layouts.app')
-@section('content')<h2>Edit Workflow Step</h2><div class="content-card p-3"><form method="POST" action="{{ route('admin.workflow-templates.steps.update', [$workflowTemplate, $step]) }}">@csrf @method('PUT') @include('admin.workflow_steps._form')</form></div>@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Edit Workflow Step',
+    'pageEyebrow' => 'Admin / Workflow Steps',
+    'heading' => 'Edit Workflow Step',
+    'subtitle' => 'Adjust order and approver rules for this step.',
+    'formAction' => route('admin.workflow-templates.steps.update', [$workflowTemplate, $step]),
+    'formMethod' => 'PUT',
+    'formPartial' => 'admin.workflow_steps._form',
+])

@@ -56,6 +56,7 @@ class RequestSubmissionController extends Controller
     public function create(FormTemplate $formTemplate): View
     {
         $formTemplate->load('fields');
+
         return view('employee.requests.form', compact('formTemplate'));
     }
 
@@ -66,7 +67,7 @@ class RequestSubmissionController extends Controller
 
         $workflowRequest = $this->dynamicRequestService->create($request->user(), $formTemplate, $request);
 
-        return redirect()->route('employee.requests.show', $workflowRequest)->with('success', 'Đã gửi đơn.');
+        return redirect()->route('employee.requests.show', $workflowRequest)->with('success', 'Da gui don.');
     }
 
     public function show(WorkflowRequest $workflowRequest): View
@@ -80,7 +81,7 @@ class RequestSubmissionController extends Controller
     public function edit(WorkflowRequest $workflowRequest): View
     {
         $this->authorizeOwner($workflowRequest);
-        abort_if($workflowRequest->status !== 'returned', 403, 'Chỉ đơn bị trả về mới được sửa.');
+        abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, 'Chi don bi tra ve moi duoc sua.');
 
         $workflowRequest->load(['formTemplate.fields', 'values']);
         $formTemplate = $workflowRequest->formTemplate;
@@ -92,14 +93,14 @@ class RequestSubmissionController extends Controller
     public function update(Request $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
         $this->authorizeOwner($workflowRequest);
-        abort_if($workflowRequest->status !== 'returned', 403, 'Chỉ đơn bị trả về mới được sửa.');
+        abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, 'Chi don bi tra ve moi duoc sua.');
 
         $workflowRequest->load('formTemplate.fields');
         $request->validate($this->dynamicRules($workflowRequest->formTemplate, true));
 
         $this->dynamicRequestService->updateReturned($request->user(), $workflowRequest, $request);
 
-        return redirect()->route('employee.requests.show', $workflowRequest)->with('success', 'Đã gửi lại đơn.');
+        return redirect()->route('employee.requests.show', $workflowRequest)->with('success', 'Da gui lai don.');
     }
 
     private function dynamicRules(FormTemplate $formTemplate, bool $isUpdate = false): array

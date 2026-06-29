@@ -1,2 +1,8 @@
-@extends('layouts.app')
-@section('content')<h2>Create Role</h2><div class="content-card p-3"><form method="POST" action="{{ route('admin.roles.store') }}">@csrf @include('admin.roles._form')</form></div>@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Create Role',
+    'pageEyebrow' => 'Admin / Roles',
+    'heading' => 'Create Role',
+    'subtitle' => 'Add a new role for access control and workflow assignment.',
+    'formAction' => route('admin.roles.store'),
+    'formPartial' => 'admin.roles._form',
+])

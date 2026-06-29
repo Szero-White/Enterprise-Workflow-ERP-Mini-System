@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class WorkflowRequest extends Model
 {
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_RETURNED = 'returned';
+
     protected $table = 'requests';
 
     protected $fillable = [
@@ -56,5 +61,26 @@ class WorkflowRequest extends Model
     public function attachments()
     {
         return $this->hasMany(Attachment::class, 'request_id');
+    }
+
+    public static function statuses(): array
+    {
+        return [
+            self::STATUS_PENDING => 'Pending',
+            self::STATUS_APPROVED => 'Approved',
+            self::STATUS_REJECTED => 'Rejected',
+            self::STATUS_RETURNED => 'Returned',
+        ];
+    }
+
+    public static function statusMeta(?string $status): array
+    {
+        return match ($status) {
+            self::STATUS_PENDING => ['label' => 'Pending', 'class' => 'text-bg-warning', 'icon' => 'bi-hourglass-split'],
+            self::STATUS_APPROVED => ['label' => 'Approved', 'class' => 'text-bg-success', 'icon' => 'bi-check-circle-fill'],
+            self::STATUS_REJECTED => ['label' => 'Rejected', 'class' => 'text-bg-danger', 'icon' => 'bi-x-circle-fill'],
+            self::STATUS_RETURNED => ['label' => 'Returned', 'class' => 'text-bg-info', 'icon' => 'bi-arrow-counterclockwise'],
+            default => ['label' => ucfirst((string) $status), 'class' => 'text-bg-secondary', 'icon' => 'bi-circle-fill'],
+        };
     }
 }

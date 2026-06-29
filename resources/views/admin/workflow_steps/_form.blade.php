@@ -1,9 +1,49 @@
-<div class="mb-3"><label class="form-label">Step Name</label><input name="step_name" class="form-control" value="{{ old('step_name', $step->step_name ?? '') }}" required></div>
-<div class="mb-3"><label class="form-label">Step Order</label><input type="number" name="step_order" class="form-control" value="{{ old('step_order', $step->step_order ?? 1) }}" min="1" required></div>
-<div class="row">
-    <div class="col-md-4 mb-3"><label class="form-label">Approver Role</label><select name="approver_role_id" class="form-select"><option value="">-- none --</option>@foreach($roles as $role)<option value="{{ $role->id }}" @selected(old('approver_role_id', $step->approver_role_id ?? '') == $role->id)>{{ $role->name }}</option>@endforeach</select></div>
-    <div class="col-md-4 mb-3"><label class="form-label">Approver Department</label><select name="approver_department_id" class="form-select"><option value="">-- none --</option>@foreach($departments as $department)<option value="{{ $department->id }}" @selected(old('approver_department_id', $step->approver_department_id ?? '') == $department->id)>{{ $department->name }}</option>@endforeach</select></div>
-    <div class="col-md-4 mb-3"><label class="form-label">Approver User</label><select name="approver_user_id" class="form-select"><option value="">-- none --</option>@foreach($users as $user)<option value="{{ $user->id }}" @selected(old('approver_user_id', $step->approver_user_id ?? '') == $user->id)>{{ $user->name }}</option>@endforeach</select></div>
+<div class="row g-3">
+    <div class="col-md-6">
+        <label for="step_name" class="form-label erp-required">Step Name</label>
+        <input id="step_name" name="step_name" class="form-control @error('step_name') is-invalid @enderror" value="{{ old('step_name', $step->step_name ?? '') }}" required>
+        @include('partials.form_error', ['field' => 'step_name'])
+    </div>
+    <div class="col-md-6">
+        <label for="step_order" class="form-label erp-required">Step Order</label>
+        <input id="step_order" type="number" name="step_order" class="form-control @error('step_order') is-invalid @enderror" value="{{ old('step_order', $step->step_order ?? 1) }}" min="1" required>
+        @include('partials.form_error', ['field' => 'step_order'])
+    </div>
+    <div class="col-md-4">
+        <label for="approver_role_id" class="form-label">Approver Role</label>
+        <select id="approver_role_id" name="approver_role_id" class="form-select @error('approver_role_id') is-invalid @enderror">
+            <option value="">-- none --</option>
+            @foreach($roles as $role)
+                <option value="{{ $role->id }}" @selected(old('approver_role_id', $step->approver_role_id ?? '') == $role->id)>{{ $role->name }}</option>
+            @endforeach
+        </select>
+        @include('partials.form_error', ['field' => 'approver_role_id'])
+    </div>
+    <div class="col-md-4">
+        <label for="approver_department_id" class="form-label">Approver Department</label>
+        <select id="approver_department_id" name="approver_department_id" class="form-select @error('approver_department_id') is-invalid @enderror">
+            <option value="">-- none --</option>
+            @foreach($departments as $department)
+                <option value="{{ $department->id }}" @selected(old('approver_department_id', $step->approver_department_id ?? '') == $department->id)>{{ $department->name }}</option>
+            @endforeach
+        </select>
+        @include('partials.form_error', ['field' => 'approver_department_id'])
+    </div>
+    <div class="col-md-4">
+        <label for="approver_user_id" class="form-label">Approver User</label>
+        <select id="approver_user_id" name="approver_user_id" class="form-select @error('approver_user_id') is-invalid @enderror">
+            <option value="">-- none --</option>
+            @foreach($users as $user)
+                <option value="{{ $user->id }}" @selected(old('approver_user_id', $step->approver_user_id ?? '') == $user->id)>{{ $user->name }}</option>
+            @endforeach
+        </select>
+        @include('partials.form_error', ['field' => 'approver_user_id'])
+    </div>
+    <div class="col-12">
+        <div class="alert alert-info border-0 rounded-4 mb-0">
+            Select at least one approver condition. The simplest demo setup is choosing an approver role.
+        </div>
+    </div>
 </div>
-<div class="alert alert-info">Chọn ít nhất 1 điều kiện người duyệt. Demo đơn giản nhất: chọn theo Role.</div>
-<button class="btn btn-primary">Save</button><a href="{{ route('admin.workflow-templates.show', $workflowTemplate) }}" class="btn btn-light">Back</a>
+
+@include('partials.form_actions', ['cancelUrl' => route('admin.workflow-templates.show', $workflowTemplate)])

@@ -1,2 +1,8 @@
-@extends('layouts.app')
-@section('content')<h2>Add Field: {{ $formTemplate->name }}</h2><div class="content-card p-3"><form method="POST" action="{{ route('admin.form-templates.fields.store', $formTemplate) }}">@csrf @include('admin.form_fields._form')</form></div>@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Add Field',
+    'pageEyebrow' => 'Admin / Form Fields',
+    'heading' => 'Add Field: '.$formTemplate->name,
+    'subtitle' => 'Configure a new dynamic field for this form template.',
+    'formAction' => route('admin.form-templates.fields.store', $formTemplate),
+    'formPartial' => 'admin.form_fields._form',
+])

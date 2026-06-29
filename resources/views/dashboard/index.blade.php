@@ -1,24 +1,40 @@
 @extends('layouts.app')
 
+@section('page_title', 'Dashboard')
+@section('page_eyebrow', 'Tong quan he thong')
+
 @section('content')
-<h2 class="mb-4">Dashboard</h2>
 <div class="row g-3 mb-4">
-    @foreach($stats as $label => $value)
-        <div class="col-md-4 col-lg-2">
-            <div class="content-card p-3">
-                <div class="text-muted small text-uppercase">{{ str_replace('_', ' ', $label) }}</div>
-                <div class="fs-3 fw-bold">{{ $value }}</div>
+    @foreach($stats as $stat)
+        <div class="col-md-6 col-xl">
+            <div class="content-card h-100 border {{ $stat['card_class'] }}">
+                <div class="p-3 p-xl-4 d-flex justify-content-between align-items-start gap-3">
+                    <div>
+                        <div class="text-uppercase small fw-semibold text-secondary mb-2">{{ $stat['label'] }}</div>
+                        <div class="display-6 fw-bold mb-0">{{ $stat['value'] }}</div>
+                    </div>
+                    <div class="rounded-circle bg-white shadow-sm d-inline-flex align-items-center justify-content-center text-primary" style="width: 52px; height: 52px;">
+                        <i class="bi {{ $stat['icon'] }}"></i>
+                    </div>
+                </div>
             </div>
         </div>
     @endforeach
 </div>
 
-<div class="content-card p-3">
-    <h5>Latest Requests</h5>
+<div class="content-card p-3 p-lg-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+        <div>
+            <h2 class="h4 mb-1">Latest Requests</h2>
+            <p class="text-muted mb-0">Track recent request activity across the workflow.</p>
+        </div>
+    </div>
+
     <div class="table-responsive">
         <table class="table align-middle">
-            <thead>
+            <thead class="table-light">
             <tr>
+                <th width="70">No.</th>
                 <th>Code</th>
                 <th>Form</th>
                 <th>Creator</th>
@@ -30,15 +46,20 @@
             <tbody>
             @forelse($latestRequests as $item)
                 <tr>
-                    <td>{{ $item->request_code }}</td>
-                    <td>{{ $item->formTemplate?->name }}</td>
-                    <td>{{ $item->creator?->name }}</td>
-                    <td><span class="badge bg-secondary badge-status">{{ $item->status }}</span></td>
+                    <td class="text-muted fw-semibold">{{ $loop->iteration }}</td>
+                    <td class="fw-semibold">{{ $item->request_code }}</td>
+                    <td>{{ $item->formTemplate?->name ?? '-' }}</td>
+                    <td>{{ $item->creator?->name ?? '-' }}</td>
+                    <td>@include('partials.status_badge', ['status' => $item->status])</td>
                     <td>{{ $item->currentStep?->step_name ?? '-' }}</td>
                     <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
                 </tr>
             @empty
-                <tr><td colspan="6" class="text-center text-muted">Chưa có đơn.</td></tr>
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <div class="text-muted">No requests yet.</div>
+                    </td>
+                </tr>
             @endforelse
             </tbody>
         </table>

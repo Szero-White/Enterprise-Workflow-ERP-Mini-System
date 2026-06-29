@@ -1,2 +1,9 @@
-@extends('layouts.app')
-@section('content')<h2>Edit User</h2><div class="content-card p-3"><form method="POST" action="{{ route('admin.users.update', $user) }}">@csrf @method('PUT') @include('admin.users._form')</form></div>@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Edit User',
+    'pageEyebrow' => 'Admin / Users',
+    'heading' => 'Edit User',
+    'subtitle' => 'Update profile, access role, and activation status.',
+    'formAction' => route('admin.users.update', $user),
+    'formMethod' => 'PUT',
+    'formPartial' => 'admin.users._form',
+])

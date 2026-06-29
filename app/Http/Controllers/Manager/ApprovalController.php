@@ -21,7 +21,7 @@ class ApprovalController extends Controller
         $user = $request->user();
 
         $query = WorkflowRequest::with(['formTemplate', 'creator', 'currentStep.approverRole', 'currentStep.approverDepartment'])
-            ->where('status', 'pending')
+            ->where('status', WorkflowRequest::STATUS_PENDING)
             ->whereHas('currentStep', function ($q) use ($user) {
                 $q->where('approver_user_id', $user->id)
                     ->orWhere('approver_role_id', $user->role_id)
@@ -61,18 +61,21 @@ class ApprovalController extends Controller
     public function approve(ApprovalActionRequest $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
         $this->approvalService->approve($request->user(), $workflowRequest->load(['currentStep', 'workflowTemplate.steps']), $request->comment);
-        return redirect()->route('manager.approvals.index')->with('success', 'Đã duyệt đơn.');
+
+        return redirect()->route('manager.approvals.index')->with('success', 'Da duyet don.');
     }
 
     public function reject(ApprovalActionRequest $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
         $this->approvalService->reject($request->user(), $workflowRequest->load(['currentStep', 'workflowTemplate.steps']), $request->comment);
-        return redirect()->route('manager.approvals.index')->with('success', 'Đã từ chối đơn.');
+
+        return redirect()->route('manager.approvals.index')->with('success', 'Da tu choi don.');
     }
 
     public function returnToEmployee(ApprovalActionRequest $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
         $this->approvalService->returnToEmployee($request->user(), $workflowRequest->load(['currentStep', 'workflowTemplate.steps']), $request->comment);
-        return redirect()->route('manager.approvals.index')->with('success', 'Đã trả đơn về cho nhân viên sửa.');
+
+        return redirect()->route('manager.approvals.index')->with('success', 'Da tra don ve cho nhan vien sua.');
     }
 }

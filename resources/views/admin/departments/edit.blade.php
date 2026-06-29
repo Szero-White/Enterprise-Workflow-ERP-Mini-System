@@ -1,5 +1,9 @@
-@extends('layouts.app')
-@section('content')
-<h2>Edit Department</h2>
-<div class="content-card p-3"><form method="POST" action="{{ route('admin.departments.update', $department) }}">@csrf @method('PUT') @include('admin.departments._form')</form></div>
-@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Edit Department',
+    'pageEyebrow' => 'Admin / Departments',
+    'heading' => 'Edit Department',
+    'subtitle' => 'Update department information for organization structure.',
+    'formAction' => route('admin.departments.update', $department),
+    'formMethod' => 'PUT',
+    'formPartial' => 'admin.departments._form',
+])

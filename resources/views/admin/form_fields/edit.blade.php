@@ -1,2 +1,9 @@
-@extends('layouts.app')
-@section('content')<h2>Edit Field: {{ $formTemplate->name }}</h2><div class="content-card p-3"><form method="POST" action="{{ route('admin.form-templates.fields.update', [$formTemplate, $field]) }}">@csrf @method('PUT') @include('admin.form_fields._form')</form></div>@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Edit Field',
+    'pageEyebrow' => 'Admin / Form Fields',
+    'heading' => 'Edit Field: '.$formTemplate->name,
+    'subtitle' => 'Refine field type, key, and validation behavior.',
+    'formAction' => route('admin.form-templates.fields.update', [$formTemplate, $field]),
+    'formMethod' => 'PUT',
+    'formPartial' => 'admin.form_fields._form',
+])

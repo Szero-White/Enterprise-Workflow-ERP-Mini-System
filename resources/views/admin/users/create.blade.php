@@ -1,2 +1,8 @@
-@extends('layouts.app')
-@section('content')<h2>Create User</h2><div class="content-card p-3"><form method="POST" action="{{ route('admin.users.store') }}">@csrf @include('admin.users._form')</form></div>@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Create User',
+    'pageEyebrow' => 'Admin / Users',
+    'heading' => 'Create User',
+    'subtitle' => 'Set up a new account with the correct role and department.',
+    'formAction' => route('admin.users.store'),
+    'formPartial' => 'admin.users._form',
+])

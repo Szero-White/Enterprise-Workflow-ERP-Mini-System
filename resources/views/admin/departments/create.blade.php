@@ -1,5 +1,8 @@
-@extends('layouts.app')
-@section('content')
-<h2>Create Department</h2>
-<div class="content-card p-3"><form method="POST" action="{{ route('admin.departments.store') }}">@csrf @include('admin.departments._form')</form></div>
-@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Create Department',
+    'pageEyebrow' => 'Admin / Departments',
+    'heading' => 'Create Department',
+    'subtitle' => 'Add a department to organize users and approval scopes.',
+    'formAction' => route('admin.departments.store'),
+    'formPartial' => 'admin.departments._form',
+])

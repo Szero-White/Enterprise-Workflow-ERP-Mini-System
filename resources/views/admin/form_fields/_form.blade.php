@@ -1,10 +1,46 @@
-<div class="mb-3"><label class="form-label">Label</label><input name="label" class="form-control" value="{{ old('label', $field->label ?? '') }}" required></div>
-<div class="mb-3"><label class="form-label">Field Key</label><input name="field_key" class="form-control" value="{{ old('field_key', $field->field_key ?? '') }}" placeholder="from_date" required><div class="form-text">Chỉ dùng chữ, số, dấu gạch dưới. Ví dụ: leave_reason.</div></div>
-<div class="mb-3"><label class="form-label">Field Type</label><select name="field_type" id="field_type" class="form-select" required>@foreach(\App\Models\FormField::TYPES as $type)<option value="{{ $type }}" @selected(old('field_type', $field->field_type ?? '') === $type)>{{ $type }}</option>@endforeach</select></div>
-<div class="mb-3" id="options_box"><label class="form-label">Options for select, one line each</label><textarea name="options_text" class="form-control" rows="4">{{ old('options_text', isset($field) && is_array($field->options) ? implode("\n", $field->options) : '') }}</textarea></div>
-<div class="mb-3"><label class="form-label">Sort Order</label><input type="number" name="sort_order" class="form-control" value="{{ old('sort_order', $field->sort_order ?? 0) }}" min="0" required></div>
-<div class="form-check mb-3"><input type="hidden" name="is_required" value="0"><input class="form-check-input" type="checkbox" name="is_required" value="1" id="is_required" @checked(old('is_required', $field->is_required ?? false))><label class="form-check-label" for="is_required">Required</label></div>
-<button class="btn btn-primary">Save</button><a href="{{ route('admin.form-templates.show', $formTemplate) }}" class="btn btn-light">Back</a>
+<div class="row g-3">
+    <div class="col-md-6">
+        <label for="field_label" class="form-label erp-required">Label</label>
+        <input id="field_label" name="label" class="form-control @error('label') is-invalid @enderror" value="{{ old('label', $field->label ?? '') }}" required>
+        @include('partials.form_error', ['field' => 'label'])
+    </div>
+    <div class="col-md-6">
+        <label for="field_key" class="form-label erp-required">Field Key</label>
+        <input id="field_key" name="field_key" class="form-control @error('field_key') is-invalid @enderror" value="{{ old('field_key', $field->field_key ?? '') }}" placeholder="from_date" required>
+        <div class="erp-form-hint">Use letters, numbers, and underscore only. Example: <code>leave_reason</code>.</div>
+        @include('partials.form_error', ['field' => 'field_key'])
+    </div>
+    <div class="col-md-6">
+        <label for="field_type" class="form-label erp-required">Field Type</label>
+        <select name="field_type" id="field_type" class="form-select @error('field_type') is-invalid @enderror" required>
+            @foreach(\App\Models\FormField::TYPES as $type)
+                <option value="{{ $type }}" @selected(old('field_type', $field->field_type ?? '') === $type)>{{ $type }}</option>
+            @endforeach
+        </select>
+        @include('partials.form_error', ['field' => 'field_type'])
+    </div>
+    <div class="col-md-6">
+        <label for="sort_order" class="form-label erp-required">Sort Order</label>
+        <input id="sort_order" type="number" name="sort_order" class="form-control @error('sort_order') is-invalid @enderror" value="{{ old('sort_order', $field->sort_order ?? 0) }}" min="0" required>
+        @include('partials.form_error', ['field' => 'sort_order'])
+    </div>
+    <div class="col-12" id="options_box">
+        <label for="options_text" class="form-label">Options</label>
+        <textarea id="options_text" name="options_text" class="form-control @error('options_text') is-invalid @enderror" rows="4">{{ old('options_text', isset($field) && is_array($field->options) ? implode("\n", $field->options) : '') }}</textarea>
+        <div class="erp-form-hint">Only needed for <code>select</code>. Enter one option per line.</div>
+        @include('partials.form_error', ['field' => 'options_text'])
+    </div>
+    <div class="col-12">
+        <div class="form-check form-switch mt-2">
+            <input type="hidden" name="is_required" value="0">
+            <input class="form-check-input" type="checkbox" name="is_required" value="1" id="is_required" @checked(old('is_required', $field->is_required ?? false))>
+            <label class="form-check-label" for="is_required">Required field</label>
+        </div>
+    </div>
+</div>
+
+@include('partials.form_actions', ['cancelUrl' => route('admin.form-templates.show', $formTemplate)])
+
 @push('scripts')
 <script>
 function toggleOptions(){

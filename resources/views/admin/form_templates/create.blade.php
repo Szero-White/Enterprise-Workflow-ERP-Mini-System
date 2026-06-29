@@ -1,2 +1,8 @@
-@extends('layouts.app')
-@section('content')<h2>Create Form Template</h2><div class="content-card p-3"><form method="POST" action="{{ route('admin.form-templates.store') }}">@csrf @include('admin.form_templates._form')</form></div>@endsection
+@include('partials.form_page', [
+    'pageTitle' => 'Create Form Template',
+    'pageEyebrow' => 'Admin / Form Templates',
+    'heading' => 'Create Form Template',
+    'subtitle' => 'Create a reusable request form for employees.',
+    'formAction' => route('admin.form-templates.store'),
+    'formPartial' => 'admin.form_templates._form',
+])

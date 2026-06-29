@@ -37,12 +37,12 @@ class ApprovalService
             if ($nextStep) {
                 $workflowRequest->update([
                     'current_step_id' => $nextStep->id,
-                    'status' => 'pending',
+                    'status' => WorkflowRequest::STATUS_PENDING,
                 ]);
             } else {
                 $workflowRequest->update([
                     'current_step_id' => null,
-                    'status' => 'approved',
+                    'status' => WorkflowRequest::STATUS_APPROVED,
                 ]);
             }
 
@@ -67,7 +67,7 @@ class ApprovalService
             ]);
 
             $workflowRequest->update([
-                'status' => 'rejected',
+                'status' => WorkflowRequest::STATUS_REJECTED,
                 'current_step_id' => null,
             ]);
 
@@ -91,7 +91,7 @@ class ApprovalService
                 'comment' => $comment,
             ]);
 
-            $workflowRequest->update(['status' => 'returned']);
+            $workflowRequest->update(['status' => WorkflowRequest::STATUS_RETURNED]);
 
             $this->auditLogService->log('request.returned', $workflowRequest, $old, $workflowRequest->fresh()->toArray());
 
@@ -101,12 +101,12 @@ class ApprovalService
 
     private function ensureCanAct(User $actor, WorkflowRequest $workflowRequest): void
     {
-        if ($workflowRequest->status !== 'pending') {
-            abort(422, 'Đơn này không còn ở trạng thái chờ duyệt.');
+        if ($workflowRequest->status !== WorkflowRequest::STATUS_PENDING) {
+            abort(422, 'Don nay khong con o trang thai cho duyet.');
         }
 
         if (! $workflowRequest->currentStep || ! $workflowRequest->currentStep->canBeApprovedBy($actor)) {
-            abort(403, 'Bạn không phải người duyệt của bước hiện tại.');
+            abort(403, 'Ban khong phai nguoi duyet cua buoc hien tai.');
         }
     }
 }

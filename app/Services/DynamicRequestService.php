@@ -30,7 +30,7 @@ class DynamicRequestService
                 'workflow_template_id' => $workflowTemplate->id,
                 'current_step_id' => $firstStep->id,
                 'created_by' => $user->id,
-                'status' => 'pending',
+                'status' => WorkflowRequest::STATUS_PENDING,
                 'submitted_at' => now(),
             ]);
 
@@ -53,13 +53,13 @@ class DynamicRequestService
     public function updateReturned(User $user, WorkflowRequest $workflowRequest, Request $httpRequest): WorkflowRequest
     {
         return DB::transaction(function () use ($user, $workflowRequest, $httpRequest) {
-            if ($workflowRequest->created_by !== $user->id || $workflowRequest->status !== 'returned') {
-                abort(403, 'Chỉ người tạo đơn mới được sửa đơn bị trả về.');
+            if ($workflowRequest->created_by !== $user->id || $workflowRequest->status !== WorkflowRequest::STATUS_RETURNED) {
+                abort(403, 'Chi nguoi tao don moi duoc sua don bi tra ve.');
             }
 
             $old = $workflowRequest->load('values')->toArray();
             $workflowRequest->update([
-                'status' => 'pending',
+                'status' => WorkflowRequest::STATUS_PENDING,
                 'submitted_at' => now(),
             ]);
 
