@@ -16,7 +16,7 @@
     <div class="alert alert-danger border-0 shadow-sm rounded-4" role="alert">
         <div class="fw-semibold mb-2 d-flex align-items-center gap-2">
             <i class="bi bi-exclamation-octagon-fill"></i>
-            <span>Vui long kiem tra lai thong tin.</span>
+            <span>{{ __('messages.validation_failed') }}</span>
         </div>
         <ul class="mb-0 ps-3">
             @foreach ($errors->all() as $error)

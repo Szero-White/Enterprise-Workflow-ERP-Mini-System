@@ -13,7 +13,7 @@ class RoleMiddleware
         $user = $request->user();
 
         if (! $user || ! $user->role || ! in_array($user->role->key, $roles, true)) {
-            abort(403, 'Bạn không có quyền truy cập chức năng này.');
+            abort(403, __('messages.not_authorized'));
         }
 
         return $next($request);

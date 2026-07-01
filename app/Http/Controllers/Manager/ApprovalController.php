@@ -53,7 +53,7 @@ class ApprovalController extends Controller
     public function show(WorkflowRequest $workflowRequest): View
     {
         $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'creator', 'currentStep']);
-        abort_if(! $workflowRequest->currentStep || ! $workflowRequest->currentStep->canBeApprovedBy(auth()->user()), 403);
+        $this->approvalService->ensureCanAct(auth()->user(), $workflowRequest);
 
         return view('manager.approvals.show', compact('workflowRequest'));
     }
@@ -62,20 +62,20 @@ class ApprovalController extends Controller
     {
         $this->approvalService->approve($request->user(), $workflowRequest->load(['currentStep', 'workflowTemplate.steps']), $request->comment);
 
-        return redirect()->route('manager.approvals.index')->with('success', 'Da duyet don.');
+        return redirect()->route('manager.approvals.index')->with('success', __('messages.request_approved'));
     }
 
     public function reject(ApprovalActionRequest $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
         $this->approvalService->reject($request->user(), $workflowRequest->load(['currentStep', 'workflowTemplate.steps']), $request->comment);
 
-        return redirect()->route('manager.approvals.index')->with('success', 'Da tu choi don.');
+        return redirect()->route('manager.approvals.index')->with('success', __('messages.request_rejected'));
     }
 
     public function returnToEmployee(ApprovalActionRequest $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
         $this->approvalService->returnToEmployee($request->user(), $workflowRequest->load(['currentStep', 'workflowTemplate.steps']), $request->comment);
 
-        return redirect()->route('manager.approvals.index')->with('success', 'Da tra don ve cho nhan vien sua.');
+        return redirect()->route('manager.approvals.index')->with('success', __('messages.request_returned'));
     }
 }

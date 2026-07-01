@@ -30,7 +30,7 @@ class DepartmentController extends Controller
     {
         $department = Department::create($request->validated());
         $this->auditLogService->log('department.created', $department, null, $department->toArray());
-        return redirect()->route('admin.departments.index')->with('success', 'Đã tạo phòng ban.');
+        return redirect()->route('admin.departments.index')->with('success', __('messages.department_created'));
     }
 
     public function edit(Department $department): View
@@ -43,7 +43,7 @@ class DepartmentController extends Controller
         $old = $department->toArray();
         $department->update($request->validated());
         $this->auditLogService->log('department.updated', $department, $old, $department->fresh()->toArray());
-        return redirect()->route('admin.departments.index')->with('success', 'Đã cập nhật phòng ban.');
+        return redirect()->route('admin.departments.index')->with('success', __('messages.department_updated'));
     }
 
     public function destroy(Department $department): RedirectResponse
@@ -51,6 +51,6 @@ class DepartmentController extends Controller
         $old = $department->toArray();
         $this->auditLogService->log('department.deleted', $department, $old, null);
         $department->delete();
-        return back()->with('success', 'Đã xóa phòng ban.');
+        return back()->with('success', __('messages.department_deleted'));
     }
 }

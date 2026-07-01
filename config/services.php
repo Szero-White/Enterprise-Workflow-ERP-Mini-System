@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'node_notification' => [
+        'url' => env('NODE_NOTIFICATION_URL'),
+        'timeout' => env('NODE_NOTIFICATION_TIMEOUT', 2),
+    ],
+
 ];

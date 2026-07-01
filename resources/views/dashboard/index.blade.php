@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('page_title', 'Dashboard')
-@section('page_eyebrow', 'Tong quan he thong')
+@section('page_title', __('menu.dashboard'))
+@section('page_eyebrow', 'Tổng quan hệ thống')
 
 @section('content')
 <div class="row g-3 mb-4">
@@ -25,8 +25,8 @@
 <div class="content-card p-3 p-lg-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
         <div>
-            <h2 class="h4 mb-1">Latest Requests</h2>
-            <p class="text-muted mb-0">Track recent request activity across the workflow.</p>
+            <h2 class="h4 mb-1">Đơn mới nhất</h2>
+            <p class="text-muted mb-0">Theo dõi hoạt động gửi đơn gần đây trong toàn bộ quy trình.</p>
         </div>
     </div>
 
@@ -34,13 +34,13 @@
         <table class="table align-middle">
             <thead class="table-light">
             <tr>
-                <th width="70">No.</th>
-                <th>Code</th>
-                <th>Form</th>
-                <th>Creator</th>
-                <th>Status</th>
-                <th>Current Step</th>
-                <th>Created</th>
+                <th width="70">{{ __('ui.no') }}</th>
+                <th>{{ __('ui.code') }}</th>
+                <th>{{ __('ui.form') }}</th>
+                <th>{{ __('ui.creator') }}</th>
+                <th>{{ __('ui.status') }}</th>
+                <th>{{ __('ui.step') }}</th>
+                <th>{{ __('ui.created') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -57,7 +57,7 @@
             @empty
                 <tr>
                     <td colspan="7" class="text-center py-5">
-                        <div class="text-muted">No requests yet.</div>
+                        <div class="text-muted">Chưa có đơn nào.</div>
                     </td>
                 </tr>
             @endforelse

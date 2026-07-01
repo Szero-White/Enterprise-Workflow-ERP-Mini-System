@@ -38,7 +38,7 @@ class WorkflowTemplateController extends Controller
         $workflow = WorkflowTemplate::create($data);
         $this->auditLogService->log('workflow_template.created', $workflow, null, $workflow->toArray());
 
-        return redirect()->route('admin.workflow-templates.show', $workflow)->with('success', 'Đã tạo workflow.');
+        return redirect()->route('admin.workflow-templates.show', $workflow)->with('success', __('messages.workflow_template_created'));
     }
 
     public function show(WorkflowTemplate $workflowTemplate): View
@@ -64,7 +64,7 @@ class WorkflowTemplateController extends Controller
         $workflowTemplate->update($data);
         $this->auditLogService->log('workflow_template.updated', $workflowTemplate, $old, $workflowTemplate->fresh()->toArray());
 
-        return redirect()->route('admin.workflow-templates.show', $workflowTemplate)->with('success', 'Đã cập nhật workflow.');
+        return redirect()->route('admin.workflow-templates.show', $workflowTemplate)->with('success', __('messages.workflow_template_updated'));
     }
 
     public function destroy(WorkflowTemplate $workflowTemplate): RedirectResponse
@@ -72,6 +72,6 @@ class WorkflowTemplateController extends Controller
         $old = $workflowTemplate->toArray();
         $this->auditLogService->log('workflow_template.deleted', $workflowTemplate, $old, null);
         $workflowTemplate->delete();
-        return redirect()->route('admin.workflow-templates.index')->with('success', 'Đã xóa workflow.');
+        return redirect()->route('admin.workflow-templates.index')->with('success', __('messages.workflow_template_deleted'));
     }
 }

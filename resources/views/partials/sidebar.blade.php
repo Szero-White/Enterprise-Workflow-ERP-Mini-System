@@ -2,43 +2,44 @@
     $user = auth()->user();
     $menuGroups = [
         [
-            'title' => 'Tong quan',
+            'title' => __('menu.overview'),
             'items' => [
-                ['label' => 'Dashboard', 'route' => 'dashboard', 'active' => ['dashboard'], 'icon' => 'bi-grid-1x2-fill'],
+                ['label' => __('menu.dashboard'), 'route' => 'dashboard', 'active' => ['dashboard'], 'icon' => 'bi-grid-1x2-fill'],
+                ['label' => __('menu.notifications'), 'route' => 'notifications.index', 'active' => ['notifications.*'], 'icon' => 'bi-bell-fill'],
             ],
         ],
     ];
 
     if ($user->hasRole('admin')) {
         $menuGroups[] = [
-            'title' => 'Admin',
+            'title' => __('menu.admin'),
             'items' => [
-                ['label' => 'Nguoi dung', 'route' => 'admin.users.index', 'active' => ['admin.users.*'], 'icon' => 'bi-people-fill'],
-                ['label' => 'Vai tro', 'route' => 'admin.roles.index', 'active' => ['admin.roles.*'], 'icon' => 'bi-shield-lock-fill'],
-                ['label' => 'Phong ban', 'route' => 'admin.departments.index', 'active' => ['admin.departments.*'], 'icon' => 'bi-diagram-3-fill'],
-                ['label' => 'Bieu mau', 'route' => 'admin.form-templates.index', 'active' => ['admin.form-templates.*'], 'icon' => 'bi-ui-checks-grid'],
-                ['label' => 'Workflow', 'route' => 'admin.workflow-templates.index', 'active' => ['admin.workflow-templates.*'], 'icon' => 'bi-bezier2'],
-                ['label' => 'Audit Logs', 'route' => 'admin.audit-logs.index', 'active' => ['admin.audit-logs.*'], 'icon' => 'bi-clock-history'],
+                ['label' => __('menu.users'), 'route' => 'admin.users.index', 'active' => ['admin.users.*'], 'icon' => 'bi-people-fill'],
+                ['label' => __('menu.roles'), 'route' => 'admin.roles.index', 'active' => ['admin.roles.*'], 'icon' => 'bi-shield-lock-fill'],
+                ['label' => __('menu.departments'), 'route' => 'admin.departments.index', 'active' => ['admin.departments.*'], 'icon' => 'bi-diagram-3-fill'],
+                ['label' => __('menu.form_templates'), 'route' => 'admin.form-templates.index', 'active' => ['admin.form-templates.*'], 'icon' => 'bi-ui-checks-grid'],
+                ['label' => __('menu.workflow_templates'), 'route' => 'admin.workflow-templates.index', 'active' => ['admin.workflow-templates.*'], 'icon' => 'bi-bezier2'],
+                ['label' => __('menu.audit_logs'), 'route' => 'admin.audit-logs.index', 'active' => ['admin.audit-logs.*'], 'icon' => 'bi-clock-history'],
             ],
         ];
     }
 
     if ($user->hasRole(['employee', 'admin'])) {
         $menuGroups[] = [
-            'title' => 'Nhan vien',
+            'title' => __('menu.employee'),
             'items' => [
-                ['label' => 'Tao don', 'route' => 'employee.requests.select-template', 'active' => ['employee.requests.select-template', 'employee.requests.create', 'employee.requests.store'], 'icon' => 'bi-file-earmark-plus-fill'],
-                ['label' => 'Don cua toi', 'route' => 'employee.requests.index', 'active' => ['employee.requests.index', 'employee.requests.show', 'employee.requests.edit', 'employee.requests.update'], 'icon' => 'bi-folder2-open'],
+                ['label' => __('menu.create_request'), 'route' => 'employee.requests.select-template', 'active' => ['employee.requests.select-template', 'employee.requests.create', 'employee.requests.store'], 'icon' => 'bi-file-earmark-plus-fill'],
+                ['label' => __('menu.my_requests'), 'route' => 'employee.requests.index', 'active' => ['employee.requests.index', 'employee.requests.show', 'employee.requests.edit', 'employee.requests.update'], 'icon' => 'bi-folder2-open'],
             ],
         ];
     }
 
     if ($user->hasRole(['manager', 'hr', 'director', 'admin'])) {
         $menuGroups[] = [
-            'title' => 'Phe duyet',
+            'title' => __('menu.approval'),
             'items' => [
-                ['label' => 'Cho duyet', 'route' => 'manager.approvals.index', 'active' => ['manager.approvals.index'], 'icon' => 'bi-hourglass-split'],
-                ['label' => 'Lich su duyet', 'route' => 'manager.approvals.index', 'active' => ['manager.approvals.show', 'manager.approvals.approve', 'manager.approvals.reject', 'manager.approvals.return'], 'icon' => 'bi-list-check'],
+                ['label' => __('menu.pending_approvals'), 'route' => 'manager.approvals.index', 'active' => ['manager.approvals.index'], 'icon' => 'bi-hourglass-split'],
+                ['label' => __('menu.approval_history'), 'route' => 'manager.approvals.index', 'active' => ['manager.approvals.show', 'manager.approvals.approve', 'manager.approvals.reject', 'manager.approvals.return'], 'icon' => 'bi-list-check'],
             ],
         ];
     }
@@ -58,7 +59,9 @@
             <div class="fw-semibold text-white">{{ $user->name }}</div>
             <div class="small text-white-50">{{ $user->email }}</div>
             <div class="small mt-2">
-                <span class="badge text-bg-light">{{ $user->role?->name ?? 'No role' }}</span>
+                <span class="badge text-bg-light">
+                    {{ $user->role ? (trans()->has('ui.roles.'.$user->role->key) ? __('ui.roles.'.$user->role->key) : $user->role->name) : __('ui.no_role') }}
+                </span>
             </div>
         </div>
 
@@ -77,7 +80,7 @@
         <form action="{{ route('logout') }}" method="POST" class="mt-4 pt-2">
             @csrf
             <button class="btn btn-outline-light w-100 rounded-4">
-                <i class="bi bi-box-arrow-right me-2"></i>Dang xuat
+                <i class="bi bi-box-arrow-right me-2"></i>{{ __('menu.logout') }}
             </button>
         </form>
     </div>

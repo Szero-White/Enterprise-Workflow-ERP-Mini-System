@@ -33,4 +33,21 @@ class FormFieldRequest extends FormRequest
             'sort_order' => ['required', 'integer', 'min:0'],
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            if ($this->input('field_type') !== 'select') {
+                return;
+            }
+
+            $options = collect(preg_split('/\r\n|\r|\n/', (string) $this->input('options_text')))
+                ->map(fn ($item) => trim($item))
+                ->filter();
+
+            if ($options->isEmpty()) {
+                $validator->errors()->add('options_text', __('messages.select_options_required'));
+            }
+        });
+    }
 }

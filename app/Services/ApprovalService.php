@@ -3,13 +3,17 @@
 namespace App\Services;
 
 use App\Models\ApprovalHistory;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\WorkflowRequest;
 use Illuminate\Support\Facades\DB;
 
 class ApprovalService
 {
-    public function __construct(private AuditLogService $auditLogService)
+    public function __construct(
+        private AuditLogService $auditLogService,
+        private NotificationService $notificationService
+    )
     {
     }
 
@@ -26,6 +30,7 @@ class ApprovalService
                 'actor_id' => $actor->id,
                 'action' => 'approve',
                 'comment' => $comment,
+                'acted_at' => now(),
             ]);
 
             $nextStep = $workflowRequest->workflowTemplate
@@ -46,9 +51,22 @@ class ApprovalService
                 ]);
             }
 
-            $this->auditLogService->log('request.approved', $workflowRequest, $old, $workflowRequest->fresh()->toArray());
+            $freshRequest = $workflowRequest->fresh(['currentStep', 'creator', 'formTemplate']);
+            $this->auditLogService->log('request.approved', $workflowRequest, $old, $freshRequest->toArray());
 
-            return $workflowRequest->fresh();
+            if ($nextStep) {
+                $this->notificationService->notifyCurrentApprovers($freshRequest, Notification::TYPE_REQUEST_APPROVED);
+            } else {
+                $this->notificationService->notifyCreator(
+                    $freshRequest,
+                    'Đơn đã được duyệt',
+                    sprintf('Đơn %s của bạn đã được duyệt hoàn tất.', $freshRequest->request_code),
+                    Notification::TYPE_REQUEST_COMPLETED,
+                    'approved'
+                );
+            }
+
+            return $freshRequest;
         });
     }
 
@@ -64,6 +82,7 @@ class ApprovalService
                 'actor_id' => $actor->id,
                 'action' => 'reject',
                 'comment' => $comment,
+                'acted_at' => now(),
             ]);
 
             $workflowRequest->update([
@@ -71,9 +90,17 @@ class ApprovalService
                 'current_step_id' => null,
             ]);
 
-            $this->auditLogService->log('request.rejected', $workflowRequest, $old, $workflowRequest->fresh()->toArray());
+            $freshRequest = $workflowRequest->fresh(['creator', 'formTemplate']);
+            $this->auditLogService->log('request.rejected', $workflowRequest, $old, $freshRequest->toArray());
+            $this->notificationService->notifyCreator(
+                $freshRequest,
+                'Đơn đã bị từ chối',
+                sprintf('Đơn %s của bạn đã bị từ chối.', $freshRequest->request_code),
+                Notification::TYPE_REQUEST_REJECTED,
+                'rejected'
+            );
 
-            return $workflowRequest->fresh();
+            return $freshRequest;
         });
     }
 
@@ -89,24 +116,33 @@ class ApprovalService
                 'actor_id' => $actor->id,
                 'action' => 'return',
                 'comment' => $comment,
+                'acted_at' => now(),
             ]);
 
             $workflowRequest->update(['status' => WorkflowRequest::STATUS_RETURNED]);
 
-            $this->auditLogService->log('request.returned', $workflowRequest, $old, $workflowRequest->fresh()->toArray());
+            $freshRequest = $workflowRequest->fresh(['creator', 'formTemplate']);
+            $this->auditLogService->log('request.returned', $workflowRequest, $old, $freshRequest->toArray());
+            $this->notificationService->notifyCreator(
+                $freshRequest,
+                'Đơn đã được trả về',
+                sprintf('Đơn %s của bạn đã được trả về để chỉnh sửa.', $freshRequest->request_code),
+                Notification::TYPE_REQUEST_RETURNED,
+                'returned'
+            );
 
-            return $workflowRequest->fresh();
+            return $freshRequest;
         });
     }
 
-    private function ensureCanAct(User $actor, WorkflowRequest $workflowRequest): void
+    public function ensureCanAct(User $actor, WorkflowRequest $workflowRequest): void
     {
         if ($workflowRequest->status !== WorkflowRequest::STATUS_PENDING) {
-            abort(422, 'Don nay khong con o trang thai cho duyet.');
+            abort(422, __('messages.request_not_pending'));
         }
 
         if (! $workflowRequest->currentStep || ! $workflowRequest->currentStep->canBeApprovedBy($actor)) {
-            abort(403, 'Ban khong phai nguoi duyet cua buoc hien tai.');
+            abort(403, __('messages.not_current_approver'));
         }
     }
 }

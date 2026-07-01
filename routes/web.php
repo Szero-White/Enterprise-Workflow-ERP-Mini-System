@@ -12,6 +12,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Employee\RequestSubmissionController;
 use App\Http\Controllers\Manager\ApprovalController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -25,6 +26,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
         Route::resource('roles', RoleController::class)->except(['show']);
@@ -36,13 +40,15 @@ Route::middleware('auth')->group(function () {
             ->parameters(['form-templates' => 'formTemplate']);
         Route::resource('form-templates.fields', FormFieldController::class)
             ->parameters(['form-templates' => 'formTemplate', 'fields' => 'field'])
-            ->except(['show']);
+            ->except(['show'])
+            ->scoped();
 
         Route::resource('workflow-templates', WorkflowTemplateController::class)
             ->parameters(['workflow-templates' => 'workflowTemplate']);
         Route::resource('workflow-templates.steps', WorkflowStepController::class)
             ->parameters(['workflow-templates' => 'workflowTemplate', 'steps' => 'step'])
-            ->except(['show']);
+            ->except(['show'])
+            ->scoped();
     });
 
     Route::prefix('employee')->name('employee.')->middleware('role:employee,admin')->group(function () {

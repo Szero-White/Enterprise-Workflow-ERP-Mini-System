@@ -66,20 +66,27 @@ class WorkflowRequest extends Model
     public static function statuses(): array
     {
         return [
-            self::STATUS_PENDING => 'Pending',
-            self::STATUS_APPROVED => 'Approved',
-            self::STATUS_REJECTED => 'Rejected',
-            self::STATUS_RETURNED => 'Returned',
+            self::STATUS_PENDING => __('status.pending'),
+            self::STATUS_APPROVED => __('status.approved'),
+            self::STATUS_REJECTED => __('status.rejected'),
+            self::STATUS_RETURNED => __('status.returned'),
         ];
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        $key = 'status.'.$this->status;
+
+        return trans()->has($key) ? __($key) : $this->status;
     }
 
     public static function statusMeta(?string $status): array
     {
         return match ($status) {
-            self::STATUS_PENDING => ['label' => 'Pending', 'class' => 'text-bg-warning', 'icon' => 'bi-hourglass-split'],
-            self::STATUS_APPROVED => ['label' => 'Approved', 'class' => 'text-bg-success', 'icon' => 'bi-check-circle-fill'],
-            self::STATUS_REJECTED => ['label' => 'Rejected', 'class' => 'text-bg-danger', 'icon' => 'bi-x-circle-fill'],
-            self::STATUS_RETURNED => ['label' => 'Returned', 'class' => 'text-bg-info', 'icon' => 'bi-arrow-counterclockwise'],
+            self::STATUS_PENDING => ['label' => __('status.pending'), 'class' => 'text-bg-warning', 'icon' => 'bi-hourglass-split'],
+            self::STATUS_APPROVED => ['label' => __('status.approved'), 'class' => 'text-bg-success', 'icon' => 'bi-check-circle-fill'],
+            self::STATUS_REJECTED => ['label' => __('status.rejected'), 'class' => 'text-bg-danger', 'icon' => 'bi-x-circle-fill'],
+            self::STATUS_RETURNED => ['label' => __('status.returned'), 'class' => 'text-bg-info', 'icon' => 'bi-arrow-counterclockwise'],
             default => ['label' => ucfirst((string) $status), 'class' => 'text-bg-secondary', 'icon' => 'bi-circle-fill'],
         };
     }

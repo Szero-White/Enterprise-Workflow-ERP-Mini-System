@@ -20,7 +20,7 @@ class AuthController extends Controller
         $credentials['is_active'] = true;
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            return back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.'])->onlyInput('email');
+            return back()->withErrors(['email' => __('messages.login_failed')])->onlyInput('email');
         }
 
         $request->session()->regenerate();

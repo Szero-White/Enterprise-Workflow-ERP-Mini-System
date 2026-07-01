@@ -41,7 +41,7 @@ class UserController extends Controller
         $user = User::create($data);
         $this->auditLogService->log('user.created', $user, null, $user->toArray());
 
-        return redirect()->route('admin.users.index')->with('success', 'Đã tạo user.');
+        return redirect()->route('admin.users.index')->with('success', __('messages.user_created'));
     }
 
     public function edit(User $user): View
@@ -68,7 +68,7 @@ class UserController extends Controller
         $user->update($data);
         $this->auditLogService->log('user.updated', $user, $old, $user->fresh()->toArray());
 
-        return redirect()->route('admin.users.index')->with('success', 'Đã cập nhật user.');
+        return redirect()->route('admin.users.index')->with('success', __('messages.user_updated'));
     }
 
     public function destroy(User $user): RedirectResponse
@@ -76,6 +76,6 @@ class UserController extends Controller
         $old = $user->toArray();
         $this->auditLogService->log('user.deleted', $user, $old, null);
         $user->delete();
-        return back()->with('success', 'Đã xóa user.');
+        return back()->with('success', __('messages.user_deleted'));
     }
 }

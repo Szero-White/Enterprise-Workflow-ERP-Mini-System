@@ -35,7 +35,7 @@ class FormFieldController extends Controller
         $field = FormField::create($data);
         $this->auditLogService->log('form_field.created', $field, null, $field->toArray());
 
-        return redirect()->route('admin.form-templates.show', $formTemplate)->with('success', 'Đã thêm field.');
+        return redirect()->route('admin.form-templates.show', $formTemplate)->with('success', __('messages.form_field_created'));
     }
 
     public function edit(FormTemplate $formTemplate, FormField $field): View
@@ -49,7 +49,7 @@ class FormFieldController extends Controller
         $field->update($this->prepareData($request->validated(), $request));
         $this->auditLogService->log('form_field.updated', $field, $old, $field->fresh()->toArray());
 
-        return redirect()->route('admin.form-templates.show', $formTemplate)->with('success', 'Đã cập nhật field.');
+        return redirect()->route('admin.form-templates.show', $formTemplate)->with('success', __('messages.form_field_updated'));
     }
 
     public function destroy(FormTemplate $formTemplate, FormField $field): RedirectResponse
@@ -57,7 +57,7 @@ class FormFieldController extends Controller
         $old = $field->toArray();
         $this->auditLogService->log('form_field.deleted', $field, $old, null);
         $field->delete();
-        return back()->with('success', 'Đã xóa field.');
+        return back()->with('success', __('messages.form_field_deleted'));
     }
 
     private function prepareData(array $data, FormFieldRequest $request): array

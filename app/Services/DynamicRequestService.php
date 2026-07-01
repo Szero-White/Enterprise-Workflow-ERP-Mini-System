@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ApprovalHistory;
 use App\Models\Attachment;
 use App\Models\FormTemplate;
+use App\Models\Notification;
 use App\Models\RequestValue;
 use App\Models\User;
 use App\Models\WorkflowRequest;
@@ -14,7 +15,10 @@ use Illuminate\Support\Str;
 
 class DynamicRequestService
 {
-    public function __construct(private AuditLogService $auditLogService)
+    public function __construct(
+        private AuditLogService $auditLogService,
+        private NotificationService $notificationService
+    )
     {
     }
 
@@ -41,10 +45,12 @@ class DynamicRequestService
                 'workflow_step_id' => $firstStep->id,
                 'actor_id' => $user->id,
                 'action' => 'submit',
-                'comment' => 'Employee submitted request.',
+                'comment' => 'Nhân viên đã gửi đơn.',
+                'acted_at' => now(),
             ]);
 
             $this->auditLogService->log('request.created', $workflowRequest, null, $workflowRequest->toArray());
+            $this->notificationService->notifyCurrentApprovers($workflowRequest, Notification::TYPE_REQUEST_SUBMITTED);
 
             return $workflowRequest;
         });
@@ -54,7 +60,7 @@ class DynamicRequestService
     {
         return DB::transaction(function () use ($user, $workflowRequest, $httpRequest) {
             if ($workflowRequest->created_by !== $user->id || $workflowRequest->status !== WorkflowRequest::STATUS_RETURNED) {
-                abort(403, 'Chi nguoi tao don moi duoc sua don bi tra ve.');
+                abort(403, __('messages.returned_request_owner_only'));
             }
 
             $old = $workflowRequest->load('values')->toArray();
@@ -70,10 +76,12 @@ class DynamicRequestService
                 'workflow_step_id' => $workflowRequest->current_step_id,
                 'actor_id' => $user->id,
                 'action' => 'resubmit',
-                'comment' => 'Employee resubmitted returned request.',
+                'comment' => 'Nhân viên đã gửi lại đơn bị trả về.',
+                'acted_at' => now(),
             ]);
 
             $this->auditLogService->log('request.resubmitted', $workflowRequest, $old, $workflowRequest->fresh('values')->toArray());
+            $this->notificationService->notifyCurrentApprovers($workflowRequest, Notification::TYPE_REQUEST_SUBMITTED);
 
             return $workflowRequest->fresh();
         });

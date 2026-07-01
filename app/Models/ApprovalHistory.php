@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApprovalHistory extends Model
 {
-    protected $fillable = ['request_id', 'workflow_step_id', 'actor_id', 'action', 'comment'];
+    protected $fillable = ['request_id', 'workflow_step_id', 'actor_id', 'action', 'comment', 'acted_at'];
+
+    protected function casts(): array
+    {
+        return [
+            'acted_at' => 'datetime',
+        ];
+    }
 
     public function workflowRequest()
     {

@@ -13,8 +13,11 @@ class ApprovalActionRequest extends FormRequest
 
     public function rules(): array
     {
+        $actionMethod = $this->route()?->getActionMethod();
+        $commentRule = in_array($actionMethod, ['reject', 'returnToEmployee'], true) ? 'required' : 'nullable';
+
         return [
-            'comment' => ['nullable', 'string', 'max:1000'],
+            'comment' => [$commentRule, 'string', 'max:1000'],
         ];
     }
 }

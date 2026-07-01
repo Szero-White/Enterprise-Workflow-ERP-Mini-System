@@ -48,6 +48,16 @@ class User extends Authenticatable
         return $this->hasMany(WorkflowRequest::class, 'created_by');
     }
 
+    public function auditLogs()
+    {
+        return $this->hasMany(AuditLog::class, 'actor_id');
+    }
+
+    public function systemNotifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     public function hasRole(string|array $roles): bool
     {
         $roles = is_array($roles) ? $roles : [$roles];

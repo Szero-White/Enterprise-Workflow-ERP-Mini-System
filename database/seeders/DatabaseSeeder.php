@@ -17,22 +17,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $roles = collect([
-            ['name' => 'Admin', 'key' => 'admin'],
-            ['name' => 'Manager', 'key' => 'manager'],
-            ['name' => 'Employee', 'key' => 'employee'],
-            ['name' => 'HR', 'key' => 'hr'],
-            ['name' => 'Director', 'key' => 'director'],
+            ['name' => 'Quản trị viên', 'key' => 'admin'],
+            ['name' => 'Quản lý', 'key' => 'manager'],
+            ['name' => 'Nhân viên', 'key' => 'employee'],
+            ['name' => 'Nhân sự', 'key' => 'hr'],
+            ['name' => 'Giám đốc', 'key' => 'director'],
         ])->mapWithKeys(fn ($role) => [$role['key'] => Role::updateOrCreate(['key' => $role['key']], $role)]);
 
         $departments = collect([
-            ['name' => 'Administration', 'code' => 'ADMIN'],
-            ['name' => 'Human Resources', 'code' => 'HR'],
-            ['name' => 'Engineering', 'code' => 'ENG'],
-            ['name' => 'Accounting', 'code' => 'ACC'],
+            ['name' => 'Hành chính', 'code' => 'ADMIN'],
+            ['name' => 'Nhân sự', 'code' => 'HR'],
+            ['name' => 'Kỹ thuật', 'code' => 'ENG'],
+            ['name' => 'Kế toán', 'code' => 'ACC'],
         ])->mapWithKeys(fn ($department) => [$department['code'] => Department::updateOrCreate(['code' => $department['code']], $department)]);
 
         User::updateOrCreate(['email' => 'admin@example.com'], [
-            'name' => 'System Admin',
+            'name' => 'Quản trị hệ thống',
             'password' => Hash::make('password'),
             'department_id' => $departments['ADMIN']->id,
             'role_id' => $roles['admin']->id,
@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::updateOrCreate(['email' => 'manager@example.com'], [
-            'name' => 'Team Manager',
+            'name' => 'Quản lý nhóm',
             'password' => Hash::make('password'),
             'department_id' => $departments['ENG']->id,
             'role_id' => $roles['manager']->id,
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::updateOrCreate(['email' => 'employee@example.com'], [
-            'name' => 'Demo Employee',
+            'name' => 'Nhân viên demo',
             'password' => Hash::make('password'),
             'department_id' => $departments['ENG']->id,
             'role_id' => $roles['employee']->id,
@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::updateOrCreate(['email' => 'hr@example.com'], [
-            'name' => 'HR Approver',
+            'name' => 'Người duyệt nhân sự',
             'password' => Hash::make('password'),
             'department_id' => $departments['HR']->id,
             'role_id' => $roles['hr']->id,
@@ -64,7 +64,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::updateOrCreate(['email' => 'director@example.com'], [
-            'name' => 'Director Approver',
+            'name' => 'Người duyệt giám đốc',
             'password' => Hash::make('password'),
             'department_id' => $departments['ADMIN']->id,
             'role_id' => $roles['director']->id,
@@ -74,18 +74,18 @@ class DatabaseSeeder extends Seeder
         $admin = User::where('email', 'admin@example.com')->first();
 
         $leaveTemplate = FormTemplate::updateOrCreate(['code' => 'LEAVE'], [
-            'name' => 'Leave Request',
-            'description' => 'Employee leave application form.',
+            'name' => 'Đơn xin nghỉ phép',
+            'description' => 'Biểu mẫu đăng ký nghỉ phép của nhân viên.',
             'is_active' => true,
             'created_by' => $admin->id,
         ]);
 
         $fields = [
-            ['label' => 'Leave Type', 'field_key' => 'leave_type', 'field_type' => 'select', 'is_required' => true, 'options' => ['Annual Leave', 'Sick Leave', 'Unpaid Leave'], 'sort_order' => 1],
-            ['label' => 'From Date', 'field_key' => 'from_date', 'field_type' => 'date', 'is_required' => true, 'options' => null, 'sort_order' => 2],
-            ['label' => 'To Date', 'field_key' => 'to_date', 'field_type' => 'date', 'is_required' => true, 'options' => null, 'sort_order' => 3],
-            ['label' => 'Reason', 'field_key' => 'reason', 'field_type' => 'textarea', 'is_required' => true, 'options' => null, 'sort_order' => 4],
-            ['label' => 'Attachment', 'field_key' => 'attachment', 'field_type' => 'file', 'is_required' => false, 'options' => null, 'sort_order' => 5],
+            ['label' => 'Loại nghỉ phép', 'field_key' => 'leave_type', 'field_type' => 'select', 'is_required' => true, 'options' => ['Nghỉ phép năm', 'Nghỉ ốm', 'Nghỉ không lương'], 'sort_order' => 1],
+            ['label' => 'Từ ngày', 'field_key' => 'from_date', 'field_type' => 'date', 'is_required' => true, 'options' => null, 'sort_order' => 2],
+            ['label' => 'Đến ngày', 'field_key' => 'to_date', 'field_type' => 'date', 'is_required' => true, 'options' => null, 'sort_order' => 3],
+            ['label' => 'Lý do', 'field_key' => 'reason', 'field_type' => 'textarea', 'is_required' => true, 'options' => null, 'sort_order' => 4],
+            ['label' => 'Tệp đính kèm', 'field_key' => 'attachment', 'field_type' => 'file', 'is_required' => false, 'options' => null, 'sort_order' => 5],
         ];
 
         foreach ($fields as $field) {
@@ -97,7 +97,7 @@ class DatabaseSeeder extends Seeder
 
         $workflow = WorkflowTemplate::updateOrCreate([
             'form_template_id' => $leaveTemplate->id,
-            'name' => 'Leave Approval Flow',
+            'name' => 'Quy trình duyệt nghỉ phép',
         ], [
             'is_active' => true,
             'created_by' => $admin->id,
@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
             'workflow_template_id' => $workflow->id,
             'step_order' => 1,
         ], [
-            'step_name' => 'Manager Approval',
+            'step_name' => 'Quản lý duyệt',
             'approver_role_id' => $roles['manager']->id,
             'approver_department_id' => null,
             'approver_user_id' => null,
@@ -117,7 +117,7 @@ class DatabaseSeeder extends Seeder
             'workflow_template_id' => $workflow->id,
             'step_order' => 2,
         ], [
-            'step_name' => 'HR Approval',
+            'step_name' => 'Nhân sự duyệt',
             'approver_role_id' => $roles['hr']->id,
             'approver_department_id' => null,
             'approver_user_id' => null,
@@ -127,7 +127,7 @@ class DatabaseSeeder extends Seeder
             'workflow_template_id' => $workflow->id,
             'step_order' => 3,
         ], [
-            'step_name' => 'Director Approval',
+            'step_name' => 'Giám đốc duyệt',
             'approver_role_id' => $roles['director']->id,
             'approver_department_id' => null,
             'approver_user_id' => null,

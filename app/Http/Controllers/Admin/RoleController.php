@@ -30,7 +30,7 @@ class RoleController extends Controller
     {
         $role = Role::create($request->validated());
         $this->auditLogService->log('role.created', $role, null, $role->toArray());
-        return redirect()->route('admin.roles.index')->with('success', 'Đã tạo role.');
+        return redirect()->route('admin.roles.index')->with('success', __('messages.role_created'));
     }
 
     public function edit(Role $role): View
@@ -43,7 +43,7 @@ class RoleController extends Controller
         $old = $role->toArray();
         $role->update($request->validated());
         $this->auditLogService->log('role.updated', $role, $old, $role->fresh()->toArray());
-        return redirect()->route('admin.roles.index')->with('success', 'Đã cập nhật role.');
+        return redirect()->route('admin.roles.index')->with('success', __('messages.role_updated'));
     }
 
     public function destroy(Role $role): RedirectResponse
@@ -51,6 +51,6 @@ class RoleController extends Controller
         $old = $role->toArray();
         $this->auditLogService->log('role.deleted', $role, $old, null);
         $role->delete();
-        return back()->with('success', 'Đã xóa role.');
+        return back()->with('success', __('messages.role_deleted'));
     }
 }

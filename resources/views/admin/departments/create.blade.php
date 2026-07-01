@@ -1,8 +1,8 @@
 @include('partials.form_page', [
-    'pageTitle' => 'Create Department',
-    'pageEyebrow' => 'Admin / Departments',
-    'heading' => 'Create Department',
-    'subtitle' => 'Add a department to organize users and approval scopes.',
+    'pageTitle' => 'Tạo phòng ban',
+    'pageEyebrow' => __('menu.admin').' / '.__('menu.departments'),
+    'heading' => 'Tạo phòng ban',
+    'subtitle' => 'Thêm phòng ban để tổ chức người dùng và phạm vi phê duyệt.',
     'formAction' => route('admin.departments.store'),
     'formPartial' => 'admin.departments._form',
 ])

@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('page_title', 'Departments')
-@section('page_eyebrow', 'Admin / Departments')
+@section('page_title', __('menu.departments'))
+@section('page_eyebrow', __('menu.admin').' / '.__('menu.departments'))
 
 @section('content')
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
     <div>
-        <h2 class="h4 mb-1">Departments</h2>
-        <p class="text-muted mb-0">Keep department structure clean for organization and approval routing.</p>
+        <h2 class="h4 mb-1">{{ __('menu.departments') }}</h2>
+        <p class="text-muted mb-0">Quản lý cơ cấu phòng ban để tổ chức người dùng và tuyến duyệt rõ ràng.</p>
     </div>
     <a href="{{ route('admin.departments.create') }}" class="btn btn-primary rounded-3">
-        <i class="bi bi-plus-circle me-2"></i>Create Department
+        <i class="bi bi-plus-circle me-2"></i>Tạo phòng ban
     </a>
 </div>
 
@@ -18,11 +18,11 @@
     <table class="table align-middle">
         <thead class="table-light">
         <tr>
-            <th width="70">No.</th>
-            <th>Name</th>
-            <th>Code</th>
-            <th>Description</th>
-            <th width="180">Action</th>
+            <th width="70">{{ __('ui.no') }}</th>
+            <th>{{ __('ui.name') }}</th>
+            <th>{{ __('ui.entity_code') }}</th>
+            <th>{{ __('ui.description') }}</th>
+            <th width="180">{{ __('ui.action') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -34,11 +34,11 @@
                 <td>{{ $department->description ?: '-' }}</td>
                 <td>
                     <div class="d-flex gap-2 flex-wrap">
-                        <a href="{{ route('admin.departments.edit', $department) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <form action="{{ route('admin.departments.destroy', $department) }}" method="POST" onsubmit="return confirm('Delete this department?')">
+                        <a href="{{ route('admin.departments.edit', $department) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
+                        <form action="{{ route('admin.departments.destroy', $department) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_department') }}')">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            <button class="btn btn-sm btn-outline-danger">{{ __('ui.delete') }}</button>
                         </form>
                     </div>
                 </td>
@@ -46,7 +46,7 @@
         @empty
             <tr>
                 <td colspan="5" class="text-center py-5">
-                    <div class="text-muted">No departments found.</div>
+                    <div class="text-muted">{{ __('ui.no_departments') }}</div>
                 </td>
             </tr>
         @endforelse

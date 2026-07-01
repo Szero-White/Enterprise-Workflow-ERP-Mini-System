@@ -38,7 +38,7 @@ class WorkflowStepController extends Controller
         $step = WorkflowStep::create($data);
         $this->auditLogService->log('workflow_step.created', $step, null, $step->toArray());
 
-        return redirect()->route('admin.workflow-templates.show', $workflowTemplate)->with('success', 'Đã thêm bước duyệt.');
+        return redirect()->route('admin.workflow-templates.show', $workflowTemplate)->with('success', __('messages.workflow_step_created'));
     }
 
     public function edit(WorkflowTemplate $workflowTemplate, WorkflowStep $step): View
@@ -52,7 +52,7 @@ class WorkflowStepController extends Controller
         $step->update($request->validated());
         $this->auditLogService->log('workflow_step.updated', $step, $old, $step->fresh()->toArray());
 
-        return redirect()->route('admin.workflow-templates.show', $workflowTemplate)->with('success', 'Đã cập nhật bước duyệt.');
+        return redirect()->route('admin.workflow-templates.show', $workflowTemplate)->with('success', __('messages.workflow_step_updated'));
     }
 
     public function destroy(WorkflowTemplate $workflowTemplate, WorkflowStep $step): RedirectResponse
@@ -60,7 +60,7 @@ class WorkflowStepController extends Controller
         $old = $step->toArray();
         $this->auditLogService->log('workflow_step.deleted', $step, $old, null);
         $step->delete();
-        return back()->with('success', 'Đã xóa bước duyệt.');
+        return back()->with('success', __('messages.workflow_step_deleted'));
     }
 
     private function viewData(WorkflowTemplate $workflowTemplate, ?WorkflowStep $step = null): array

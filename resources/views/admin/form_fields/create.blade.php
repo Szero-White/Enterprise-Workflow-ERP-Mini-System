@@ -1,8 +1,8 @@
 @include('partials.form_page', [
-    'pageTitle' => 'Add Field',
-    'pageEyebrow' => 'Admin / Form Fields',
-    'heading' => 'Add Field: '.$formTemplate->name,
-    'subtitle' => 'Configure a new dynamic field for this form template.',
+    'pageTitle' => 'Thêm trường',
+    'pageEyebrow' => __('menu.admin').' / '.__('menu.form_templates'),
+    'heading' => 'Thêm trường: '.$formTemplate->name,
+    'subtitle' => 'Cấu hình trường động mới cho biểu mẫu này.',
     'formAction' => route('admin.form-templates.fields.store', $formTemplate),
     'formPartial' => 'admin.form_fields._form',
 ])

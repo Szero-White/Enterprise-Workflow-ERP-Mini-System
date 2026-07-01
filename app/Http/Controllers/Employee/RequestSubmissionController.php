@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\WorkflowRequestSubmissionRequest;
 use App\Models\FormTemplate;
 use App\Models\WorkflowRequest;
 use App\Services\DynamicRequestService;
@@ -60,14 +61,13 @@ class RequestSubmissionController extends Controller
         return view('employee.requests.form', compact('formTemplate'));
     }
 
-    public function store(Request $request, FormTemplate $formTemplate): RedirectResponse
+    public function store(WorkflowRequestSubmissionRequest $request, FormTemplate $formTemplate): RedirectResponse
     {
         $formTemplate->load('fields');
-        $request->validate($this->dynamicRules($formTemplate));
 
         $workflowRequest = $this->dynamicRequestService->create($request->user(), $formTemplate, $request);
 
-        return redirect()->route('employee.requests.show', $workflowRequest)->with('success', 'Da gui don.');
+        return redirect()->route('employee.requests.show', $workflowRequest)->with('success', __('messages.request_submitted'));
     }
 
     public function show(WorkflowRequest $workflowRequest): View
@@ -81,7 +81,7 @@ class RequestSubmissionController extends Controller
     public function edit(WorkflowRequest $workflowRequest): View
     {
         $this->authorizeOwner($workflowRequest);
-        abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, 'Chi don bi tra ve moi duoc sua.');
+        abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, __('messages.returned_request_only'));
 
         $workflowRequest->load(['formTemplate.fields', 'values']);
         $formTemplate = $workflowRequest->formTemplate;
@@ -90,40 +90,16 @@ class RequestSubmissionController extends Controller
         return view('employee.requests.edit', compact('workflowRequest', 'formTemplate', 'oldValues'));
     }
 
-    public function update(Request $request, WorkflowRequest $workflowRequest): RedirectResponse
+    public function update(WorkflowRequestSubmissionRequest $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
         $this->authorizeOwner($workflowRequest);
-        abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, 'Chi don bi tra ve moi duoc sua.');
+        abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, __('messages.returned_request_only'));
 
         $workflowRequest->load('formTemplate.fields');
-        $request->validate($this->dynamicRules($workflowRequest->formTemplate, true));
 
         $this->dynamicRequestService->updateReturned($request->user(), $workflowRequest, $request);
 
-        return redirect()->route('employee.requests.show', $workflowRequest)->with('success', 'Da gui lai don.');
-    }
-
-    private function dynamicRules(FormTemplate $formTemplate, bool $isUpdate = false): array
-    {
-        $rules = [];
-        foreach ($formTemplate->fields as $field) {
-            $fieldRules = $field->is_required ? ['required'] : ['nullable'];
-
-            $fieldRules[] = match ($field->field_type) {
-                'number' => 'numeric',
-                'date' => 'date',
-                'file' => $isUpdate ? 'file|max:5120' : 'file|max:5120',
-                default => 'string',
-            };
-
-            if ($field->field_type === 'select' && is_array($field->options)) {
-                $fieldRules[] = 'in:'.implode(',', $field->options);
-            }
-
-            $rules[$field->field_key] = $fieldRules;
-        }
-
-        return $rules;
+        return redirect()->route('employee.requests.show', $workflowRequest)->with('success', __('messages.request_resubmitted'));
     }
 
     private function authorizeOwner(WorkflowRequest $workflowRequest): void

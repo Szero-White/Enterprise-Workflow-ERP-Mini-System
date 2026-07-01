@@ -35,7 +35,7 @@ class FormTemplateController extends Controller
         $template = FormTemplate::create($data);
         $this->auditLogService->log('form_template.created', $template, null, $template->toArray());
 
-        return redirect()->route('admin.form-templates.show', $template)->with('success', 'Đã tạo mẫu đơn.');
+        return redirect()->route('admin.form-templates.show', $template)->with('success', __('messages.form_template_created'));
     }
 
     public function show(FormTemplate $formTemplate): View
@@ -58,7 +58,7 @@ class FormTemplateController extends Controller
         $formTemplate->update($data);
         $this->auditLogService->log('form_template.updated', $formTemplate, $old, $formTemplate->fresh()->toArray());
 
-        return redirect()->route('admin.form-templates.show', $formTemplate)->with('success', 'Đã cập nhật mẫu đơn.');
+        return redirect()->route('admin.form-templates.show', $formTemplate)->with('success', __('messages.form_template_updated'));
     }
 
     public function destroy(FormTemplate $formTemplate): RedirectResponse
@@ -66,6 +66,6 @@ class FormTemplateController extends Controller
         $old = $formTemplate->toArray();
         $this->auditLogService->log('form_template.deleted', $formTemplate, $old, null);
         $formTemplate->delete();
-        return redirect()->route('admin.form-templates.index')->with('success', 'Đã xóa mẫu đơn.');
+        return redirect()->route('admin.form-templates.index')->with('success', __('messages.form_template_deleted'));
     }
 }
