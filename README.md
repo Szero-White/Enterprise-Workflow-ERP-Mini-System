@@ -1,123 +1,357 @@
 # Enterprise Workflow & ERP Mini System
 
-Dự án portfolio Backend PHP/Laravel mô phỏng một hệ thống nội bộ nhỏ để tạo biểu mẫu động, gửi yêu cầu và duyệt nhiều cấp.
+[![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
+[![Tests](https://img.shields.io/badge/tests-17%20passed-success)](#automated-tests)
+[![Assertions](https://img.shields.io/badge/assertions-61-success)](#automated-tests)
 
-Mục tiêu của project không phải là làm thật nhiều chức năng, mà là thể hiện tư duy backend thực tế: phân quyền rõ, workflow có trạng thái, dữ liệu có quan hệ, thao tác quan trọng có transaction, audit log, notification và test.
+A Laravel-based internal workflow management system for configurable business approval processes.
 
-## Vì sao không chỉ là CRUD
+The application provides dynamic forms, multi-step approvals, role-based authorization, notifications, audit logging, file attachments, approval history, dashboard statistics, and automated feature testing.
 
-Project có CRUD cho dữ liệu nền như role, department, user, form template và workflow template. Phần giá trị chính nằm ở luồng nghiệp vụ:
+The current demo focuses on a leave-request workflow and is structured so the same workflow engine can support additional internal processes such as purchase requests, payment requests, business trips, and document approvals.
 
-- Admin cấu hình form động và các bước duyệt.
-- Employee gửi request theo form đã cấu hình.
-- Manager, HR, Director duyệt tuần tự theo workflow step.
-- Hệ thống lưu request values, file attachment, approval history, audit log và notification.
-- Approval action chạy trong database transaction để tránh trạng thái nửa vời.
+---
 
-## Tech stack
+## Live Demo
 
-- Laravel 12
+> Live demo URL will be added after deployment.
+
+### Demo Accounts
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@example.com` | `password` |
+| Manager | `manager@example.com` | `password` |
+| Employee | `employee@example.com` | `password` |
+| HR | `hr@example.com` | `password` |
+| Director | `director@example.com` | `password` |
+
+---
+
+## Tech Stack
+
+**Backend**
 - PHP 8.2+
+- Laravel 12
+- Eloquent ORM
+- Laravel Session Authentication
+- Laravel Notifications
+- Laravel Validation
+- Database Transactions
+
+**Frontend**
 - Blade
 - Bootstrap 5
-- JavaScript/AJAX cơ bản
-- MySQL hoặc SQLite
+- HTML / CSS
+- JavaScript
+- AJAX for selected interactions
+- Vite
+
+**Database**
+- SQLite for local development/demo
+- MySQL configuration supported
+
+**Testing & Tooling**
 - PHPUnit
-- Vite/Tailwind asset pipeline
+- Laravel Feature Tests
+- Composer
+- npm
+- Git
+- Vite
 
-## Ngôn ngữ sử dụng trong codebase
+---
 
-- Backend chính: PHP với Laravel.
-- Frontend server-rendered: Blade template, HTML, CSS và Bootstrap 5.
-- JavaScript: dùng ở mức cơ bản cho tương tác nhỏ trong form động.
-- SQL/database: thông qua migration, Eloquent và MySQL hoặc SQLite.
-- Node.js: chỉ xuất hiện ở vai trò tooling cho Vite/Tailwind và cấu hình realtime optional, chưa có backend Node.js riêng trong repo.
-- Ngôn ngữ giao diện: tiếng Việt qua `lang/vi` và các Blade view đã Việt hóa.
+## Architecture
 
-Node.js hiện chỉ dùng cho Vite/Tailwind build asset. Project chưa có backend Node.js Socket.IO riêng trong repo. Laravel đã có `RealtimeNotificationService` dạng optional: nếu cấu hình `NODE_NOTIFICATION_URL`, Laravel sẽ thử gửi realtime notification; nếu service Node tắt, Laravel vẫn chạy bình thường.
+```text
+HTTP Request
+    ↓
+Controller
+    ↓
+FormRequest
+    ↓
+Service Layer
+    ↓
+Eloquent Models
+    ↓
+Database
+```
 
-## Locale và timezone
+### Responsibilities
 
-Project mặc định dùng:
+**Controllers**
+- Receive HTTP requests
+- Call application services
+- Return Blade views or redirects
+- Keep business rules out of controllers
+
+**Form Requests**
+- Validate request payloads
+- Define request-specific validation rules
+- Stop invalid data before it reaches the service layer
+
+**Service Layer**
+- Submit workflow requests
+- Process approval actions
+- Transition workflow steps
+- Create notifications
+- Persist approval history
+- Record audit logs
+- Coordinate database transactions
+
+**Models**
+- Define Eloquent relationships
+- Represent request and workflow state
+- Store domain metadata and persisted data
+
+---
+
+## Core Modules
+
+### Authentication & Authorization
+- Session-based login/logout
+- Role-based access control
+- Separate access levels for Admin, Employee, Manager, HR, and Director
+- Resource ownership checks
+- Current-step approval authorization
+
+### Organization Management
+- Role management
+- Department management
+- User management
+- User assignment by department and role
+
+### Dynamic Form Management
+
+Administrators can create reusable form templates without hard-coding a dedicated request form for every business process.
+
+Supported field types:
+- Text
+- Textarea
+- Number
+- Date
+- Select
+- File upload
+
+Request metadata and dynamic field values are stored separately so the same request engine can support multiple form types.
+
+### Workflow Management
+- Workflow templates
+- Workflow steps
+- Sequential approval flow
+- Current-step tracking
+- Approve / Reject / Return actions
+- Required comments for Reject and Return
+
+### Employee Portal
+Employees can:
+- Select an available form template
+- Submit a request
+- Upload attachments
+- View their own requests
+- Track request status
+- Review approval progress
+- Receive notifications
+
+### Approval Center
+Approvers can:
+- View requests assigned to their current step
+- Review request details
+- Approve requests
+- Reject requests
+- Return requests for correction
+- View approval history
+- Filter completed approval actions
+
+### Notifications
+- Laravel database notifications
+- Mark one notification as read
+- Mark all notifications as read
+- Notification ownership protection
+- Employee notification after workflow completion
+- Optional external realtime notification endpoint
+
+### Approval History
+Each approval action records:
+- Request
+- Workflow step
+- Approver
+- Action
+- Comment
+- Action timestamp
+
+### Audit Log
+Important operations may record:
+- Acting user
+- Action description
+- Previous values
+- New values
+- Related request
+- Timestamp
+
+### Dashboard
+- Request statistics
+- Workflow status summaries
+
+### Search, Filtering & Pagination
+- Search
+- Filtering
+- Pagination
+
+---
+
+## Approval Workflow
+
+```text
+Employee
+   ↓ Submit
+Manager
+   ↓ Approve
+HR
+   ↓ Approve
+Director
+   ↓ Approve
+Approved
+   ↓
+Employee Notification
+```
+
+The same workflow engine can be reused for:
+- Leave Request
+- Purchase Request
+- Payment Request
+- Business Trip Request
+- Document Approval
+
+---
+
+## Workflow States
+
+```text
+pending
+approved
+rejected
+returned
+```
+
+Workflow progress is tracked separately through the request's current workflow step.
+
+---
+
+## Data Integrity & Authorization
+
+Important workflow operations are executed inside database transactions so related changes remain consistent.
+
+A typical approval action can update:
+- Request status
+- Current workflow step
+- Approval history
+- Audit log
+- Notification
+
+The application also prevents:
+- Approval by users outside the active workflow step
+- Re-approval of completed requests
+- Employees accessing restricted administration pages
+- Employees viewing requests owned by other employees
+- Users modifying notifications that do not belong to them
+
+---
+
+## Main Domain Flow
+
+```text
+Employee submits request
+        ↓
+Request values persisted
+        ↓
+Initial workflow step assigned
+        ↓
+Approver notified
+        ↓
+Approver performs action
+        ↓
+Service validates current step
+        ↓
+Database transaction
+        ↓
+Request state updated
+        ↓
+Approval history persisted
+        ↓
+Audit log persisted
+        ↓
+Next workflow step selected
+        ↓
+Next approver notified
+        ↓
+Final approval
+        ↓
+Employee notified
+```
+
+---
+
+## Localization
 
 ```env
 APP_LOCALE=vi
+APP_FALLBACK_LOCALE=en
 APP_TIMEZONE=Asia/Ho_Chi_Minh
 ```
 
-Các trạng thái nghiệp vụ vẫn giữ key nội bộ như `pending`, `approved`, `rejected`, `returned`; phần label hiển thị được dịch sang tiếng Việt.
+Internal status keys remain in English while user-facing labels are translated through Laravel language files.
 
-## Kiến trúc tổng quan
+---
 
-Luồng xử lý chính theo hướng:
+## Local Development
 
-```text
-Controller -> FormRequest -> Service -> Model
-```
-
-- Controller nhận request, gọi service và trả view/redirect.
-- FormRequest xử lý validation.
-- Service chứa nghiệp vụ như submit request, approval, audit log, notification.
-- Model khai báo relationship và metadata trạng thái.
-
-## Module chính
-
-- Login / logout bằng Laravel session auth
-- Middleware phân quyền theo role
-- CRUD Role, Department, User
-- Dynamic Form Template
-- Dynamic Form Field Builder: `text`, `textarea`, `number`, `date`, `select`, `file`
-- Workflow Template và Workflow Step Builder
-- Employee tạo request theo dynamic form
-- Lưu dữ liệu request vào `requests` và `request_values`
-- File upload lưu vào `attachments`
-- Manager/HR/Director duyệt theo từng step
-- Approval history với `acted_at`
-- Audit log có old/new values và description
-- Database notification, mark as read, mark all as read
-- Dashboard thống kê
-- Search/filter/pagination cơ bản
-- PHPUnit feature tests cho workflow, authorization, notification, audit log
-
-## Luồng approval
-
-1. Employee gửi request, trạng thái là `pending`.
-2. Request trỏ tới `current_step_id` đầu tiên của workflow.
-3. Manager approve thì request chuyển sang step HR.
-4. HR approve thì request chuyển sang step Director.
-5. Director approve thì request chuyển `approved` và `current_step_id = null`.
-6. Reject thì request chuyển `rejected`.
-7. Return thì request chuyển `returned` để Employee chỉnh sửa và gửi lại.
-8. Mỗi action ghi approval history, audit log và notification.
-
-## Cài đặt local
+### Requirements
+- PHP 8.2+
+- Composer
+- Node.js
+- npm
 
 ```bash
+git clone https://github.com/Szero-White/Enterprise-Workflow-ERP-Mini-System.git
+cd Enterprise-Workflow-ERP-Mini-System
+
 composer install
 cp .env.example .env
 php artisan key:generate
 php artisan storage:link
+
+npm install
+npm run build
+
 php artisan migrate:fresh --seed
 php artisan serve
 ```
 
-Mở:
+Open:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-Project hiện chạy local bằng `php artisan serve`, chưa dùng Docker. Docker Compose là hướng nâng cấp sau, không triển khai ở giai đoạn hiện tại.
+---
 
-## Cấu hình database
+## Database Configuration
 
-SQLite mặc định trong `.env.example`:
+### SQLite
 
 ```env
 DB_CONNECTION=sqlite
 ```
 
-MySQL nếu muốn dùng:
+Database file:
+
+```text
+database/database.sqlite
+```
+
+### MySQL
 
 ```env
 DB_CONNECTION=mysql
@@ -128,91 +362,117 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-## Notification realtime optional
+---
 
-Laravel luôn lưu notification trong database. Nếu muốn nối thêm NodeJS Socket.IO sau này, cấu hình:
+## Optional Realtime Notification Integration
 
 ```env
 NODE_NOTIFICATION_URL=http://127.0.0.1:3001/api/notify
 NODE_NOTIFICATION_TIMEOUT=2
 ```
 
-Nếu endpoint này không chạy, workflow Laravel vẫn submit/approve bình thường và chỉ ghi warning log.
+If the external endpoint is unavailable:
+- Workflow processing continues normally
+- Database notifications are still persisted
+- The failure is logged as a warning
 
-## Tài khoản demo
+The realtime service is not required for the core workflow system.
 
-| Vai trò | Email | Mật khẩu |
-|---|---|---|
-| Quản trị viên | admin@example.com | password |
-| Quản lý | manager@example.com | password |
-| Nhân viên | employee@example.com | password |
-| Nhân sự | hr@example.com | password |
-| Giám đốc | director@example.com | password |
+---
 
-## Luồng demo
-
-1. Đăng nhập bằng tài khoản admin.
-2. Tạo phòng ban, vai trò và người dùng nếu cần.
-3. Tạo hoặc dùng mẫu đơn `Đơn xin nghỉ phép`.
-4. Thêm field động: `reason`, `from_date`, `to_date`, `leave_type`, `attachment`.
-5. Tạo workflow cho mẫu đơn.
-6. Thêm các step: Quản lý -> Nhân sự -> Giám đốc.
-7. Đăng nhập bằng tài khoản nhân viên.
-8. Chọn mẫu đơn và gửi request.
-9. Manager nhận notification và duyệt bước 1.
-10. HR nhận notification và duyệt bước 2.
-11. Director nhận notification và duyệt bước cuối.
-12. Request chuyển `approved`.
-13. Employee nhận notification request đã hoàn tất.
-14. Xem approval history và audit log.
-
-## Test
-
-Chạy test:
+## Automated Tests
 
 ```bash
 php artisan test
 ```
 
-Nhóm test hiện có kiểm tra:
-
-- Login page và redirect cơ bản
-- Employee gửi request thành công
-- Employee không vào được admin
-- Employee không xem được request của người khác
-- Manager/HR/Director duyệt đúng thứ tự
-- Không được approve sai step
-- Không được approve request đã hoàn tất
-- Reject/return bắt buộc comment
-- Approval history có `acted_at`
-- Audit log được tạo
-- Notification được tạo và chỉ đúng user được đọc
-- Laravel không lỗi khi realtime service bên ngoài tắt
-
-## Cấu trúc thư mục đáng chú ý
+Current local result:
 
 ```text
-app/Http/Controllers
-app/Http/Requests
-app/Http/Middleware
-app/Models
-app/Services
-database/migrations
-database/seeders
-resources/views
-tests/Feature
+17 tests passed
+61 assertions
 ```
 
-## Ghi chú cho nhà tuyển dụng
+Coverage includes:
+- Authentication redirects
+- Login page rendering
+- Employee request submission
+- Manager notification after submission
+- Manager approval transition
+- HR approval transition
+- Director approval completion
+- Employee notification after completion
+- Reject validation
+- Return validation
+- Wrong-step authorization
+- Completed-request protection
+- Admin-page authorization
+- Request ownership protection
+- Notification ownership protection
+- Approval history persistence
+- Audit log persistence
+- Realtime service failure handling
 
-Project này phù hợp để demo tư duy Backend Laravel ở mức Fresher/Junior: không over-engineering, nhưng có nghiệp vụ nhiều bước, phân quyền, transaction, audit log, notification và feature test đủ để giải thích trong phỏng vấn.
+---
 
-## Future Improvements
+## Project Structure
 
-- Docker Compose cho Laravel và MySQL
-- REST API version
-- NodeJS Socket.IO service trong thư mục `notification-service`
-- Queue-based notification
-- VueJS dashboard components nếu cần UI giàu hơn
+```text
+app/
+├── Http/
+│   ├── Controllers/
+│   ├── Middleware/
+│   └── Requests/
+├── Models/
+└── Services/
+
+database/
+├── migrations/
+└── seeders/
+
+lang/
+└── vi/
+
+resources/
+└── views/
+
+routes/
+└── web.php
+
+tests/
+├── Feature/
+└── Unit/
+```
+
+---
+
+## Current Demo Scope
+
+The current demo focuses on the workflow engine through a leave-request process.
+
+Planned request templates:
+- Purchase Request
+- Payment Request
+- Business Trip Request
+- Document Approval
+
+---
+
+## Roadmap
+
+- Additional request templates
+- Improved dashboard analytics
+- Export to Excel/CSV
+- REST API
+- Email notifications
+- Queue-based notification processing
+- Docker Compose
 - CI/CD pipeline
-- Deployment guide
+- Production deployment
+- Optional Socket.IO realtime notification service
+
+---
+
+## Repository
+
+**GitHub:** https://github.com/Szero-White/Enterprise-Workflow-ERP-Mini-System
