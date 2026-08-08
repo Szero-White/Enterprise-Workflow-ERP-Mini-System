@@ -15,7 +15,7 @@ The current demo focuses on a leave-request workflow and is structured so the sa
 
 ## Live Demo
 
-> Live demo URL will be added after deployment.
+**Application:** https://workflow-erp.alwaysdata.net
 
 ### Demo Accounts
 
