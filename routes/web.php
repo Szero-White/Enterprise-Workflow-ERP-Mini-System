@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('manager')->name('manager.')->middleware('role:manager,hr,director,admin')->group(function () {
         Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
+        Route::get('/approvals/history', [ApprovalController::class, 'history'])->name('approvals.history');
         Route::get('/approvals/{workflowRequest}', [ApprovalController::class, 'show'])->name('approvals.show');
         Route::post('/approvals/{workflowRequest}/approve', [ApprovalController::class, 'approve'])->name('approvals.approve');
         Route::post('/approvals/{workflowRequest}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');

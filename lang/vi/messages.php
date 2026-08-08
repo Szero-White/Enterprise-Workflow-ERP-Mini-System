@@ -34,6 +34,7 @@ return [
     'request_rejected' => 'Từ chối đơn thành công.',
     'request_returned' => 'Trả đơn thành công.',
     'no_pending_approvals' => 'Không có đơn nào đang chờ duyệt.',
+    'no_approval_history' => 'Không có lịch sử duyệt nào.',
 
     'notification_read' => 'Đã đánh dấu thông báo là đã đọc.',
     'notification_all_read' => 'Đã đánh dấu tất cả thông báo là đã đọc.',

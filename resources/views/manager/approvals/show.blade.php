@@ -1,15 +1,26 @@
 @extends('layouts.app')
 
-@section('page_title', 'Duyệt đơn')
-@section('page_eyebrow', __('menu.approval').' / '.__('menu.pending_approvals'))
+@php
+    $isPending = $workflowRequest->status === \App\Models\WorkflowRequest::STATUS_PENDING;
+    $pageTitle = $isPending ? 'Duyệt đơn' : 'Chi tiết đơn';
+    $pageEyebrow = __('menu.approval').' / '.($isPending ? __('menu.pending_approvals') : __('menu.approval_history'));
+@endphp
+
+@section('page_title', $pageTitle)
+@section('page_eyebrow', $pageEyebrow)
 
 @section('content')
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
     <div>
-        <h2 class="h4 mb-1">Duyệt đơn: {{ $workflowRequest->request_code }}</h2>
-        <p class="text-muted mb-0">Kiểm tra dữ liệu đã gửi và chọn thao tác phê duyệt tiếp theo.</p>
+        <h2 class="h4 mb-1">{{ $pageTitle }}: {{ $workflowRequest->request_code }}</h2>
+        <p class="text-muted mb-0">{{ $isPending ? 'Kiểm tra dữ liệu đã gửi và chọn thao tác phê duyệt tiếp theo.' : 'Xem chi tiết đơn và lịch sử duyệt.' }}</p>
     </div>
-    <span class="badge text-bg-primary rounded-pill px-3 py-2 fw-semibold">{{ $workflowRequest->currentStep?->step_name ?? 'Không có bước' }}</span>
+    <div class="d-flex gap-2 align-items-center">
+        <a href="{{ $isPending ? route('manager.approvals.index') : route('manager.approvals.history') }}" class="btn btn-light border">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+        <span class="badge {{ $isPending ? 'text-bg-primary' : 'text-bg-secondary' }} rounded-pill px-3 py-2 fw-semibold">{{ $workflowRequest->currentStep?->step_name ?? 'Không có bước' }}</span>
+    </div>
 </div>
 
 <div class="row g-3">
@@ -41,6 +52,7 @@
         </div>
     </div>
     <div class="col-lg-5">
+        @if($workflowRequest->status === \App\Models\WorkflowRequest::STATUS_PENDING)
         <div class="content-card p-3 p-lg-4 mb-3">
             <h5 class="mb-3">{{ __('ui.action') }}</h5>
             <form method="POST" id="approvalForm">
@@ -58,12 +70,13 @@
                 </div>
             </form>
         </div>
+        @endif
         <div class="content-card p-3 p-lg-4">
             <h5 class="mb-3">{{ __('ui.history') }}</h5>
             @forelse($workflowRequest->histories as $history)
                 <div class="border-bottom py-3">
                     <div class="fw-semibold">{{ trans()->has('ui.action_labels.'.$history->action) ? __('ui.action_labels.'.$history->action) : strtoupper($history->action) }}</div>
-                    <div class="text-muted small">{{ $history->actor?->name ?? '-' }} &middot; {{ $history->created_at->format('d/m/Y H:i') }}</div>
+                    <div class="text-muted small">{{ $history->actor?->name ?? '-' }} &middot; {{ $history->acted_at ? $history->acted_at->format('d/m/Y H:i') : $history->created_at->format('d/m/Y H:i') }}</div>
                     @if($history->comment)
                         <div class="mt-2">{{ $history->comment }}</div>
                     @endif

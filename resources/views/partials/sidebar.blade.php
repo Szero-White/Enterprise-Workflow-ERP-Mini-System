@@ -38,8 +38,8 @@
         $menuGroups[] = [
             'title' => __('menu.approval'),
             'items' => [
-                ['label' => __('menu.pending_approvals'), 'route' => 'manager.approvals.index', 'active' => ['manager.approvals.index'], 'icon' => 'bi-hourglass-split'],
-                ['label' => __('menu.approval_history'), 'route' => 'manager.approvals.index', 'active' => ['manager.approvals.show', 'manager.approvals.approve', 'manager.approvals.reject', 'manager.approvals.return'], 'icon' => 'bi-list-check'],
+                ['label' => __('menu.pending_approvals'), 'route' => 'manager.approvals.index', 'active' => ['manager.approvals.index', 'manager.approvals.show', 'manager.approvals.approve', 'manager.approvals.reject', 'manager.approvals.return'], 'icon' => 'bi-hourglass-split'],
+                ['label' => __('menu.approval_history'), 'route' => 'manager.approvals.history', 'active' => ['manager.approvals.history'], 'icon' => 'bi-list-check'],
             ],
         ];
     }
