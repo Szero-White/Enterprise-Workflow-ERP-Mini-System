@@ -59,6 +59,11 @@ class DynamicRequestService
     public function updateReturned(User $user, WorkflowRequest $workflowRequest, Request $httpRequest): WorkflowRequest
     {
         return DB::transaction(function () use ($user, $workflowRequest, $httpRequest) {
+            $workflowRequest = WorkflowRequest::query()
+                ->with('formTemplate.fields')
+                ->lockForUpdate()
+                ->findOrFail($workflowRequest->id);
+
             if ($workflowRequest->created_by !== $user->id || $workflowRequest->status !== WorkflowRequest::STATUS_RETURNED) {
                 abort(403, __('messages.returned_request_owner_only'));
             }

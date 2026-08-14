@@ -10,6 +10,7 @@ use App\Services\Asset\AssetLifecycleService;
 use App\Services\AuditLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class AssetController extends Controller
@@ -22,6 +23,8 @@ class AssetController extends Controller
 
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', Asset::class);
+
         $query = Asset::query()
             ->with(['item.category', 'warehouse', 'activeAssignment.assignee'])
             ->latest('id');
@@ -47,6 +50,8 @@ class AssetController extends Controller
 
     public function show(Asset $asset): View
     {
+        Gate::authorize('view', $asset);
+
         $asset->load([
             'item.category',
             'warehouse',
@@ -63,6 +68,8 @@ class AssetController extends Controller
 
     public function edit(Asset $asset): View
     {
+        Gate::authorize('update', $asset);
+
         $asset->load(['item', 'warehouse']);
 
         return view('assets.edit', compact('asset'));
@@ -70,6 +77,8 @@ class AssetController extends Controller
 
     public function update(AssetUpdateRequest $request, Asset $asset): RedirectResponse
     {
+        Gate::authorize('update', $asset);
+
         $old = $asset->toArray();
         $asset->update($request->validated());
 
@@ -82,6 +91,8 @@ class AssetController extends Controller
 
     public function releaseMaintenance(Request $request, Asset $asset): RedirectResponse
     {
+        Gate::authorize('completeMaintenance', $asset);
+
         $this->assetLifecycleService->releaseFromMaintenance($request->user(), $asset);
 
         return back()->with('success', __('assets.messages.maintenance_completed'));

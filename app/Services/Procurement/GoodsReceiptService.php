@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\Asset\AssetRegistrationService;
 use App\Services\AuditLogService;
 use App\Services\Inventory\InventoryStockService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -36,6 +37,14 @@ class GoodsReceiptService
                 422,
                 __('procurement.messages.purchase_order_not_receivable')
             );
+
+            $receivedAt = Carbon::parse($data['received_at']);
+
+            if ($order->ordered_at && $receivedAt->lt($order->ordered_at)) {
+                throw ValidationException::withMessages([
+                    'received_at' => __('procurement.messages.goods_receipt_before_issue'),
+                ]);
+            }
 
             $requestedQuantities = collect($data['lines'])->mapWithKeys(
                 fn (array $line) => [(int) $line['purchase_order_item_id'] => (float) ($line['quantity'] ?? 0)]

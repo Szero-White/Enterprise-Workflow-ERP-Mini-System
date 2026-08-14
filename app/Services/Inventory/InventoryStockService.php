@@ -11,6 +11,7 @@ use App\Models\Warehouse;
 use App\Services\AuditLogService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class InventoryStockService
 {
@@ -38,6 +39,12 @@ class InventoryStockService
             $reference,
             $movementType
         ) {
+            if ($quantity <= 0) {
+                throw ValidationException::withMessages([
+                    'quantity' => __('inventory.validation.quantity_must_be_positive'),
+                ]);
+            }
+
             $stock = $this->lockOrCreateStock($warehouse, $item);
             $oldQuantity = (float) $stock->quantity;
 
@@ -101,7 +108,7 @@ class InventoryStockService
                 ->first();
 
             if (! $stock) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
+                throw ValidationException::withMessages([
                     'asset' => __('inventory.validation.stock_not_found', [
                         'sku' => $item->sku,
                         'warehouse' => $warehouse->code,
@@ -112,7 +119,7 @@ class InventoryStockService
             $oldQuantity = (float) $stock->quantity;
 
             if ($quantity <= 0 || $oldQuantity + 0.0001 < $quantity) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
+                throw ValidationException::withMessages([
                     'asset' => __('inventory.validation.insufficient_stock', [
                         'sku' => $item->sku,
                         'warehouse' => $warehouse->code,

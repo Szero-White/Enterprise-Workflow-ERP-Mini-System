@@ -9,6 +9,7 @@ use App\Models\Asset;
 use App\Models\User;
 use App\Services\Asset\AssetLifecycleService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class AssetAssignmentController extends Controller
@@ -19,6 +20,8 @@ class AssetAssignmentController extends Controller
 
     public function create(Asset $asset): View
     {
+        Gate::authorize('assign', $asset);
+
         $asset->load(['item', 'warehouse']);
         abort_unless($asset->status === AssetStatus::Available && $asset->warehouse_id, 422, __('assets.messages.asset_not_available'));
 
@@ -30,6 +33,8 @@ class AssetAssignmentController extends Controller
 
     public function store(AssetAssignmentStoreRequest $request, Asset $asset): RedirectResponse
     {
+        Gate::authorize('assign', $asset);
+
         $this->assetLifecycleService->assign($request->user(), $asset, $request->validated());
 
         return redirect()

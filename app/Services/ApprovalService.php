@@ -21,6 +21,7 @@ class ApprovalService
     public function approve(User $actor, WorkflowRequest $workflowRequest, ?string $comment = null): WorkflowRequest
     {
         return DB::transaction(function () use ($actor, $workflowRequest, $comment) {
+            $workflowRequest = $this->lockRequest($workflowRequest);
             $this->ensureCanAct($actor, $workflowRequest);
             $old = $workflowRequest->toArray();
             $currentStep = $workflowRequest->currentStep;
@@ -75,6 +76,7 @@ class ApprovalService
     public function reject(User $actor, WorkflowRequest $workflowRequest, ?string $comment = null): WorkflowRequest
     {
         return DB::transaction(function () use ($actor, $workflowRequest, $comment) {
+            $workflowRequest = $this->lockRequest($workflowRequest);
             $this->ensureCanAct($actor, $workflowRequest);
             $old = $workflowRequest->toArray();
 
@@ -110,6 +112,7 @@ class ApprovalService
     public function returnToEmployee(User $actor, WorkflowRequest $workflowRequest, ?string $comment = null): WorkflowRequest
     {
         return DB::transaction(function () use ($actor, $workflowRequest, $comment) {
+            $workflowRequest = $this->lockRequest($workflowRequest);
             $this->ensureCanAct($actor, $workflowRequest);
             $old = $workflowRequest->toArray();
 
@@ -137,6 +140,14 @@ class ApprovalService
 
             return $freshRequest;
         });
+    }
+
+    private function lockRequest(WorkflowRequest $workflowRequest): WorkflowRequest
+    {
+        return WorkflowRequest::query()
+            ->with(['currentStep', 'workflowTemplate.steps'])
+            ->lockForUpdate()
+            ->findOrFail($workflowRequest->id);
     }
 
     public function ensureCanAct(User $actor, WorkflowRequest $workflowRequest): void

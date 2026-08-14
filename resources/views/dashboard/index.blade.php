@@ -10,14 +10,23 @@
         <h1 class="erp-dashboard-welcome__title">{{ __('dashboard.hero_title') }}</h1>
         <p class="erp-dashboard-welcome__description">{{ __('dashboard.hero_description') }}</p>
     </div>
-    @if($inventorySummary)
+    @if($procurementSummary || $inventorySummary || $assetSummary)
         <div class="erp-page-actions flex-shrink-0">
-            <a href="{{ route('inventory.stocks.index') }}" class="btn btn-light border">
-                <i class="bi bi-boxes"></i>{{ __('dashboard.view_inventory') }}
-            </a>
-            <a href="{{ route('inventory.receipts.create') }}" class="btn btn-primary">
-                <i class="bi bi-box-arrow-in-down"></i>{{ __('dashboard.receive_stock') }}
-            </a>
+            @if($procurementSummary)
+                <a href="{{ route('procurement.purchase-requests.index') }}" class="btn btn-light border">
+                    <i class="bi bi-cart-check"></i>{{ __('dashboard.view_procurement') }}
+                </a>
+            @elseif($assetSummary)
+                <a href="{{ route('assets.index') }}" class="btn btn-light border">
+                    <i class="bi bi-laptop"></i>{{ __('dashboard.view_assets') }}
+                </a>
+            @endif
+
+            @if($inventorySummary)
+                <a href="{{ route('inventory.stocks.index') }}" class="btn btn-primary">
+                    <i class="bi bi-boxes"></i>{{ __('dashboard.view_inventory') }}
+                </a>
+            @endif
         </div>
     @endif
 </section>
@@ -76,6 +85,37 @@
         </table>
     </div>
 </x-erp.panel>
+
+@if($procurementSummary)
+    <div class="erp-section-divider"></div>
+
+    <div class="erp-section-heading">
+        <div>
+            <h2 class="erp-section-heading__title">{{ __('dashboard.procurement_operations') }}</h2>
+            <p class="erp-section-heading__text">{{ __('dashboard.procurement_operations_description') }}</p>
+        </div>
+    </div>
+
+    @php
+        $procurementCards = [
+            ['label' => __('dashboard.purchase_requests_pending'), 'value' => number_format($procurementSummary['pending_approval']), 'icon' => 'bi-hourglass-split', 'tone' => 'warning'],
+            ['label' => __('dashboard.purchase_requests_ready'), 'value' => number_format($procurementSummary['ready_for_order']), 'icon' => 'bi-cart-check', 'tone' => 'primary'],
+            ['label' => __('dashboard.open_purchase_orders'), 'value' => number_format($procurementSummary['open_purchase_orders']), 'icon' => 'bi-file-earmark-text', 'tone' => 'info'],
+            ['label' => __('dashboard.awaiting_receipt'), 'value' => number_format($procurementSummary['awaiting_receipt']), 'icon' => 'bi-box-arrow-in-down', 'tone' => 'dark'],
+        ];
+    @endphp
+
+    <div class="erp-dashboard-metrics">
+        @foreach($procurementCards as $card)
+            <x-erp.metric-card
+                :label="$card['label']"
+                :value="$card['value']"
+                :icon="$card['icon']"
+                :tone="$card['tone']"
+            />
+        @endforeach
+    </div>
+@endif
 
 @if($inventorySummary)
     <div class="erp-section-divider"></div>
@@ -153,6 +193,37 @@
                 @endforelse
             </div>
         </x-erp.panel>
+    </div>
+@endif
+
+@if($assetSummary)
+    <div class="erp-section-divider"></div>
+
+    <div class="erp-section-heading">
+        <div>
+            <h2 class="erp-section-heading__title">{{ __('dashboard.asset_operations') }}</h2>
+            <p class="erp-section-heading__text">{{ __('dashboard.asset_operations_description') }}</p>
+        </div>
+    </div>
+
+    @php
+        $assetCards = [
+            ['label' => __('dashboard.total_assets'), 'value' => number_format($assetSummary['total_assets']), 'icon' => 'bi-laptop', 'tone' => 'primary'],
+            ['label' => __('dashboard.available_assets'), 'value' => number_format($assetSummary['available_assets']), 'icon' => 'bi-check2-circle', 'tone' => 'info'],
+            ['label' => __('dashboard.assigned_assets'), 'value' => number_format($assetSummary['assigned_assets']), 'icon' => 'bi-person-check', 'tone' => 'dark'],
+            ['label' => __('dashboard.maintenance_assets'), 'value' => number_format($assetSummary['maintenance_assets']), 'icon' => 'bi-tools', 'tone' => 'warning'],
+        ];
+    @endphp
+
+    <div class="erp-dashboard-metrics">
+        @foreach($assetCards as $card)
+            <x-erp.metric-card
+                :label="$card['label']"
+                :value="$card['value']"
+                :icon="$card['icon']"
+                :tone="$card['tone']"
+            />
+        @endforeach
     </div>
 @endif
 @endsection

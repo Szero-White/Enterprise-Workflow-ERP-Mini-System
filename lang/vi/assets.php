@@ -76,6 +76,8 @@ return [
         'asset_assigned' => 'Đã cấp phát tài sản và cập nhật tồn kho.',
         'asset_returned' => 'Đã thu hồi tài sản về kho.',
         'maintenance_completed' => 'Đã hoàn tất bảo trì và đưa tài sản về trạng thái sẵn sàng.',
+        'assignment_before_acquisition' => 'Thời điểm cấp phát không thể trước ngày tài sản được ghi nhận.',
+        'return_before_assignment' => 'Thời điểm thu hồi không thể trước thời điểm cấp phát.',
         'asset_not_available' => 'Tài sản hiện không ở trạng thái sẵn sàng để cấp phát.',
         'asset_already_assigned' => 'Tài sản đã có một lượt cấp phát đang hoạt động.',
         'assignment_already_returned' => 'Lượt cấp phát này đã được thu hồi trước đó.',

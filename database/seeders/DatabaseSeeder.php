@@ -201,7 +201,7 @@ class DatabaseSeeder extends Seeder
 
         Supplier::updateOrCreate(['code' => 'SUP-TECH'], [
             'name' => 'Công ty Công nghệ Demo', 'tax_code' => '0312345678', 'contact_name' => 'Nguyễn Minh',
-            'email' => 'sales@supplier-demo.test', 'phone' => '0900000001', 'payment_terms' => 'Net 30', 'lead_time_days' => 5,
+            'email' => 'procurement@supplier-demo.test', 'phone' => '0900000001', 'payment_terms' => 'Net 30', 'lead_time_days' => 5,
             'address' => 'TP. Hồ Chí Minh', 'is_active' => true,
         ]);
 

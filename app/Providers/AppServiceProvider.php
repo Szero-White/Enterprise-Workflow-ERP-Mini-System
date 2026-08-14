@@ -2,9 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\Asset;
+use App\Models\PurchaseRequest;
+use App\Models\WorkflowRequest;
+use App\Policies\AssetPolicy;
+use App\Policies\PurchaseRequestPolicy;
+use App\Policies\WorkflowRequestPolicy;
 use App\Services\Procurement\PurchaseRequestWorkflowHandler;
 use App\Services\Workflow\WorkflowTransitionDispatcher;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,6 +36,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(PurchaseRequest::class, PurchaseRequestPolicy::class);
+        Gate::policy(Asset::class, AssetPolicy::class);
+        Gate::policy(WorkflowRequest::class, WorkflowRequestPolicy::class);
+
         Paginator::useBootstrapFive();
     }
 }

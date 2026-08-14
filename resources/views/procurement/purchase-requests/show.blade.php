@@ -10,15 +10,12 @@
         :description="$purchaseRequest->purpose"
     >
         <x-slot:actions>
-            @if(
-                $purchaseRequest->workflowRequest->status === \App\Models\WorkflowRequest::STATUS_RETURNED
-                && $purchaseRequest->workflowRequest->created_by === auth()->id()
-            )
+            @can('update', $purchaseRequest)
                 <a class="btn btn-light border" href="{{ route('procurement.purchase-requests.edit', $purchaseRequest) }}">
                     <i class="bi bi-pencil"></i>
                     {{ __('ui.edit') }}
                 </a>
-            @endif
+            @endcan
 
             @if(
                 $purchaseRequest->status === \App\Enums\PurchaseRequestStatus::Approved
@@ -74,21 +71,21 @@
         </div>
 
         <div class="col-xl-4">
-            <x-erp.panel title="Thông tin yêu cầu">
+            <x-erp.panel :title="__('procurement.purchase_request.details')">
                 <dl class="row mb-0">
-                    <dt class="col-5">Người yêu cầu</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_request.requester') }}</dt>
                     <dd class="col-7">{{ $purchaseRequest->workflowRequest->creator?->name ?? '-' }}</dd>
 
-                    <dt class="col-5">Ngày cần hàng</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_request.required_date') }}</dt>
                     <dd class="col-7">{{ $purchaseRequest->required_date?->format('d/m/Y') ?? '-' }}</dd>
 
-                    <dt class="col-5">Ngân sách</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_request.estimated_total') }}</dt>
                     <dd class="col-7">{{ number_format((float) $purchaseRequest->estimated_total, 0, ',', '.') }} ₫</dd>
 
-                    <dt class="col-5">Workflow</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_request.workflow_status') }}</dt>
                     <dd class="col-7">@include('partials.status_badge', ['status' => $purchaseRequest->workflowRequest->status])</dd>
 
-                    <dt class="col-5">Mua sắm</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_request.procurement_status') }}</dt>
                     <dd class="col-7"><span class="badge text-bg-light border">{{ $purchaseRequest->status->label() }}</span></dd>
                 </dl>
             </x-erp.panel>

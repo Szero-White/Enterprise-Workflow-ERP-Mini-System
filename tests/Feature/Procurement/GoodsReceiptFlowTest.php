@@ -87,6 +87,30 @@ class GoodsReceiptFlowTest extends TestCase
         ]);
     }
 
+    public function test_goods_receipt_cannot_be_posted_before_purchase_order_issue_time(): void
+    {
+        $purchaseRequest = $this->submitPurchaseRequest(quantity: 1);
+        $this->approvePurchaseRequest($purchaseRequest);
+        $purchaseOrder = $this->createAndIssuePurchaseOrder($purchaseRequest, unitCost: 1_000);
+        $orderItem = $purchaseOrder->items()->firstOrFail();
+
+        $this->actingAs($this->procurementUsers['procurement'])
+            ->post(route('procurement.goods-receipts.store', $purchaseOrder), [
+                'received_at' => $purchaseOrder->ordered_at->copy()->subDay()->format('Y-m-d H:i:s'),
+                'lines' => [[
+                    'purchase_order_item_id' => $orderItem->id,
+                    'quantity' => 1,
+                ]],
+            ])
+            ->assertSessionHasErrors('received_at');
+
+        $this->assertDatabaseCount('goods_receipts', 0);
+        $this->assertDatabaseMissing('inventory_stocks', [
+            'warehouse_id' => $this->procurementWarehouse->id,
+            'item_id' => $this->procurementItem->id,
+        ]);
+    }
+
     private function postGoodsReceipt(
         PurchaseOrder $purchaseOrder,
         int $orderItemId,

@@ -8,6 +8,7 @@ use App\Models\WorkflowRequest;
 use App\Services\ApprovalService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class ApprovalController extends Controller
@@ -52,11 +53,9 @@ class ApprovalController extends Controller
 
     public function show(WorkflowRequest $workflowRequest): View
     {
-        $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'creator', 'currentStep', 'workflowTemplate.steps', 'purchaseRequest.items.item']);
+        Gate::authorize('review', $workflowRequest);
 
-        if ($workflowRequest->status === WorkflowRequest::STATUS_PENDING) {
-            $this->approvalService->ensureCanAct(auth()->user(), $workflowRequest);
-        }
+        $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'creator', 'currentStep', 'workflowTemplate.steps', 'purchaseRequest.items.item']);
 
         return view('manager.approvals.show', compact('workflowRequest'));
     }

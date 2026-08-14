@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\PurchaseRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -9,7 +10,13 @@ class PurchaseRequestStoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $purchaseRequest = $this->route('purchaseRequest');
+
+        if ($purchaseRequest instanceof PurchaseRequest) {
+            return $this->user()?->can('update', $purchaseRequest) ?? false;
+        }
+
+        return $this->user()?->can('create', PurchaseRequest::class) ?? false;
     }
 
     public function rules(): array

@@ -91,6 +91,7 @@ return [
     ],
 
     'validation' => [
+        'quantity_must_be_positive' => 'Số lượng nhập hoặc xuất kho phải lớn hơn 0.',
         'stock_not_found' => 'Vật tư :sku chưa có tồn kho tại kho :warehouse.',
         'insufficient_stock' => 'Vật tư :sku không đủ tồn tại kho :warehouse. Tồn hiện tại: :available :unit.',
         'asset_tracked_manual_receipt_blocked' => 'Vật tư theo dõi tài sản phải được nhận qua đơn mua hàng để hệ thống tạo mã tài sản và lưu nguồn gốc.',

@@ -9,6 +9,7 @@ use App\Models\WorkflowRequest;
 use App\Services\DynamicRequestService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class RequestSubmissionController extends Controller
@@ -76,7 +77,7 @@ class RequestSubmissionController extends Controller
 
     public function show(WorkflowRequest $workflowRequest): View
     {
-        $this->authorizeOwner($workflowRequest);
+        Gate::authorize('view', $workflowRequest);
         $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'currentStep', 'purchaseRequest.items.item']);
 
         return view('employee.requests.show', compact('workflowRequest'));
@@ -84,10 +85,8 @@ class RequestSubmissionController extends Controller
 
     public function edit(WorkflowRequest $workflowRequest): View
     {
-        $this->authorizeOwner($workflowRequest);
+        Gate::authorize('update', $workflowRequest);
         abort_unless($workflowRequest->formTemplate?->submission_type === 'dynamic', 404);
-        abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, __('messages.returned_request_only'));
-
         $workflowRequest->load(['formTemplate.fields', 'values']);
         $formTemplate = $workflowRequest->formTemplate;
         $oldValues = $workflowRequest->values->pluck('value', 'field_key');
@@ -97,21 +96,12 @@ class RequestSubmissionController extends Controller
 
     public function update(WorkflowRequestSubmissionRequest $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
-        $this->authorizeOwner($workflowRequest);
+        Gate::authorize('update', $workflowRequest);
         abort_unless($workflowRequest->formTemplate?->submission_type === 'dynamic', 404);
-        abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, __('messages.returned_request_only'));
-
         $workflowRequest->load('formTemplate.fields');
 
         $this->dynamicRequestService->updateReturned($request->user(), $workflowRequest, $request);
 
         return redirect()->route('employee.requests.show', $workflowRequest)->with('success', __('messages.request_resubmitted'));
-    }
-
-    private function authorizeOwner(WorkflowRequest $workflowRequest): void
-    {
-        if ($workflowRequest->created_by !== auth()->id() && ! auth()->user()->hasRole('admin')) {
-            abort(403);
-        }
     }
 }

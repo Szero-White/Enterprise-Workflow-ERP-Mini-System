@@ -29,7 +29,7 @@ class SidebarNavigation
             ]);
         }
 
-        if ($user->hasRole(['asset_manager', 'admin'])) {
+        if ($user->hasRole(['asset_manager', 'procurement', 'admin'])) {
             $groups[] = $this->group(__('menu.asset_management'), [
                 $this->item(__('menu.assets'), 'assets.index', ['assets.*'], 'bi-laptop-fill'),
             ]);

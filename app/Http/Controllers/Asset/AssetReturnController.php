@@ -9,6 +9,7 @@ use App\Models\AssetAssignment;
 use App\Models\Warehouse;
 use App\Services\Asset\AssetLifecycleService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class AssetReturnController extends Controller
@@ -20,6 +21,7 @@ class AssetReturnController extends Controller
     public function create(AssetAssignment $assignment): View
     {
         $assignment->load(['asset.item', 'assignee', 'returnRecord']);
+        Gate::authorize('receiveReturn', $assignment->asset);
         abort_if($assignment->returnRecord, 422, __('assets.messages.assignment_already_returned'));
 
         return view('assets.returns.create', [
@@ -31,6 +33,9 @@ class AssetReturnController extends Controller
 
     public function store(AssetReturnStoreRequest $request, AssetAssignment $assignment): RedirectResponse
     {
+        $assignment->loadMissing('asset');
+        Gate::authorize('receiveReturn', $assignment->asset);
+
         $assetId = $assignment->asset_id;
         $this->assetLifecycleService->returnAsset($request->user(), $assignment, $request->validated());
 

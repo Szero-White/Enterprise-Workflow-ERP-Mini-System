@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Asset;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -9,7 +10,10 @@ class AssetUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $asset = $this->route('asset');
+
+        return $asset instanceof Asset
+            && ($this->user()?->can('update', $asset) ?? false);
     }
 
     public function rules(): array

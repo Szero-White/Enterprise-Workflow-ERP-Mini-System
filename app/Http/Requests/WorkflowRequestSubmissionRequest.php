@@ -11,6 +11,12 @@ class WorkflowRequestSubmissionRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        $workflowRequest = $this->route('workflowRequest');
+
+        if ($workflowRequest instanceof WorkflowRequest) {
+            return $this->user()?->can('update', $workflowRequest) ?? false;
+        }
+
         return true;
     }
 

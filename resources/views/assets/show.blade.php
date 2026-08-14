@@ -9,7 +9,7 @@
         :eyebrow="__('assets.show_title')"
         :description="$asset->item->sku.' · '.$asset->item->name"
     >
-        @if(auth()->user()->hasRole(['asset_manager', 'admin']))
+        @can('update', $asset)
             <x-slot:actions>
                 @if($asset->status === \App\Enums\AssetStatus::Available)
                     <a class="btn btn-primary" href="{{ route('assets.assignments.create', $asset) }}">
@@ -35,7 +35,7 @@
                     {{ __('assets.edit') }}
                 </a>
             </x-slot:actions>
-        @endif
+        @endcan
     </x-erp.page-header>
 
     <div class="row g-3">

@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PurchaseRequestStoreRequest;
 use App\Models\Item;
 use App\Models\PurchaseRequest;
-use App\Models\WorkflowRequest;
 use App\Services\Procurement\PurchaseRequestService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class PurchaseRequestController extends Controller
@@ -20,6 +20,8 @@ class PurchaseRequestController extends Controller
 
     public function index(Request $request): View
     {
+        Gate::authorize('viewAny', PurchaseRequest::class);
+
         $query = PurchaseRequest::query()
             ->with(['workflowRequest.creator', 'items'])
             ->latest();
@@ -45,6 +47,8 @@ class PurchaseRequestController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('create', PurchaseRequest::class);
+
         return view('procurement.purchase-requests.create', [
             'items' => Item::where('is_active', true)->orderBy('name')->get(),
         ]);
@@ -52,6 +56,8 @@ class PurchaseRequestController extends Controller
 
     public function store(PurchaseRequestStoreRequest $request): RedirectResponse
     {
+        Gate::authorize('create', PurchaseRequest::class);
+
         $purchaseRequest = $this->purchaseRequestService->create(
             $request->user(),
             $request->validated(),
@@ -63,7 +69,7 @@ class PurchaseRequestController extends Controller
             ->with('success', __('procurement.messages.purchase_request_created'));
     }
 
-    public function show(Request $request, PurchaseRequest $purchaseRequest): View
+    public function show(PurchaseRequest $purchaseRequest): View
     {
         $purchaseRequest->load([
             'workflowRequest.creator',
@@ -73,18 +79,15 @@ class PurchaseRequestController extends Controller
             'activePurchaseOrder',
         ]);
 
-        $this->authorizeView($request, $purchaseRequest);
+        Gate::authorize('view', $purchaseRequest);
 
         return view('procurement.purchase-requests.show', compact('purchaseRequest'));
     }
 
-    public function edit(Request $request, PurchaseRequest $purchaseRequest): View
+    public function edit(PurchaseRequest $purchaseRequest): View
     {
         $purchaseRequest->load(['workflowRequest', 'items.item']);
-        $canEdit = $purchaseRequest->workflowRequest->created_by === $request->user()->id;
-
-        abort_unless($canEdit, 403);
-        abort_unless($purchaseRequest->workflowRequest->status === WorkflowRequest::STATUS_RETURNED, 403);
+        Gate::authorize('update', $purchaseRequest);
 
         return view('procurement.purchase-requests.edit', [
             'purchaseRequest' => $purchaseRequest,
@@ -96,6 +99,8 @@ class PurchaseRequestController extends Controller
         PurchaseRequestStoreRequest $request,
         PurchaseRequest $purchaseRequest
     ): RedirectResponse {
+        Gate::authorize('update', $purchaseRequest);
+
         $this->purchaseRequestService->updateReturned(
             $request->user(),
             $purchaseRequest->load('workflowRequest'),
@@ -106,13 +111,5 @@ class PurchaseRequestController extends Controller
         return redirect()
             ->route('procurement.purchase-requests.show', $purchaseRequest)
             ->with('success', __('procurement.messages.purchase_request_resubmitted'));
-    }
-
-    private function authorizeView(Request $request, PurchaseRequest $purchaseRequest): void
-    {
-        $canView = $purchaseRequest->workflowRequest->created_by === $request->user()->id
-            || $request->user()->hasRole(['admin', 'manager', 'procurement', 'finance', 'director']);
-
-        abort_unless($canView, 403);
     }
 }

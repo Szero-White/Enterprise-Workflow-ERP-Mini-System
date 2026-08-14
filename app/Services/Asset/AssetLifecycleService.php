@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Warehouse;
 use App\Services\AuditLogService;
 use App\Services\Inventory\InventoryStockService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -40,6 +41,14 @@ class AssetLifecycleService
             if ($lockedAsset->assignments()->whereDoesntHave('returnRecord')->exists()) {
                 throw ValidationException::withMessages([
                     'asset' => __('assets.messages.asset_already_assigned'),
+                ]);
+            }
+
+            $assignedAt = Carbon::parse($data['assigned_at']);
+
+            if ($lockedAsset->acquired_at && $assignedAt->startOfDay()->lt($lockedAsset->acquired_at->startOfDay())) {
+                throw ValidationException::withMessages([
+                    'assigned_at' => __('assets.messages.assignment_before_acquisition'),
                 ]);
             }
 
@@ -112,6 +121,14 @@ class AssetLifecycleService
             if ($asset->status !== AssetStatus::Assigned) {
                 throw ValidationException::withMessages([
                     'asset' => __('assets.messages.asset_not_assigned'),
+                ]);
+            }
+
+            $returnedAt = Carbon::parse($data['returned_at']);
+
+            if ($lockedAssignment->assigned_at && $returnedAt->lt($lockedAssignment->assigned_at)) {
+                throw ValidationException::withMessages([
+                    'returned_at' => __('assets.messages.return_before_assignment'),
                 ]);
             }
 

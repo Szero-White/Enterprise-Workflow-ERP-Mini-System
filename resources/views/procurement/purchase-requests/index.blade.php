@@ -9,14 +9,14 @@
         :eyebrow="__('procurement.eyebrow')"
         :description="__('procurement.purchase_request.index_description')"
     >
-        @if(auth()->user()->hasRole(['employee', 'admin']))
+        @can('create', \App\Models\PurchaseRequest::class)
             <x-slot:actions>
                 <a class="btn btn-primary" href="{{ route('procurement.purchase-requests.create') }}">
                     <i class="bi bi-plus-lg"></i>
                     {{ __('procurement.purchase_request.create_title') }}
                 </a>
             </x-slot:actions>
-        @endif
+        @endcan
     </x-erp.page-header>
 
     <x-erp.panel>
@@ -26,7 +26,7 @@
                     name="q"
                     class="form-control"
                     value="{{ request('q') }}"
-                    placeholder="Tìm theo mã yêu cầu..."
+                    placeholder="{{ __('procurement.purchase_request.search') }}"
                 >
             </div>
             <div class="col-auto">
@@ -41,7 +41,7 @@
             <table class="table erp-table align-middle mb-0">
                 <thead>
                     <tr>
-                        <th>Mã yêu cầu</th>
+                        <th>{{ __('procurement.purchase_request.code') }}</th>
                         <th>{{ __('procurement.purchase_request.requester') }}</th>
                         <th>{{ __('procurement.purchase_request.estimated_total') }}</th>
                         <th>{{ __('procurement.purchase_request.workflow_status') }}</th>

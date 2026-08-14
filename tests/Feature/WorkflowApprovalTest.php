@@ -188,6 +188,19 @@ class WorkflowApprovalTest extends TestCase
         $this->assertSame($this->managerStep->id, $workflowRequest->fresh()->current_step_id);
     }
 
+    public function test_user_cannot_view_request_before_their_approval_step(): void
+    {
+        $workflowRequest = $this->submitRequest();
+
+        $this->actingAs($this->hr)
+            ->get(route('manager.approvals.show', $workflowRequest))
+            ->assertForbidden();
+
+        $this->actingAs($this->manager)
+            ->get(route('manager.approvals.show', $workflowRequest))
+            ->assertOk();
+    }
+
     public function test_completed_request_cannot_be_approved_again(): void
     {
         $workflowRequest = $this->completeRequest();

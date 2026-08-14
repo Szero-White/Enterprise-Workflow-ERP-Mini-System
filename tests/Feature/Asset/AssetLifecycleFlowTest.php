@@ -169,6 +169,49 @@ class AssetLifecycleFlowTest extends TestCase
         $this->assertSame(AssetCondition::Good, $asset->fresh()->condition);
     }
 
+    public function test_assignment_before_acquisition_is_rejected_without_stock_side_effects(): void
+    {
+        $asset = $this->receiveOneTrackedAsset();
+
+        $this->actingAs($this->procurementUsers['asset_manager'])
+            ->post(route('assets.assignments.store', $asset), [
+                'assigned_to' => $this->procurementUsers['employee']->id,
+                'assigned_at' => $asset->acquired_at->copy()->subDay()->format('Y-m-d H:i:s'),
+            ])
+            ->assertSessionHasErrors('assigned_at');
+
+        $this->assertDatabaseCount('asset_assignments', 0);
+        $this->assertSame(AssetStatus::Available, $asset->fresh()->status);
+        $this->assertEquals(1.0, $this->stockQuantity());
+    }
+
+    public function test_return_before_assignment_is_rejected_without_inventory_side_effects(): void
+    {
+        $asset = $this->receiveOneTrackedAsset();
+        $assignedAt = now()->addDay();
+
+        $this->actingAs($this->procurementUsers['asset_manager'])
+            ->post(route('assets.assignments.store', $asset), [
+                'assigned_to' => $this->procurementUsers['employee']->id,
+                'assigned_at' => $assignedAt->format('Y-m-d H:i:s'),
+            ])
+            ->assertRedirect();
+
+        $assignment = AssetAssignment::query()->firstOrFail();
+
+        $this->actingAs($this->procurementUsers['asset_manager'])
+            ->post(route('assets.returns.store', $assignment), [
+                'warehouse_id' => $this->procurementWarehouse->id,
+                'returned_at' => $assignedAt->copy()->subHour()->format('Y-m-d H:i:s'),
+                'condition' => AssetCondition::Good->value,
+            ])
+            ->assertSessionHasErrors('returned_at');
+
+        $this->assertDatabaseCount('asset_returns', 0);
+        $this->assertSame(AssetStatus::Assigned, $asset->fresh()->status);
+        $this->assertEquals(0.0, $this->stockQuantity());
+    }
+
     private function receiveOneTrackedAsset(): Asset
     {
         $purchaseRequest = $this->submitPurchaseRequest(quantity: 1);
