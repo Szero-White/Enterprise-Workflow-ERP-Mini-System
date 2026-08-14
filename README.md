@@ -1,6 +1,6 @@
 # Enterprise Workflow & Operations Management System
 
-A Laravel 12 portfolio project for **internal enterprise operations**. The system is centered on a configurable Workflow Engine and is being expanded toward Procurement, Inventory and Asset Management.
+A Laravel 12 portfolio project for **internal enterprise operations**. The system is centered on a configurable Workflow Engine and connects approval-driven Procurement with Inventory and Asset Management.
 
 ## Current product direction
 
@@ -9,19 +9,23 @@ Organization
     ↓
 Workflow Engine
     ├── HR requests
-    ├── Finance requests      (next phase)
-    └── Purchase requests     (next phase)
-                              ↓
-                         Procurement
-                              ↓
-                         Goods Receipt
-                              ↓
-                          Inventory
-                              ↓
-                            Assets
+    ├── Finance requests
+    └── Purchase requests
+              ↓
+         Procurement
+              ↓
+         Purchase Order
+              ↓
+         Goods Receipt
+              ↓
+          Inventory
+              ↓
+      Asset Management
+        ├── Assignment
+        └── Return
 ```
 
-The former Sales / CRM domain has been removed so the product has one coherent business story.
+The former Sales / CRM domain has been removed so the product has one coherent internal-operations story.
 
 ## Implemented today
 
@@ -29,7 +33,7 @@ The former Sales / CRM domain has been removed so the product has one coherent b
 
 - Users, departments and roles.
 - Role-aware routes and navigation.
-- Admin, manager, employee, HR and director demo roles.
+- Admin, manager, employee, HR, procurement, finance, director and asset-manager demo roles.
 
 ### Configurable Workflow Engine
 
@@ -38,16 +42,36 @@ The former Sales / CRM domain has been removed so the product has one coherent b
 - Approve, reject and return-to-employee actions.
 - Approval history, notifications and audit logs.
 - Leave-request workflow included in the seed data.
+- Workflow transition dispatcher keeps domain completion handlers outside approval controllers/services.
 
-### Inventory foundation
+### Procurement
+
+- Supplier master.
+- Structured Purchase Requests linked to the generic workflow request.
+- Manager → Procurement → Finance → Director approval flow.
+- Purchase Orders with supplier, warehouse and item snapshots.
+- PO issue/cancel lifecycle and replacement of cancelled orders while preserving history.
+- Goods Receipts with partial receiving and over-receipt protection.
+- Goods receipt automatically posts inventory movements.
+
+### Inventory
 
 - Item master (`Item` / `ItemCategory`) for internal materials and equipment.
-- Item categories.
-- Warehouses.
-- Stock by warehouse + item.
+- Warehouses and stock by warehouse + item.
 - Inventory movement ledger.
 - Low-stock alerts.
-- Manual stock receipt as a temporary foundation before Procurement is connected.
+- Manual stock receipt for non-asset-tracked materials.
+- Asset assignment/return movements keep physical warehouse stock synchronized.
+
+### Asset Management
+
+- Items can be marked as asset-trackable.
+- Goods Receipt creates one traceable `Asset` record per received unit for asset-tracked items.
+- Asset codes preserve the source Goods Receipt and acquisition cost.
+- Assignment records employee custody and removes one physical unit from warehouse stock.
+- Return records destination warehouse and condition, then restores warehouse stock.
+- Returned assets can enter maintenance before becoming available for assignment again.
+- Serial number and operational notes can be maintained without changing historical procurement data.
 
 ### Internal API v1
 
@@ -61,10 +85,11 @@ The API is session-authenticated and intended for internal integration only.
 - Thin controllers.
 - Form Requests for HTTP validation.
 - Domain/application services for transaction logic.
+- Database transactions and row locks around stock, procurement and asset lifecycle transitions.
 - Eloquent models focused on persistence and relationships.
 - Blade views do not own business rules.
 - Audit and notification behavior remains cross-cutting and reusable.
-- No hard-coded workflow for each request type; templates drive approval flows.
+- No hard-coded controller per dynamic request type; workflow templates drive generic approvals and completion handlers bridge approved requests into domain modules.
 
 ## Local setup
 
@@ -80,11 +105,16 @@ npm run build
 php artisan serve
 ```
 
-Demo login:
+Demo accounts use password `password`:
 
 ```text
 admin@example.com
-password
+employee@example.com
+manager@example.com
+procurement@example.com
+finance@example.com
+director@example.com
+asset@example.com
 ```
 
 ## Tests
@@ -93,14 +123,12 @@ password
 php artisan test
 ```
 
-The uploaded source does not contain `vendor/`, so automated Laravel tests must be executed after `composer install` on the local machine.
+The distributed source does not contain `vendor/`, so Laravel tests must be executed after `composer install` on the local machine.
 
-## Refactor plan
+## Refactor milestones
 
 - Step 01: remove legacy Sales / CRM. ✅
-- Step 02: Item / ItemCategory domain cleanup completed; sales-oriented pricing removed.
-- Step 03: implement Supplier + Purchase Request + Purchase Order + Goods Receipt.
-- Step 04: connect completed Purchase Request workflow to Procurement.
-- Step 05: implement Asset + Assignment / Return, then final cleanup and test pass.
-
-See [STEP_01_REMOVE_SALES_CRM.md](STEP_01_REMOVE_SALES_CRM.md) for the first cleanup increment.
+- Step 02: normalize Product → Item / ItemCategory and Inventory terminology. ✅
+- Step 03: add workflow-driven Procurement, Purchase Orders and Goods Receipts. ✅
+- Step 04: add Asset registration, assignment, return and maintenance lifecycle. ✅
+- Step 05: final hardening, reporting/dashboard cleanup and portfolio documentation.

@@ -33,7 +33,7 @@ trait BuildsProcurementFixture
         ]);
 
         $roles = [];
-        foreach (['employee', 'manager', 'procurement', 'finance', 'director', 'admin'] as $key) {
+        foreach (['employee', 'manager', 'procurement', 'finance', 'director', 'asset_manager', 'admin'] as $key) {
             $roles[$key] = Role::create([
                 'name' => ucfirst($key),
                 'key' => $key,
@@ -99,6 +99,7 @@ trait BuildsProcurementFixture
             'unit' => 'cái',
             'cost_price' => 10_000_000,
             'reorder_level' => 1,
+            'is_asset_trackable' => true,
             'is_active' => true,
         ]);
 

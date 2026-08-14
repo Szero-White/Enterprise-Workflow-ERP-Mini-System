@@ -67,6 +67,7 @@ class GoodsReceiptController extends Controller
             'warehouse',
             'receiver',
             'items.item',
+            'items.assets',
         ]);
 
         return view('procurement.goods-receipts.show', compact('goodsReceipt'));

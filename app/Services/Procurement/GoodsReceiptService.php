@@ -8,6 +8,7 @@ use App\Enums\PurchaseRequestStatus;
 use App\Models\GoodsReceipt;
 use App\Models\PurchaseOrder;
 use App\Models\User;
+use App\Services\Asset\AssetRegistrationService;
 use App\Services\AuditLogService;
 use App\Services\Inventory\InventoryStockService;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,7 @@ class GoodsReceiptService
 {
     public function __construct(
         private InventoryStockService $inventoryStockService,
+        private AssetRegistrationService $assetRegistrationService,
         private AuditLogService $auditLogService
     ) {
     }
@@ -86,7 +88,7 @@ class GoodsReceiptService
                     ]);
                 }
 
-                $receipt->items()->create([
+                $receiptItem = $receipt->items()->create([
                     'purchase_order_item_id' => $orderItem->id,
                     'item_id' => $orderItem->item_id,
                     'quantity' => $quantity,
@@ -106,6 +108,8 @@ class GoodsReceiptService
                     reference: $receipt,
                     movementType: InventoryMovementType::PurchaseReceipt,
                 );
+
+                $this->assetRegistrationService->registerFromReceiptItem($receiptItem);
 
                 $orderItem->update([
                     'received_quantity' => (float) $orderItem->received_quantity + $quantity,
@@ -140,6 +144,7 @@ class GoodsReceiptService
                 'warehouse',
                 'receiver',
                 'items.item',
+                'items.assets',
             ]);
         });
     }

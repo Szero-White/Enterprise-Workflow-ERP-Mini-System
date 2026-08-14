@@ -73,6 +73,87 @@ class InventoryStockService
         });
     }
 
+
+    public function issue(
+        User $actor,
+        Warehouse $warehouse,
+        Item $item,
+        float $quantity,
+        ?float $unitCost = null,
+        ?string $note = null,
+        ?Model $reference = null,
+        InventoryMovementType $movementType = InventoryMovementType::AdjustmentOut
+    ): InventoryStock {
+        return DB::transaction(function () use (
+            $actor,
+            $warehouse,
+            $item,
+            $quantity,
+            $unitCost,
+            $note,
+            $reference,
+            $movementType
+        ) {
+            $stock = InventoryStock::query()
+                ->where('warehouse_id', $warehouse->id)
+                ->where('item_id', $item->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $stock) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'asset' => __('inventory.validation.stock_not_found', [
+                        'sku' => $item->sku,
+                        'warehouse' => $warehouse->code,
+                    ]),
+                ]);
+            }
+
+            $oldQuantity = (float) $stock->quantity;
+
+            if ($quantity <= 0 || $oldQuantity + 0.0001 < $quantity) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'asset' => __('inventory.validation.insufficient_stock', [
+                        'sku' => $item->sku,
+                        'warehouse' => $warehouse->code,
+                        'available' => $oldQuantity,
+                        'unit' => $item->unit,
+                    ]),
+                ]);
+            }
+
+            $stock->update([
+                'quantity' => $oldQuantity - $quantity,
+            ]);
+
+            $this->recordMovement(
+                actor: $actor,
+                warehouse: $warehouse,
+                item: $item,
+                type: $movementType,
+                quantity: -$quantity,
+                balanceAfter: (float) $stock->quantity,
+                unitCost: $unitCost,
+                reference: $reference,
+                note: $note,
+            );
+
+            $this->auditLogService->log(
+                'inventory.issued',
+                $stock,
+                ['quantity' => $oldQuantity],
+                ['quantity' => (float) $stock->quantity],
+                __('inventory.audit.issued', [
+                    'quantity' => $quantity,
+                    'unit' => $item->unit,
+                    'warehouse' => $warehouse->code,
+                ])
+            );
+
+            return $stock->fresh(['warehouse', 'item']);
+        });
+    }
+
     private function lockOrCreateStock(Warehouse $warehouse, Item $item): InventoryStock
     {
         InventoryStock::query()->insertOrIgnore([

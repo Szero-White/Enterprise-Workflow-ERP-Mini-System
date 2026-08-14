@@ -66,6 +66,9 @@ class WarehouseController extends Controller
             $warehouse->inventoryMovements()->exists()
             || $warehouse->purchaseOrders()->exists()
             || $warehouse->goodsReceipts()->exists()
+            || $warehouse->assets()->exists()
+            || $warehouse->assetAssignments()->exists()
+            || $warehouse->assetReturns()->exists()
             || $warehouse->stocks()->where('quantity', '!=', 0)->exists()
         ) {
             return back()->with('error', __('inventory.messages.warehouse_delete_blocked'));

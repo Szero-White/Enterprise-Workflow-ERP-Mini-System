@@ -51,6 +51,7 @@ class ItemController extends Controller
     public function store(ItemRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        $data['is_asset_trackable'] = $request->boolean('is_asset_trackable');
         $data['is_active'] = $request->boolean('is_active', true);
         $item = Item::create($data);
 
@@ -71,7 +72,13 @@ class ItemController extends Controller
     {
         $old = $item->toArray();
         $data = $request->validated();
+        $data['is_asset_trackable'] = $request->boolean('is_asset_trackable');
         $data['is_active'] = $request->boolean('is_active');
+
+        if (! $data['is_asset_trackable'] && $item->assets()->exists()) {
+            return back()->withInput()->with('error', __('items.messages.asset_tracking_disable_blocked'));
+        }
+
         $item->update($data);
 
         $this->auditLogService->log('item.updated', $item, $old, $item->fresh()->toArray());
@@ -81,7 +88,7 @@ class ItemController extends Controller
 
     public function destroy(Item $item): RedirectResponse
     {
-        if ($item->inventoryMovements()->exists() || $item->purchaseRequestItems()->exists() || $item->purchaseOrderItems()->exists() || $item->stocks()->where('quantity', '!=', 0)->exists()) {
+        if ($item->inventoryMovements()->exists() || $item->purchaseRequestItems()->exists() || $item->purchaseOrderItems()->exists() || $item->assets()->exists() || $item->stocks()->where('quantity', '!=', 0)->exists()) {
             return back()->with('error', __('items.messages.item_delete_blocked'));
         }
 

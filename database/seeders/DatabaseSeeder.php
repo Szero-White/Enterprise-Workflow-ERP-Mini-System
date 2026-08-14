@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AssetCondition;
+use App\Enums\AssetStatus;
+use App\Models\Asset;
 use App\Models\Department;
 use App\Models\InventoryStock;
 use App\Models\Item;
@@ -29,6 +32,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Giám đốc', 'key' => 'director'],
             ['name' => 'Mua sắm', 'key' => 'procurement'],
             ['name' => 'Tài chính', 'key' => 'finance'],
+            ['name' => 'Quản lý tài sản', 'key' => 'asset_manager'],
         ])->mapWithKeys(fn ($role) => [$role['key'] => Role::updateOrCreate(['key' => $role['key']], $role)]);
 
         $departments = collect([
@@ -37,6 +41,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Kỹ thuật', 'code' => 'ENG'],
             ['name' => 'Kế toán', 'code' => 'ACC'],
             ['name' => 'Mua sắm', 'code' => 'PROC'],
+            ['name' => 'Quản lý tài sản', 'code' => 'ASSET'],
         ])->mapWithKeys(fn ($department) => [$department['code'] => Department::updateOrCreate(['code' => $department['code']], $department)]);
 
         User::updateOrCreate(['email' => 'admin@example.com'], [
@@ -88,6 +93,11 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate(['email' => 'finance@example.com'], [
             'name' => 'Chuyên viên tài chính', 'password' => Hash::make('password'),
             'department_id' => $departments['ACC']->id, 'role_id' => $roles['finance']->id, 'is_active' => true,
+        ]);
+
+        User::updateOrCreate(['email' => 'asset@example.com'], [
+            'name' => 'Chuyên viên quản lý tài sản', 'password' => Hash::make('password'),
+            'department_id' => $departments['ASSET']->id, 'role_id' => $roles['asset_manager']->id, 'is_active' => true,
         ]);
 
         $admin = User::where('email', 'admin@example.com')->first();
@@ -207,11 +217,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $items = collect([
-            ['sku' => 'LAP-PRO-14', 'name' => 'Laptop Business Pro 14', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 18500000, 'reorder_level' => 8],
-            ['sku' => 'MON-27-QHD', 'name' => 'Màn hình 27 inch QHD', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 4200000, 'reorder_level' => 12],
-            ['sku' => 'KEY-MECH-87', 'name' => 'Bàn phím cơ 87 phím', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 850000, 'reorder_level' => 20],
-            ['sku' => 'CHAIR-ERG-01', 'name' => 'Ghế công thái học Office Pro', 'category_id' => $office->id, 'unit' => 'cái', 'cost_price' => 2600000, 'reorder_level' => 10],
-            ['sku' => 'HUB-USBC-12', 'name' => 'Hub USB-C 12 in 1', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 980000, 'reorder_level' => 18],
+            ['sku' => 'LAP-PRO-14', 'name' => 'Laptop Business Pro 14', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 18500000, 'reorder_level' => 8, 'is_asset_trackable' => true],
+            ['sku' => 'MON-27-QHD', 'name' => 'Màn hình 27 inch QHD', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 4200000, 'reorder_level' => 12, 'is_asset_trackable' => true],
+            ['sku' => 'KEY-MECH-87', 'name' => 'Bàn phím cơ 87 phím', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 850000, 'reorder_level' => 20, 'is_asset_trackable' => false],
+            ['sku' => 'CHAIR-ERG-01', 'name' => 'Ghế công thái học Office Pro', 'category_id' => $office->id, 'unit' => 'cái', 'cost_price' => 2600000, 'reorder_level' => 10, 'is_asset_trackable' => true],
+            ['sku' => 'HUB-USBC-12', 'name' => 'Hub USB-C 12 in 1', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 980000, 'reorder_level' => 18, 'is_asset_trackable' => false],
         ])->mapWithKeys(function (array $data) {
             $item = Item::updateOrCreate(['sku' => $data['sku']], array_merge($data, [
                 'description' => 'Vật tư demo cho nền tảng quản lý kho và vận hành nội bộ.',
@@ -249,6 +259,24 @@ class DatabaseSeeder extends Seeder
                 ['warehouse_id' => $backupWarehouse->id, 'item_id' => $items[$sku]->id],
                 ['quantity' => $dnQty]
             );
+        }
+
+        foreach ([
+            ['asset_code' => 'AST-DEMO-001', 'item' => 'LAP-PRO-14', 'serial' => 'SN-LAP-DEMO-001'],
+            ['asset_code' => 'AST-DEMO-002', 'item' => 'LAP-PRO-14', 'serial' => 'SN-LAP-DEMO-002'],
+            ['asset_code' => 'AST-DEMO-003', 'item' => 'MON-27-QHD', 'serial' => 'SN-MON-DEMO-001'],
+        ] as $demoAsset) {
+            Asset::updateOrCreate(['asset_code' => $demoAsset['asset_code']], [
+                'item_id' => $items[$demoAsset['item']]->id,
+                'goods_receipt_item_id' => null,
+                'warehouse_id' => $mainWarehouse->id,
+                'serial_number' => $demoAsset['serial'],
+                'acquired_at' => now()->subDays(30)->toDateString(),
+                'acquisition_cost' => $items[$demoAsset['item']]->cost_price,
+                'status' => AssetStatus::Available,
+                'condition' => AssetCondition::Good,
+                'note' => 'Tài sản demo có trước khi hệ thống bắt đầu theo dõi phiếu nhận hàng.',
+            ]);
         }
 
     }

@@ -10,6 +10,9 @@ use App\Http\Controllers\Admin\WorkflowStepController;
 use App\Http\Controllers\Admin\WorkflowTemplateController;
 use App\Http\Controllers\Api\V1\InventoryStockController as ApiInventoryStockController;
 use App\Http\Controllers\Api\V1\ItemController as ApiItemController;
+use App\Http\Controllers\Asset\AssetAssignmentController;
+use App\Http\Controllers\Asset\AssetController;
+use App\Http\Controllers\Asset\AssetReturnController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Employee\RequestSubmissionController;
@@ -40,7 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 
-    Route::middleware('role:admin,manager,procurement')->group(function () {
+    Route::middleware('role:admin,manager,procurement,asset_manager')->group(function () {
         Route::prefix('internal-api/v1')->name('internal-api.v1.')->group(function () {
             Route::get('items', [ApiItemController::class, 'index'])->name('items.index');
             Route::get('inventory-stocks', [ApiInventoryStockController::class, 'index'])->name('inventory-stocks.index');
@@ -83,6 +86,24 @@ Route::middleware('auth')->group(function () {
             Route::get('goods-receipts/create/{purchaseOrder}', [GoodsReceiptController::class, 'create'])->name('goods-receipts.create');
             Route::post('goods-receipts/{purchaseOrder}', [GoodsReceiptController::class, 'store'])->name('goods-receipts.store');
             Route::get('goods-receipts/{goodsReceipt}', [GoodsReceiptController::class, 'show'])->name('goods-receipts.show');
+        });
+    });
+
+
+    Route::prefix('assets')->name('assets.')->group(function () {
+        Route::middleware('role:asset_manager,procurement,admin')->group(function () {
+            Route::get('/', [AssetController::class, 'index'])->name('index');
+            Route::get('/{asset}', [AssetController::class, 'show'])->name('show');
+        });
+
+        Route::middleware('role:asset_manager,admin')->group(function () {
+            Route::get('/{asset}/edit', [AssetController::class, 'edit'])->name('edit');
+            Route::put('/{asset}', [AssetController::class, 'update'])->name('update');
+            Route::get('/{asset}/assign', [AssetAssignmentController::class, 'create'])->name('assignments.create');
+            Route::post('/{asset}/assign', [AssetAssignmentController::class, 'store'])->name('assignments.store');
+            Route::get('/assignments/{assignment}/return', [AssetReturnController::class, 'create'])->name('returns.create');
+            Route::post('/assignments/{assignment}/return', [AssetReturnController::class, 'store'])->name('returns.store');
+            Route::post('/{asset}/maintenance/complete', [AssetController::class, 'releaseMaintenance'])->name('maintenance.complete');
         });
     });
 

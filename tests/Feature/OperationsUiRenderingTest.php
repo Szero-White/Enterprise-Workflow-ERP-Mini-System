@@ -53,6 +53,7 @@ class OperationsUiRenderingTest extends TestCase
             route('procurement.suppliers.create'),
             route('procurement.purchase-orders.index'),
             route('procurement.goods-receipts.index'),
+            route('assets.index'),
         ];
 
         foreach ($routes as $url) {

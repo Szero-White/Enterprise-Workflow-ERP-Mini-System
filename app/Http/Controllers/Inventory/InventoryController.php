@@ -49,7 +49,7 @@ class InventoryController extends Controller
     {
         return view('inventory.receipts.create', [
             'warehouses' => Warehouse::where('is_active', true)->orderBy('name')->get(),
-            'items' => Item::where('is_active', true)->orderBy('name')->get(),
+            'items' => Item::where('is_active', true)->where('is_asset_trackable', false)->orderBy('name')->get(),
         ]);
     }
 

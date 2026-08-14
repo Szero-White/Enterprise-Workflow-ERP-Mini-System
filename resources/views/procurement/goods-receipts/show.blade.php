@@ -20,6 +20,7 @@
                                 <th>Vật tư</th>
                                 <th>Số lượng</th>
                                 <th>Đơn giá</th>
+                                <th>Tài sản</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -31,6 +32,20 @@
                                     </td>
                                     <td>{{ $line->quantity }} {{ $line->item->unit }}</td>
                                     <td>{{ number_format((float) $line->unit_cost, 0, ',', '.') }} ₫</td>
+                                    <td>
+                                        @if($line->assets->isNotEmpty())
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach($line->assets->take(4) as $asset)
+                                                    <a class="badge text-bg-light border text-decoration-none" href="{{ route('assets.show', $asset) }}">{{ $asset->asset_code }}</a>
+                                                @endforeach
+                                                @if($line->assets->count() > 4)
+                                                    <span class="badge text-bg-light border">+{{ $line->assets->count() - 4 }}</span>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

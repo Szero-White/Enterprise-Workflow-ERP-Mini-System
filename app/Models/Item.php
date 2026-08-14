@@ -16,6 +16,7 @@ class Item extends Model
         'unit',
         'cost_price',
         'reorder_level',
+        'is_asset_trackable',
         'is_active',
     ];
 
@@ -24,6 +25,7 @@ class Item extends Model
         return [
             'cost_price' => 'decimal:2',
             'reorder_level' => 'decimal:3',
+            'is_asset_trackable' => 'boolean',
             'is_active' => 'boolean',
         ];
     }
@@ -51,5 +53,10 @@ class Item extends Model
     public function inventoryMovements(): HasMany
     {
         return $this->hasMany(InventoryMovement::class, 'item_id');
+    }
+
+    public function assets(): HasMany
+    {
+        return $this->hasMany(Asset::class);
     }
 }

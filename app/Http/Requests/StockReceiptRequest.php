@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Item;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -10,6 +11,24 @@ class StockReceiptRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            $itemId = $this->integer('item_id');
+
+            if (! $itemId) {
+                return;
+            }
+
+            $item = Item::query()->find($itemId);
+
+            if ($item?->is_asset_trackable) {
+                $validator->errors()->add('item_id', __('inventory.validation.asset_tracked_manual_receipt_blocked'));
+            }
+        });
     }
 
     public function rules(): array

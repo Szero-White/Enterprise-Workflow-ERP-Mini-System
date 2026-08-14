@@ -60,7 +60,7 @@ return [
         'title' => 'Nhập kho',
         'page_description' => 'Ghi nhận nhanh một lần nhập hàng, cập nhật tồn kho và tạo movement ledger có thể truy vết.',
         'quick_receipt' => 'Phiếu nhập kho nhanh',
-        'description' => 'Tác vụ này cập nhật tồn kho và đồng thời tạo lịch sử biến động kho cùng audit log.',
+        'description' => 'Tác vụ này chỉ dùng cho vật tư tiêu hao hoặc vật tư không theo dõi tài sản. Thiết bị được đánh dấu theo dõi tài sản phải nhập qua phiếu nhận hàng của đơn mua để bảo toàn nguồn gốc.',
         'warehouse' => 'Kho nhận',
         'select_warehouse' => '-- Chọn kho --',
         'item' => 'Vật tư',
@@ -78,6 +78,8 @@ return [
         'purchase_receipt' => 'Nhận hàng theo PO',
         'adjustment_in' => 'Điều chỉnh tăng',
         'adjustment_out' => 'Điều chỉnh giảm',
+        'asset_assignment' => 'Cấp phát tài sản',
+        'asset_return' => 'Thu hồi tài sản',
     ],
 
     'messages' => [
@@ -91,9 +93,11 @@ return [
     'validation' => [
         'stock_not_found' => 'Vật tư :sku chưa có tồn kho tại kho :warehouse.',
         'insufficient_stock' => 'Vật tư :sku không đủ tồn tại kho :warehouse. Tồn hiện tại: :available :unit.',
+        'asset_tracked_manual_receipt_blocked' => 'Vật tư theo dõi tài sản phải được nhận qua đơn mua hàng để hệ thống tạo mã tài sản và lưu nguồn gốc.',
     ],
 
     'audit' => [
         'received' => 'Nhập :quantity :unit vào kho :warehouse.',
+        'issued' => 'Xuất :quantity :unit khỏi kho :warehouse.',
     ],
 ];

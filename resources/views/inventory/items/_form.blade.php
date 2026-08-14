@@ -51,6 +51,11 @@
             @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
         </div>
         <div class="col-12">
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" name="is_asset_trackable" value="1" id="is_asset_trackable" @checked(old('is_asset_trackable', $item->is_asset_trackable ?? false))>
+                <label class="form-check-label fw-semibold" for="is_asset_trackable">{{ __('items.item.is_asset_trackable') }}</label>
+                <div class="erp-form-hint">{{ __('items.item.is_asset_trackable_hint') }}</div>
+            </div>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" name="is_active" value="1" id="is_active" @checked(old('is_active', $item->is_active ?? true))>
                 <label class="form-check-label fw-semibold" for="is_active">{{ __('items.item.is_active') }}</label>

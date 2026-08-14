@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('unit', 30)->default('cái');
             $table->decimal('cost_price', 15, 2)->default(0);
             $table->decimal('reorder_level', 15, 3)->default(0);
+            $table->boolean('is_asset_trackable')->default(false)->index();
             $table->boolean('is_active')->default(true)->index();
             $table->timestamps();
 

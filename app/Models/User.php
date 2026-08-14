@@ -73,6 +73,21 @@ class User extends Authenticatable
         return $this->hasMany(InventoryMovement::class, 'created_by');
     }
 
+    public function assignedAssets()
+    {
+        return $this->hasMany(AssetAssignment::class, 'assigned_to');
+    }
+
+    public function assetAssignmentsCreated()
+    {
+        return $this->hasMany(AssetAssignment::class, 'assigned_by');
+    }
+
+    public function assetReturnsReceived()
+    {
+        return $this->hasMany(AssetReturn::class, 'received_by');
+    }
+
     public function hasRole(string|array $roles): bool
     {
         $roles = is_array($roles) ? $roles : [$roles];

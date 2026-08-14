@@ -33,4 +33,19 @@ class Warehouse extends Model
     {
         return $this->hasMany(InventoryMovement::class);
     }
+
+    public function assets(): HasMany
+    {
+        return $this->hasMany(Asset::class);
+    }
+
+    public function assetAssignments(): HasMany
+    {
+        return $this->hasMany(AssetAssignment::class, 'source_warehouse_id');
+    }
+
+    public function assetReturns(): HasMany
+    {
+        return $this->hasMany(AssetReturn::class);
+    }
 }

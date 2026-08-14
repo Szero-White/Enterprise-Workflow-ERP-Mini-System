@@ -20,12 +20,18 @@ class SidebarNavigation
             ]),
         ];
 
-        if ($user->hasRole(['admin', 'manager', 'procurement'])) {
+        if ($user->hasRole(['admin', 'manager', 'procurement', 'asset_manager'])) {
             $groups[] = $this->group(__('menu.item_inventory'), [
                 $this->item(__('menu.items'), 'inventory.items.index', ['inventory.items.*'], 'bi-box-seam-fill'),
                 $this->item(__('menu.item_categories'), 'inventory.item-categories.index', ['inventory.item-categories.*'], 'bi-tags-fill'),
                 $this->item(__('menu.inventory_stocks'), 'inventory.stocks.index', ['inventory.stocks.*', 'inventory.receipts.*'], 'bi-boxes'),
                 $this->item(__('menu.warehouses'), 'inventory.warehouses.index', ['inventory.warehouses.*'], 'bi-buildings-fill'),
+            ]);
+        }
+
+        if ($user->hasRole(['asset_manager', 'admin'])) {
+            $groups[] = $this->group(__('menu.asset_management'), [
+                $this->item(__('menu.assets'), 'assets.index', ['assets.*'], 'bi-laptop-fill'),
             ]);
         }
 

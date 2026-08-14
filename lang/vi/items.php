@@ -51,6 +51,8 @@ return [
         'reorder_level' => 'Mức tồn cảnh báo',
         'reorder_hint' => 'Hệ thống cảnh báo khi tồn kho nhỏ hơn hoặc bằng mức này.',
         'description' => 'Mô tả',
+        'is_asset_trackable' => 'Theo dõi như tài sản',
+        'is_asset_trackable_hint' => 'Khi nhận hàng theo PO, mỗi đơn vị sẽ tự tạo một mã tài sản để quản lý cấp phát và thu hồi.',
         'is_active' => 'Đang sử dụng',
         'search_placeholder' => 'Tên hoặc mã vật tư...',
         'all_categories' => 'Tất cả danh mục',
@@ -81,6 +83,7 @@ return [
         'item_created' => 'Đã tạo vật tư.',
         'item_updated' => 'Đã cập nhật vật tư.',
         'item_deleted' => 'Đã xóa vật tư.',
-        'item_delete_blocked' => 'Không thể xóa vật tư đã phát sinh biến động hoặc còn tồn kho. Hãy chuyển vật tư sang trạng thái tạm dừng thay vì xóa.',
+        'item_delete_blocked' => 'Không thể xóa vật tư đã phát sinh biến động, tài sản hoặc còn tồn kho. Hãy chuyển vật tư sang trạng thái tạm dừng thay vì xóa.',
+        'asset_tracking_disable_blocked' => 'Không thể tắt theo dõi tài sản vì vật tư này đã phát sinh mã tài sản.',
     ],
 ];

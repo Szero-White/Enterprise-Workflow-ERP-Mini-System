@@ -24,6 +24,7 @@ class ItemRequest extends FormRequest
             'unit' => ['required', 'string', 'max:30'],
             'cost_price' => ['required', 'numeric', 'min:0'],
             'reorder_level' => ['required', 'numeric', 'min:0'],
+            'is_asset_trackable' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
         ];
     }

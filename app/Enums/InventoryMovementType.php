@@ -8,6 +8,8 @@ enum InventoryMovementType: string
     case PurchaseReceipt = 'purchase_receipt';
     case AdjustmentIn = 'adjustment_in';
     case AdjustmentOut = 'adjustment_out';
+    case AssetAssignment = 'asset_assignment';
+    case AssetReturn = 'asset_return';
 
     public function label(): string
     {
@@ -16,6 +18,8 @@ enum InventoryMovementType: string
             self::PurchaseReceipt => __('inventory.movement.purchase_receipt'),
             self::AdjustmentIn => __('inventory.movement.adjustment_in'),
             self::AdjustmentOut => __('inventory.movement.adjustment_out'),
+            self::AssetAssignment => __('inventory.movement.asset_assignment'),
+            self::AssetReturn => __('inventory.movement.asset_return'),
         };
     }
 }
