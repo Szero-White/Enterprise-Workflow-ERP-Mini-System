@@ -12,6 +12,7 @@ return [
 
     'index' => [
         'title' => 'Đơn bán hàng',
+        'description' => 'Theo dõi toàn bộ vòng đời đơn bán từ nháp, xác nhận đến hủy và hoàn tồn kho.',
         'search_placeholder' => 'Mã đơn hoặc khách hàng...',
         'all_statuses' => 'Mọi trạng thái',
         'filter' => 'Lọc',
@@ -29,6 +30,7 @@ return [
 
     'create' => [
         'title' => 'Tạo đơn bán hàng',
+        'description' => 'Tạo đơn nháp từ catalog đang hoạt động. Giá bán được lấy từ backend và tồn kho chỉ thay đổi khi xác nhận đơn.',
         'order_information' => 'Thông tin đơn hàng',
         'customer' => 'Khách hàng',
         'select_customer' => '-- Chọn khách hàng --',
@@ -51,9 +53,13 @@ return [
         'cancel' => 'Hủy',
         'select_product' => '-- Chọn sản phẩm --',
         'catalog_price_aria' => 'Đơn giá từ catalog',
+        'pricing_policy' => 'Chính sách giá an toàn',
+        'pricing_policy_hint' => 'Frontend chỉ gửi sản phẩm và số lượng; backend tự lấy lại giá bán để ngăn sửa giá từ client.',
+        'remove_line' => 'Xóa dòng sản phẩm',
     ],
 
     'detail' => [
+        'description' => 'Kiểm tra thông tin khách hàng, dòng sản phẩm, giá trị đơn và trạng thái xử lý tồn kho.',
         'created_by' => 'Tạo bởi :name · :time',
         'back_to_list' => 'Danh sách đơn',
         'confirm' => 'Xác nhận đơn',

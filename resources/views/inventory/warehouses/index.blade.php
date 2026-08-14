@@ -2,8 +2,55 @@
 @section('page_title', __('inventory.warehouse.index_title'))
 @section('page_eyebrow', __('inventory.eyebrow'))
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3"><form method="GET" class="erp-filter-bar"><input class="form-control" name="q" value="{{ request('q') }}" placeholder="{{ __('inventory.warehouse.search_placeholder') }}"><button class="btn btn-outline-secondary">{{ __('inventory.warehouse.search') }}</button></form><a href="{{ route('inventory.warehouses.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>{{ __('inventory.warehouse.add') }}</a></div>
-<div class="content-card overflow-hidden"><div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>{{ __('inventory.warehouse.code') }}</th><th>{{ __('inventory.warehouse.name') }}</th><th>{{ __('inventory.warehouse.address') }}</th><th>{{ __('inventory.warehouse.tracked_skus') }}</th><th>{{ __('inventory.warehouse.status') }}</th><th class="text-end">{{ __('inventory.warehouse.actions') }}</th></tr></thead><tbody>
-@forelse($warehouses as $warehouse)<tr><td class="fw-semibold">{{ $warehouse->code }}</td><td>{{ $warehouse->name }}</td><td>{{ $warehouse->address ?: '-' }}</td><td>{{ $warehouse->stocks_count }}</td><td><span class="badge rounded-pill {{ $warehouse->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $warehouse->is_active ? __('inventory.warehouse.active') : __('inventory.warehouse.inactive') }}</span></td><td class="text-end"><a href="{{ route('inventory.warehouses.edit',$warehouse) }}" class="btn btn-sm btn-outline-primary">{{ __('inventory.warehouse.edit') }}</a><form method="POST" action="{{ route('inventory.warehouses.destroy',$warehouse) }}" class="d-inline" onsubmit="return confirm(@js(__('inventory.warehouse.confirm_delete')))">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger">{{ __('inventory.warehouse.delete') }}</button></form></td></tr>@empty<tr><td colspan="6"><div class="erp-empty"><i class="bi bi-buildings"></i>{{ __('inventory.warehouse.empty') }}</div></td></tr>@endforelse
-</tbody></table></div>@if($warehouses->hasPages())<div class="p-3 border-top">{{ $warehouses->links() }}</div>@endif</div>
+<x-erp.page-header :title="__('inventory.warehouse.index_title')" :eyebrow="__('inventory.eyebrow')" :description="__('inventory.warehouse.index_description')">
+    <x-slot:actions>
+        <a href="{{ route('inventory.warehouses.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>{{ __('inventory.warehouse.add') }}</a>
+    </x-slot:actions>
+</x-erp.page-header>
+
+<div class="erp-table-card">
+    <div class="erp-table-toolbar">
+        <form method="GET" class="erp-filter-bar">
+            <div class="erp-filter-search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" name="q" value="{{ request('q') }}" placeholder="{{ __('inventory.warehouse.search_placeholder') }}">
+            </div>
+            <button class="btn btn-light border">{{ __('inventory.warehouse.search') }}</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr><th>{{ __('inventory.warehouse.code') }}</th><th>{{ __('inventory.warehouse.name') }}</th><th>{{ __('inventory.warehouse.address') }}</th><th>{{ __('inventory.warehouse.tracked_skus') }}</th><th>{{ __('inventory.warehouse.status') }}</th><th class="text-end">{{ __('inventory.warehouse.actions') }}</th></tr></thead>
+            <tbody>
+            @forelse($warehouses as $warehouse)
+                <tr>
+                    <td><span class="erp-record-code">{{ $warehouse->code }}</span></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="erp-product-thumb"><i class="bi bi-buildings"></i></div>
+                            <div class="erp-record-primary">{{ $warehouse->name }}</div>
+                        </div>
+                    </td>
+                    <td>{{ $warehouse->address ?: '-' }}</td>
+                    <td><span class="badge rounded-pill text-bg-light border">{{ number_format($warehouse->stocks_count) }}</span></td>
+                    <td><span class="badge rounded-pill {{ $warehouse->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $warehouse->is_active ? __('inventory.warehouse.active') : __('inventory.warehouse.inactive') }}</span></td>
+                    <td class="text-end">
+                        <div class="erp-row-actions">
+                            <a href="{{ route('inventory.warehouses.edit', $warehouse) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('inventory.warehouse.edit') }}"><i class="bi bi-pencil"></i></a>
+                            <form method="POST" action="{{ route('inventory.warehouses.destroy', $warehouse) }}" onsubmit="return confirm(@js(__('inventory.warehouse.confirm_delete')))">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('inventory.warehouse.delete') }}"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="6"><x-erp.empty-state icon="bi-buildings" :title="__('inventory.warehouse.empty')" /></td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    @if($warehouses->hasPages())<div class="erp-pagination">{{ $warehouses->links() }}</div>@endif
+</div>
 @endsection

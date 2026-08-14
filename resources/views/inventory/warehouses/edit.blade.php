@@ -2,5 +2,17 @@
 @section('page_title', __('inventory.warehouse.edit_title'))
 @section('page_eyebrow', __('inventory.eyebrow'))
 @section('content')
-<div class="content-card erp-form-card p-3 p-lg-4"><form method="POST" action="{{ route('inventory.warehouses.update',$warehouse) }}">@csrf @method('PUT') @include('inventory.warehouses._form')<div class="d-flex gap-2 mt-4"><button class="btn btn-primary">{{ __('inventory.warehouse.save_changes') }}</button><a href="{{ route('inventory.warehouses.index') }}" class="btn btn-light border">{{ __('inventory.warehouse.back') }}</a></div></form></div>
+<x-erp.form-shell
+    :title="__('inventory.warehouse.edit_title')"
+    :eyebrow="__('inventory.eyebrow')"
+    :description="$warehouse->code.' · '.$warehouse->name"
+    :action="route('inventory.warehouses.update', $warehouse)"
+    method="PUT"
+    :submit-label="__('inventory.warehouse.save_changes')"
+    :cancel-url="route('inventory.warehouses.index')"
+    :cancel-label="__('inventory.warehouse.back')"
+    :aside-hint="__('inventory.warehouse.form_hint')"
+>
+    @include('inventory.warehouses._form')
+</x-erp.form-shell>
 @endsection

@@ -1,0 +1,56 @@
+/* Responsive */
+@media (max-width: 1199.98px) {
+    .erp-order-layout, .erp-form-layout { grid-template-columns: 1fr; }
+    .erp-order-summary, .erp-form-aside { position: static; }
+}
+
+@media (max-width: 991.98px) {
+    .erp-sidebar { transform: translateX(-102%); transition: transform .22s ease; box-shadow: 24px 0 70px rgba(2, 6, 23, .24); }
+    .erp-main { margin-left: 0; }
+    .erp-sidebar-open { overflow: hidden; }
+    .erp-sidebar-open .erp-sidebar { transform: translateX(0); }
+    .erp-sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1040;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        background: rgba(2, 6, 23, .50);
+        backdrop-filter: blur(2px);
+        transition: .2s ease;
+    }
+    .erp-sidebar-open .erp-sidebar-backdrop { visibility: visible; opacity: 1; }
+    .erp-content { padding: 22px 18px 38px; }
+    .erp-topbar { padding-inline: 18px; }
+    .erp-dashboard-hero__content { align-items: flex-start; flex-direction: column; }
+}
+
+@media (max-width: 767.98px) {
+    .erp-content { padding-inline: 14px; }
+    .erp-topbar { min-height: 68px; padding-inline: 13px; }
+    .erp-topbar__eyebrow { display: none; }
+    .erp-topbar__title { font-size: .92rem; }
+    .erp-page-header { align-items: flex-start; flex-direction: column; }
+    .erp-page-actions { width: 100%; justify-content: flex-start; }
+    .erp-dashboard-hero { padding: 20px; border-radius: 18px; }
+    .erp-dashboard-hero__title { font-size: 1.55rem; }
+    .erp-filter-bar, .erp-filter-search { width: 100%; }
+    .erp-filter-bar .form-control, .erp-filter-bar .form-select { width: 100%; max-width: none; }
+    .erp-table-toolbar { align-items: stretch; flex-direction: column; }
+    .erp-login-feature-grid { grid-template-columns: 1fr; }
+    .erp-login-brand-panel, .erp-login-form-panel { min-height: auto; }
+    .erp-login-brand-panel { padding: 28px 24px; }
+    .erp-login-kicker { margin-top: 50px; }
+    .erp-login-form-panel { padding: 28px 22px; }
+    .erp-auth-wrapper { padding: 12px; }
+    .erp-login-shell { border-radius: 20px; }
+}
+
+@media (max-width: 575.98px) {
+    .erp-topbar__actions { gap: 5px; }
+    .erp-icon-btn { width: 39px; height: 39px; }
+    .erp-profile-trigger { padding: 0; min-height: 39px; }
+    .erp-avatar { width: 39px; height: 39px; flex-basis: 39px; }
+    .erp-page-actions .btn { flex: 1 1 auto; }
+}

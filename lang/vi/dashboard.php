@@ -2,6 +2,15 @@
 
 return [
     'page_title' => 'Tổng quan vận hành',
+    'hero_kicker' => 'Trung tâm điều hành thương mại',
+    'hero_title' => 'Theo dõi bán hàng, tồn kho và workflow trong một nhịp vận hành.',
+    'hero_description' => 'Tập trung những tín hiệu quan trọng nhất để xử lý đơn hàng, bổ sung tồn kho và theo dõi quy trình nội bộ nhanh hơn.',
+    'workflow_total_users' => 'Tổng người dùng',
+    'workflow_departments' => 'Phòng ban',
+    'workflow_total_requests' => 'Đơn nội bộ',
+    'workflow_pending' => 'Chờ phê duyệt',
+    'business_snapshot' => 'Ảnh chụp vận hành',
+    'business_snapshot_description' => 'Các chỉ số kinh doanh hiện tại dựa trên dữ liệu thực trong hệ thống.',
     'eyebrow' => 'Dashboard doanh nghiệp',
     'business_performance' => 'Hiệu suất kinh doanh',
     'business_performance_description' => 'Theo dõi doanh thu, đơn hàng, khách hàng và cảnh báo tồn kho trên cùng một màn hình.',

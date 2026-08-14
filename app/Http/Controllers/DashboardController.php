@@ -17,10 +17,10 @@ class DashboardController extends Controller
     public function index(): View
     {
         $workflowStats = [
-            ['label' => 'Tổng người dùng', 'value' => User::count(), 'icon' => 'bi-people-fill', 'tone' => 'primary'],
-            ['label' => 'Phòng ban', 'value' => Department::count(), 'icon' => 'bi-diagram-3-fill', 'tone' => 'info'],
-            ['label' => 'Đơn nội bộ', 'value' => WorkflowRequest::count(), 'icon' => 'bi-files', 'tone' => 'dark'],
-            ['label' => 'Chờ phê duyệt', 'value' => WorkflowRequest::where('status', WorkflowRequest::STATUS_PENDING)->count(), 'icon' => 'bi-hourglass-split', 'tone' => 'warning'],
+            ['label' => __('dashboard.workflow_total_users'), 'value' => User::count(), 'icon' => 'bi-people-fill', 'tone' => 'primary'],
+            ['label' => __('dashboard.workflow_departments'), 'value' => Department::count(), 'icon' => 'bi-diagram-3-fill', 'tone' => 'info'],
+            ['label' => __('dashboard.workflow_total_requests'), 'value' => WorkflowRequest::count(), 'icon' => 'bi-files', 'tone' => 'dark'],
+            ['label' => __('dashboard.workflow_pending'), 'value' => WorkflowRequest::where('status', WorkflowRequest::STATUS_PENDING)->count(), 'icon' => 'bi-hourglass-split', 'tone' => 'warning'],
         ];
 
         $canViewBusiness = auth()->user()->hasRole(['admin', 'manager']);

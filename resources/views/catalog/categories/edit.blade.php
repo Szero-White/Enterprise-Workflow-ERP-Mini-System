@@ -2,15 +2,17 @@
 @section('page_title', __('catalog.category.edit_title'))
 @section('page_eyebrow', __('catalog.eyebrow'))
 @section('content')
-<div class="content-card erp-form-card p-3 p-lg-4">
-    <form method="POST" action="{{ route('catalog.categories.update', $category) }}">
-        @csrf
-        @method('PUT')
-        @include('catalog.categories._form')
-        <div class="d-flex gap-2 mt-4">
-            <button class="btn btn-primary">{{ __('catalog.category.save_changes') }}</button>
-            <a href="{{ route('catalog.categories.index') }}" class="btn btn-light border">{{ __('catalog.category.back') }}</a>
-        </div>
-    </form>
-</div>
+<x-erp.form-shell
+    :title="__('catalog.category.edit_title')"
+    :eyebrow="__('catalog.eyebrow')"
+    :description="$category->code.' · '.$category->name"
+    :action="route('catalog.categories.update', $category)"
+    method="PUT"
+    :submit-label="__('catalog.category.save_changes')"
+    :cancel-url="route('catalog.categories.index')"
+    :cancel-label="__('catalog.category.back')"
+    :aside-hint="__('catalog.category.form_hint')"
+>
+    @include('catalog.categories._form')
+</x-erp.form-shell>
 @endsection

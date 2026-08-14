@@ -2,5 +2,17 @@
 @section('page_title', __('crm.edit_title'))
 @section('page_eyebrow', __('crm.eyebrow'))
 @section('content')
-<div class="content-card erp-form-card p-3 p-lg-4"><form method="POST" action="{{ route('crm.customers.update',$customer) }}">@csrf @method('PUT') @include('crm.customers._form')<div class="d-flex gap-2 mt-4"><button class="btn btn-primary">{{ __('crm.save_changes') }}</button><a href="{{ route('crm.customers.index') }}" class="btn btn-light border">{{ __('crm.back') }}</a></div></form></div>
+<x-erp.form-shell
+    :title="__('crm.edit_title')"
+    :eyebrow="__('crm.eyebrow')"
+    :description="$customer->code.' · '.$customer->name"
+    :action="route('crm.customers.update', $customer)"
+    method="PUT"
+    :submit-label="__('crm.save_changes')"
+    :cancel-url="route('crm.customers.index')"
+    :cancel-label="__('crm.back')"
+    :aside-hint="__('crm.form_hint')"
+>
+    @include('crm.customers._form')
+</x-erp.form-shell>
 @endsection

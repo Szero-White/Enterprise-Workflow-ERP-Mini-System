@@ -2,14 +2,15 @@
 @section('page_title', __('catalog.category.create_title'))
 @section('page_eyebrow', __('catalog.eyebrow'))
 @section('content')
-<div class="content-card erp-form-card p-3 p-lg-4">
-    <form method="POST" action="{{ route('catalog.categories.store') }}">
-        @csrf
-        @include('catalog.categories._form')
-        <div class="d-flex gap-2 mt-4">
-            <button class="btn btn-primary">{{ __('catalog.category.save') }}</button>
-            <a href="{{ route('catalog.categories.index') }}" class="btn btn-light border">{{ __('catalog.category.cancel') }}</a>
-        </div>
-    </form>
-</div>
+<x-erp.form-shell
+    :title="__('catalog.category.create_title')"
+    :eyebrow="__('catalog.eyebrow')"
+    :description="__('catalog.category.index_description')"
+    :action="route('catalog.categories.store')"
+    :submit-label="__('catalog.category.save')"
+    :cancel-url="route('catalog.categories.index')"
+    :aside-hint="__('catalog.category.form_hint')"
+>
+    @include('catalog.categories._form')
+</x-erp.form-shell>
 @endsection

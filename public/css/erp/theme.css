@@ -1,0 +1,15 @@
+/* Dark adjustments */
+:root[data-theme="dark"] .erp-avatar { color: #c7d2fe; background: #1e293b; border-color: #334155; }
+:root[data-theme="dark"] .erp-product-thumb { color: #c7d2fe; background: #172554; border-color: #283661; }
+:root[data-theme="dark"] .erp-customer-avatar { color: #6ee7b7; background: #082f2a; }
+:root[data-theme="dark"] .erp-stock-item__icon,
+:root[data-theme="dark"] .erp-stock-item__qty { color: #fbbf24; background: #422006; }
+:root[data-theme="dark"] .erp-inline-note { color: #93c5fd; border-color: #1e3a5f; background: #0c2340; }
+:root[data-theme="dark"] .erp-metric-card--success .erp-metric-card__icon { color: #6ee7b7; background: #073b31; }
+:root[data-theme="dark"] .erp-metric-card--info .erp-metric-card__icon { color: #7dd3fc; background: #082f49; }
+:root[data-theme="dark"] .erp-metric-card--warning .erp-metric-card__icon { color: #fcd34d; background: #422006; }
+:root[data-theme="dark"] .erp-metric-card--dark .erp-metric-card__icon { color: #cbd5e1; background: #1e293b; }
+:root[data-theme="dark"] .bg-light,
+:root[data-theme="dark"] .text-bg-light { background-color: var(--erp-surface-strong) !important; color: var(--erp-text) !important; }
+:root[data-theme="dark"] .border { border-color: var(--erp-border) !important; }
+

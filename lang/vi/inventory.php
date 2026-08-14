@@ -5,8 +5,11 @@ return [
 
     'warehouse' => [
         'index_title' => 'Kho hàng',
+        'index_description' => 'Quản lý các địa điểm lưu kho và phạm vi SKU đang được theo dõi.',
         'create_title' => 'Thêm kho hàng',
         'edit_title' => 'Cập nhật kho hàng',
+        'form_heading' => 'Thông tin kho',
+        'form_hint' => 'Mã kho nên ổn định vì được tham chiếu bởi tồn kho và đơn bán.',
         'code' => 'Mã kho',
         'name' => 'Tên kho',
         'address' => 'Địa chỉ',
@@ -31,6 +34,7 @@ return [
 
     'stock' => [
         'index_title' => 'Tồn kho',
+        'index_description' => 'Theo dõi tồn thực tế theo từng kho, cảnh báo thiếu hàng và các biến động gần nhất.',
         'search_placeholder' => 'Tên hoặc SKU...',
         'all_warehouses' => 'Tất cả kho',
         'low_stock_only' => 'Chỉ tồn thấp',
@@ -54,6 +58,7 @@ return [
 
     'receipt' => [
         'title' => 'Nhập kho',
+        'page_description' => 'Ghi nhận nhanh một lần nhập hàng, cập nhật tồn kho và tạo movement ledger có thể truy vết.',
         'quick_receipt' => 'Phiếu nhập kho nhanh',
         'description' => 'Tác vụ này cập nhật tồn kho và đồng thời tạo lịch sử biến động kho cùng audit log.',
         'warehouse' => 'Kho nhận',

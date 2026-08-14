@@ -5,8 +5,11 @@ return [
 
     'category' => [
         'index_title' => 'Danh mục sản phẩm',
+        'index_description' => 'Tổ chức catalog theo nhóm để tìm kiếm, quản trị và mở rộng danh mục sản phẩm dễ dàng.',
         'create_title' => 'Thêm danh mục sản phẩm',
         'edit_title' => 'Cập nhật danh mục',
+        'form_heading' => 'Thông tin danh mục',
+        'form_hint' => 'Giữ mã danh mục ngắn gọn, ổn định để dễ tra cứu và tích hợp.',
         'name' => 'Tên danh mục',
         'code' => 'Mã danh mục',
         'description' => 'Mô tả',
@@ -32,8 +35,11 @@ return [
 
     'product' => [
         'index_title' => 'Sản phẩm',
+        'index_description' => 'Quản lý SKU, giá bán, giá vốn, trạng thái kinh doanh và ngưỡng cảnh báo tồn kho.',
         'create_title' => 'Thêm sản phẩm',
         'edit_title' => 'Cập nhật sản phẩm',
+        'form_heading' => 'Thông tin sản phẩm',
+        'form_hint' => 'Quản lý định danh SKU, pricing, đơn vị bán và ngưỡng cảnh báo tồn kho.',
         'sku' => 'SKU',
         'name' => 'Tên sản phẩm',
         'category' => 'Danh mục',

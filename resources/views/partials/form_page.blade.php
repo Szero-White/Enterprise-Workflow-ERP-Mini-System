@@ -4,18 +4,17 @@
 @section('page_eyebrow', $pageEyebrow)
 
 @section('content')
-<div class="content-card p-4 p-lg-4 erp-form-card">
-    <div class="mb-4">
-        <h2 class="erp-section-title">{{ $heading }}</h2>
-        <p class="erp-section-subtitle mb-0">{{ $subtitle }}</p>
-    </div>
+<x-erp.page-header :title="$heading" :eyebrow="$pageEyebrow" :description="$subtitle" />
 
-    <form method="POST" action="{{ $formAction }}">
-        @csrf
-        @isset($formMethod)
-            @method($formMethod)
-        @endisset
-        @include($formPartial)
-    </form>
+<div class="erp-form-card">
+    <section class="erp-form-section">
+        <form method="POST" action="{{ $formAction }}">
+            @csrf
+            @isset($formMethod)
+                @method($formMethod)
+            @endisset
+            @include($formPartial)
+        </form>
+    </section>
 </div>
 @endsection

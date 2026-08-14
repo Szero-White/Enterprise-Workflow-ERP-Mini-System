@@ -3,8 +3,11 @@
 return [
     'eyebrow' => 'Quản lý quan hệ khách hàng',
     'index_title' => 'Khách hàng',
+    'index_description' => 'Quản lý hồ sơ khách hàng, thông tin liên hệ và lịch sử phát sinh đơn bán.',
     'create_title' => 'Thêm khách hàng',
     'edit_title' => 'Cập nhật khách hàng',
+    'form_heading' => 'Hồ sơ khách hàng',
+    'form_hint' => 'Lưu thông tin nhận diện, liên hệ và dữ liệu phục vụ bán hàng.',
     'code' => 'Mã khách hàng',
     'code_short' => 'Mã KH',
     'name' => 'Tên khách hàng',

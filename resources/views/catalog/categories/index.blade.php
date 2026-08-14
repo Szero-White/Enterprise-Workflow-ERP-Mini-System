@@ -2,17 +2,29 @@
 @section('page_title', __('catalog.category.index_title'))
 @section('page_eyebrow', __('catalog.eyebrow'))
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <form class="erp-filter-bar" method="GET">
-        <input class="form-control" name="q" value="{{ request('q') }}" placeholder="{{ __('catalog.category.search_placeholder') }}">
-        <button class="btn btn-outline-secondary"><i class="bi bi-search me-1"></i>{{ __('catalog.category.search') }}</button>
-        @if(request()->filled('q'))
-            <a href="{{ route('catalog.categories.index') }}" class="btn btn-light border">{{ __('catalog.category.clear_filter') }}</a>
-        @endif
-    </form>
-    <a href="{{ route('catalog.categories.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>{{ __('catalog.category.add') }}</a>
-</div>
-<div class="content-card overflow-hidden">
+<x-erp.page-header
+    :title="__('catalog.category.index_title')"
+    :eyebrow="__('catalog.eyebrow')"
+    :description="__('catalog.category.index_description')"
+>
+    <x-slot:actions>
+        <a href="{{ route('catalog.categories.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>{{ __('catalog.category.add') }}</a>
+    </x-slot:actions>
+</x-erp.page-header>
+
+<div class="erp-table-card">
+    <div class="erp-table-toolbar">
+        <form class="erp-filter-bar" method="GET">
+            <div class="erp-filter-search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" name="q" value="{{ request('q') }}" placeholder="{{ __('catalog.category.search_placeholder') }}">
+            </div>
+            <button class="btn btn-light border">{{ __('catalog.category.search') }}</button>
+            @if(request()->filled('q'))
+                <a href="{{ route('catalog.categories.index') }}" class="btn btn-light border">{{ __('catalog.category.clear_filter') }}</a>
+            @endif
+        </form>
+    </div>
     <div class="table-responsive">
         <table class="table table-hover align-middle">
             <thead>
@@ -27,25 +39,29 @@
             <tbody>
             @forelse($categories as $category)
                 <tr>
-                    <td class="fw-semibold">{{ $category->code }}</td>
-                    <td><div class="fw-semibold">{{ $category->name }}</div><div class="small text-muted text-truncate" style="max-width:420px">{{ $category->description }}</div></td>
-                    <td>{{ $category->products_count }}</td>
+                    <td><span class="erp-record-code">{{ $category->code }}</span></td>
+                    <td>
+                        <div class="erp-record-primary">{{ $category->name }}</div>
+                        <div class="erp-record-secondary text-truncate erp-description-truncate">{{ $category->description ?: '-' }}</div>
+                    </td>
+                    <td><span class="badge rounded-pill text-bg-light border">{{ number_format($category->products_count) }}</span></td>
                     <td><span class="badge rounded-pill {{ $category->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $category->is_active ? __('catalog.category.active') : __('catalog.category.inactive') }}</span></td>
                     <td class="text-end">
-                        <a href="{{ route('catalog.categories.edit', $category) }}" class="btn btn-sm btn-outline-primary">{{ __('catalog.category.edit') }}</a>
-                        <form method="POST" action="{{ route('catalog.categories.destroy', $category) }}" class="d-inline" onsubmit="return confirm(@js(__('catalog.category.confirm_delete')))">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger">{{ __('catalog.category.delete') }}</button>
-                        </form>
+                        <div class="erp-row-actions">
+                            <a href="{{ route('catalog.categories.edit', $category) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('catalog.category.edit') }}"><i class="bi bi-pencil"></i></a>
+                            <form method="POST" action="{{ route('catalog.categories.destroy', $category) }}" onsubmit="return confirm(@js(__('catalog.category.confirm_delete')))">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('catalog.category.delete') }}"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="5"><div class="erp-empty"><i class="bi bi-tags"></i>{{ __('catalog.category.empty') }}</div></td></tr>
+                <tr><td colspan="5"><x-erp.empty-state icon="bi-tags" :title="__('catalog.category.empty')" /></td></tr>
             @endforelse
             </tbody>
         </table>
     </div>
-    @if($categories->hasPages())<div class="p-3 border-top">{{ $categories->links() }}</div>@endif
+    @if($categories->hasPages())<div class="erp-pagination">{{ $categories->links() }}</div>@endif
 </div>
 @endsection

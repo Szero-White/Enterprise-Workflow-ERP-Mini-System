@@ -1,108 +1,69 @@
 @php
     $user = auth()->user();
-    $menuGroups = [
-        [
-            'title' => __('menu.overview'),
-            'items' => [
-                ['label' => __('menu.dashboard'), 'route' => 'dashboard', 'active' => ['dashboard'], 'icon' => 'bi-grid-1x2-fill'],
-                ['label' => __('menu.notifications'), 'route' => 'notifications.index', 'active' => ['notifications.*'], 'icon' => 'bi-bell-fill'],
-            ],
-        ],
-    ];
-
-    if ($user->hasRole(['admin', 'manager'])) {
-        $menuGroups[] = [
-            'title' => __('menu.business'),
-            'items' => [
-                ['label' => __('menu.sales_orders'), 'route' => 'sales.orders.index', 'active' => ['sales.orders.*'], 'icon' => 'bi-receipt-cutoff'],
-                ['label' => __('menu.customers'), 'route' => 'crm.customers.index', 'active' => ['crm.customers.*'], 'icon' => 'bi-person-vcard-fill'],
-            ],
-        ];
-
-        $menuGroups[] = [
-            'title' => __('menu.catalog_inventory'),
-            'items' => [
-                ['label' => __('menu.products'), 'route' => 'catalog.products.index', 'active' => ['catalog.products.*'], 'icon' => 'bi-box-seam-fill'],
-                ['label' => __('menu.product_categories'), 'route' => 'catalog.categories.index', 'active' => ['catalog.categories.*'], 'icon' => 'bi-tags-fill'],
-                ['label' => __('menu.inventory_stocks'), 'route' => 'inventory.stocks.index', 'active' => ['inventory.stocks.*', 'inventory.receipts.*'], 'icon' => 'bi-boxes'],
-                ['label' => __('menu.warehouses'), 'route' => 'inventory.warehouses.index', 'active' => ['inventory.warehouses.*'], 'icon' => 'bi-buildings-fill'],
-            ],
-        ];
-    }
-
-    if ($user->hasRole('admin')) {
-        $menuGroups[] = [
-            'title' => __('menu.system_admin'),
-            'items' => [
-                ['label' => __('menu.users'), 'route' => 'admin.users.index', 'active' => ['admin.users.*'], 'icon' => 'bi-people-fill'],
-                ['label' => __('menu.roles'), 'route' => 'admin.roles.index', 'active' => ['admin.roles.*'], 'icon' => 'bi-shield-lock-fill'],
-                ['label' => __('menu.departments'), 'route' => 'admin.departments.index', 'active' => ['admin.departments.*'], 'icon' => 'bi-diagram-3-fill'],
-                ['label' => __('menu.dynamic_forms'), 'route' => 'admin.form-templates.index', 'active' => ['admin.form-templates.*'], 'icon' => 'bi-ui-checks-grid'],
-                ['label' => __('menu.workflow_templates'), 'route' => 'admin.workflow-templates.index', 'active' => ['admin.workflow-templates.*'], 'icon' => 'bi-bezier2'],
-                ['label' => __('menu.audit_logs'), 'route' => 'admin.audit-logs.index', 'active' => ['admin.audit-logs.*'], 'icon' => 'bi-clock-history'],
-            ],
-        ];
-    }
-
-    if ($user->hasRole(['employee', 'admin'])) {
-        $menuGroups[] = [
-            'title' => __('menu.internal_requests'),
-            'items' => [
-                ['label' => __('menu.create_request'), 'route' => 'employee.requests.select-template', 'active' => ['employee.requests.select-template', 'employee.requests.create', 'employee.requests.store'], 'icon' => 'bi-file-earmark-plus-fill'],
-                ['label' => __('menu.my_requests'), 'route' => 'employee.requests.index', 'active' => ['employee.requests.index', 'employee.requests.show', 'employee.requests.edit', 'employee.requests.update'], 'icon' => 'bi-folder2-open'],
-            ],
-        ];
-    }
-
-    if ($user->hasRole(['manager', 'hr', 'director', 'admin'])) {
-        $menuGroups[] = [
-            'title' => __('menu.approval'),
-            'items' => [
-                ['label' => __('menu.pending_approvals'), 'route' => 'manager.approvals.index', 'active' => ['manager.approvals.index', 'manager.approvals.show', 'manager.approvals.approve', 'manager.approvals.reject', 'manager.approvals.return'], 'icon' => 'bi-hourglass-split'],
-                ['label' => __('menu.approval_history'), 'route' => 'manager.approvals.history', 'active' => ['manager.approvals.history'], 'icon' => 'bi-list-check'],
-            ],
-        ];
-    }
+    $menuGroups = app(\App\Support\Navigation\SidebarNavigation::class)->for($user);
 @endphp
 
-<aside class="erp-sidebar">
-    <div class="p-3 p-xl-4">
-        <a href="{{ route('dashboard') }}" class="erp-brand mb-4">
-            <span class="erp-brand-badge">EC</span>
-            <span>
-                <span class="d-block erp-brand-title">ERP Commerce</span>
-                <span class="small text-white-50">Sales · Stock · Workflow</span>
+<aside class="erp-sidebar" id="erp-sidebar" aria-label="{{ __('layout.main_navigation') }}">
+    <div class="erp-sidebar__header">
+        <a href="{{ route('dashboard') }}" class="erp-brand" aria-label="ERP Commerce">
+            <span class="erp-brand__mark"><i class="bi bi-layers-fill"></i></span>
+            <span class="erp-brand__copy">
+                <span class="erp-brand__name">{{ __('layout.brand_name') }}</span>
+                <span class="erp-brand__meta">{{ __('layout.brand_meta') }}</span>
             </span>
         </a>
+        <button type="button" class="erp-sidebar__close d-lg-none" data-sidebar-close aria-label="{{ __('layout.close_menu') }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
 
-        <div class="erp-user-card p-3 mb-2">
-            <div class="fw-semibold text-white text-truncate">{{ $user->name }}</div>
-            <div class="small text-white-50 text-truncate">{{ $user->email }}</div>
-            <div class="d-flex gap-2 flex-wrap mt-2">
-                <span class="badge rounded-pill text-bg-light">{{ $user->role?->name ?? __('ui.no_role') }}</span>
-                @if($user->department)
-                    <span class="badge rounded-pill border border-secondary text-light">{{ $user->department->code }}</span>
-                @endif
-            </div>
+    <div class="erp-workspace-card">
+        <div class="erp-workspace-card__icon"><i class="bi bi-shop"></i></div>
+        <div class="min-w-0 flex-grow-1">
+            <div class="erp-workspace-card__label">{{ __('layout.workspace') }}</div>
+            <div class="erp-workspace-card__name text-truncate">{{ __('layout.workspace_name') }}</div>
         </div>
+        <span class="erp-live-dot" title="{{ __('layout.system_ready') }}"></span>
+    </div>
 
+    <div class="erp-sidebar__scroll">
         @foreach ($menuGroups as $group)
-            <div class="erp-sidebar-section">{{ $group['title'] }}</div>
-            <nav>
-                @foreach ($group['items'] as $item)
-                    <a href="{{ route($item['route']) }}" class="erp-sidebar-link {{ request()->routeIs(...$item['active']) ? 'active' : '' }}">
-                        <i class="bi {{ $item['icon'] }}"></i>
-                        <span>{{ $item['label'] }}</span>
-                    </a>
-                @endforeach
-            </nav>
+            <section class="erp-nav-group">
+                <div class="erp-nav-group__label">{{ $group['title'] }}</div>
+                <nav class="erp-nav-list">
+                    @foreach ($group['items'] as $item)
+                        @php($isActive = request()->routeIs(...$item['active']))
+                        <a
+                            href="{{ route($item['route']) }}"
+                            class="erp-nav-link {{ $isActive ? 'is-active' : '' }}"
+                            @if($isActive) aria-current="page" @endif
+                        >
+                            <span class="erp-nav-link__icon"><i class="bi {{ $item['icon'] }}"></i></span>
+                            <span class="erp-nav-link__label">{{ $item['label'] }}</span>
+                            @if($isActive)<span class="erp-nav-link__active-dot"></span>@endif
+                        </a>
+                    @endforeach
+                </nav>
+            </section>
         @endforeach
+    </div>
 
-        <form action="{{ route('logout') }}" method="POST" class="mt-4 pt-2 border-top border-secondary border-opacity-25">
-            @csrf
-            <button class="btn btn-outline-light w-100 mt-3">
-                <i class="bi bi-box-arrow-right me-2"></i>{{ __('menu.logout') }}
-            </button>
-        </form>
+    <div class="erp-sidebar__footer">
+        <div class="erp-sidebar-user">
+            <div class="erp-avatar erp-avatar--sidebar">
+                {{ \Illuminate\Support\Str::of($user->name)->explode(' ')->filter()->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))->take(2)->implode('') }}
+            </div>
+            <div class="min-w-0 flex-grow-1">
+                <div class="erp-sidebar-user__name text-truncate">{{ $user->name }}</div>
+                <div class="erp-sidebar-user__role text-truncate">{{ $user->role?->name ?? __('ui.no_role') }}</div>
+            </div>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button class="erp-sidebar-user__logout" type="submit" title="{{ __('menu.logout') }}" aria-label="{{ __('menu.logout') }}">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </form>
+        </div>
     </div>
 </aside>
+<div class="erp-sidebar-backdrop" data-sidebar-close></div>
