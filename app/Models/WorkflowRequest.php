@@ -68,6 +68,40 @@ class WorkflowRequest extends Model
         return $this->hasOne(PurchaseRequest::class, 'workflow_request_id');
     }
 
+    public function canBeViewedOperationallyBy(User $user): bool
+    {
+        if ($this->created_by === $user->id || $user->hasRole('admin')) {
+            return true;
+        }
+
+        $this->loadMissing('currentStep');
+
+        if (
+            $this->status === self::STATUS_PENDING
+            && $this->currentStep?->canBeApprovedBy($user)
+        ) {
+            return true;
+        }
+
+        return $this->histories()->where('actor_id', $user->id)->exists();
+    }
+
+    public function scopeVisibleTo($query, User $user)
+    {
+        if ($user->hasRole('admin')) {
+            return $query;
+        }
+
+        return $query->where(function ($builder) use ($user): void {
+            $builder->where('created_by', $user->id)
+                ->orWhereHas('histories', fn ($history) => $history->where('actor_id', $user->id))
+                ->orWhere(function ($pending) use ($user): void {
+                    $pending->where('status', self::STATUS_PENDING)
+                        ->whereHas('currentStep', fn ($step) => $step->approverFor($user));
+                });
+        });
+    }
+
     public static function statuses(): array
     {
         return [

@@ -70,7 +70,11 @@ class WorkflowStepController extends Controller
             'step' => $step,
             'roles' => Role::orderBy('name')->get(),
             'departments' => Department::orderBy('name')->get(),
-            'users' => User::orderBy('name')->get(),
+            'users' => User::query()
+                ->where('is_active', true)
+                ->when($step?->approver_user_id, fn ($query) => $query->orWhereKey($step->approver_user_id))
+                ->orderBy('name')
+                ->get(),
         ];
     }
 }

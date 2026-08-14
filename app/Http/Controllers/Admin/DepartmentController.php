@@ -48,6 +48,10 @@ class DepartmentController extends Controller
 
     public function destroy(Department $department): RedirectResponse
     {
+        if ($department->users()->exists() || $department->workflowSteps()->exists()) {
+            return back()->with('error', __('messages.department_in_use'));
+        }
+
         $old = $department->toArray();
         $this->auditLogService->log('department.deleted', $department, $old, null);
         $department->delete();

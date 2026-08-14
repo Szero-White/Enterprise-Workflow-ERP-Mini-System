@@ -4,12 +4,7 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.audit_logs'))
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.audit_logs') }}</h2>
-        <p class="text-muted mb-0">Theo dõi các thao tác quan trọng và lịch sử thay đổi của hệ thống.</p>
-    </div>
-</div>
+<x-erp.page-header :title="__('menu.audit_logs')" :eyebrow="__('menu.admin')" description="Theo dõi thao tác quan trọng, thay đổi dữ liệu và khả năng truy vết hệ thống." />
 
 <div class="content-card p-3 mb-3">
     <form method="GET" class="row g-2">

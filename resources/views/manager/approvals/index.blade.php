@@ -4,12 +4,7 @@
 @section('page_eyebrow', 'Xử lý các đơn đang chờ')
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.pending_approvals') }}</h2>
-        <p class="text-muted mb-0">Các đơn đang chờ bạn xử lý.</p>
-    </div>
-</div>
+<x-erp.page-header :title="__('menu.pending_approvals')" eyebrow="Phê duyệt" description="Các yêu cầu đang ở đúng bước bạn có trách nhiệm xem xét và xử lý." />
 
 <div class="content-card p-3 mb-3">
     <form method="GET" class="row g-2">

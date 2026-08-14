@@ -82,29 +82,16 @@ class NotificationService
 
     private function approverUsers(WorkflowStep $step): Collection
     {
-        if ($step->approver_user_id) {
-            return User::whereKey($step->approver_user_id)
-                ->where('is_active', true)
-                ->get();
-        }
-
-        if (! $step->approver_role_id && ! $step->approver_department_id) {
-            return collect();
-        }
-
         $query = User::query()->where('is_active', true);
 
-        $query->where(function ($query) use ($step): void {
-            if ($step->approver_role_id) {
-                $query->orWhere('role_id', $step->approver_role_id);
-            }
+        match ($step->approver_type) {
+            WorkflowStep::APPROVER_USER => $query->whereKey($step->approver_user_id),
+            WorkflowStep::APPROVER_DEPARTMENT => $query->where('department_id', $step->approver_department_id),
+            WorkflowStep::APPROVER_ROLE => $query->where('role_id', $step->approver_role_id),
+            default => $query->whereRaw('1 = 0'),
+        };
 
-            if ($step->approver_department_id) {
-                $query->orWhere('department_id', $step->approver_department_id);
-            }
-        });
-
-        return $query->get()->unique('id')->values();
+        return $query->get();
     }
 
     private function requestPayload(WorkflowRequest $workflowRequest, string $action): array

@@ -12,4 +12,9 @@ class Department extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function workflowSteps()
+    {
+        return $this->hasMany(WorkflowStep::class, 'approver_department_id');
+    }
 }

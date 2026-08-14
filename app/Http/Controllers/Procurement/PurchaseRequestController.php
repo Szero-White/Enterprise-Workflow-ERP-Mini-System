@@ -26,12 +26,7 @@ class PurchaseRequestController extends Controller
             ->with(['workflowRequest.creator', 'items'])
             ->latest();
 
-        if (! $request->user()->hasRole(['admin', 'procurement', 'finance', 'director', 'manager'])) {
-            $query->whereHas(
-                'workflowRequest',
-                fn ($builder) => $builder->where('created_by', $request->user()->id)
-            );
-        }
+        $query->visibleTo($request->user());
 
         if ($search = trim((string) $request->input('q'))) {
             $query->whereHas(

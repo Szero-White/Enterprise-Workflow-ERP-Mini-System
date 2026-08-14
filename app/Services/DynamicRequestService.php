@@ -104,7 +104,7 @@ class DynamicRequestService
             if ($field->field_type === 'file') {
                 if ($httpRequest->hasFile($field->field_key)) {
                     $file = $httpRequest->file($field->field_key);
-                    $path = $file->store('request_attachments', 'public');
+                    $path = $file->store('request_attachments', 'local');
                     $value = $path;
 
                     Attachment::create([

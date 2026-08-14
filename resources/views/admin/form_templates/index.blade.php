@@ -4,15 +4,11 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.form_templates'))
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.form_templates') }}</h2>
-        <p class="text-muted mb-0">Chuẩn bị các biểu mẫu động để nhân viên gửi đơn theo đúng nghiệp vụ.</p>
-    </div>
-    <a href="{{ route('admin.form-templates.create') }}" class="btn btn-primary rounded-3">
-        <i class="bi bi-plus-circle me-2"></i>Tạo biểu mẫu
-    </a>
-</div>
+<x-erp.page-header :title="__('menu.form_templates')" :eyebrow="__('menu.admin')" description="Thiết kế biểu mẫu động dùng chung cho các quy trình nghiệp vụ nội bộ.">
+    <x-slot:actions>
+        <a href="{{ route('admin.form-templates.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Tạo biểu mẫu</a>
+    </x-slot:actions>
+</x-erp.page-header>
 
 <div class="content-card p-3 table-responsive">
     <table class="table align-middle">

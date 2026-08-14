@@ -4,55 +4,65 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.roles'))
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.roles') }}</h2>
-        <p class="text-muted mb-0">Quản lý các vai trò dùng cho phân quyền và quy trình duyệt.</p>
+<x-erp.page-header
+    :title="__('menu.roles')"
+    :eyebrow="__('menu.admin')"
+    :description="__('ui.roles_description')"
+>
+    <x-slot:actions>
+        <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>{{ __('ui.create_role') }}
+        </a>
+    </x-slot:actions>
+</x-erp.page-header>
+
+<div class="erp-table-card">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+            <tr>
+                <th width="70">{{ __('ui.no') }}</th>
+                <th>{{ __('ui.name') }}</th>
+                <th>{{ __('ui.key') }}</th>
+                <th>{{ __('ui.description') }}</th>
+                <th width="180">{{ __('ui.action') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            @forelse($roles as $role)
+                <tr>
+                    <td class="text-muted">{{ $roles->firstItem() + $loop->index }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="erp-record-primary">{{ trans()->has('ui.roles.'.$role->key) ? __('ui.roles.'.$role->key) : $role->name }}</span>
+                            @if($role->isSystemRole())
+                                <span class="badge rounded-pill text-bg-light border"><i class="bi bi-lock-fill me-1"></i>{{ __('ui.system_role') }}</span>
+                            @endif
+                        </div>
+                    </td>
+                    <td><code class="erp-record-code">{{ $role->key }}</code></td>
+                    <td>{{ $role->description ?: '-' }}</td>
+                    <td>
+                        <div class="erp-row-actions">
+                            <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('ui.edit') }}">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            @unless($role->isSystemRole())
+                                <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_role') }}')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('ui.delete') }}"><i class="bi bi-trash"></i></button>
+                                </form>
+                            @endunless
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="5"><x-erp.empty-state icon="bi-shield-lock" :title="__('ui.no_roles')" /></td></tr>
+            @endforelse
+            </tbody>
+        </table>
     </div>
-    <a href="{{ route('admin.roles.create') }}" class="btn btn-primary rounded-3">
-        <i class="bi bi-plus-circle me-2"></i>Tạo vai trò
-    </a>
-</div>
-
-<div class="content-card p-3 table-responsive">
-    <table class="table align-middle">
-        <thead class="table-light">
-        <tr>
-            <th width="70">{{ __('ui.no') }}</th>
-            <th>{{ __('ui.name') }}</th>
-            <th>{{ __('ui.key') }}</th>
-            <th>{{ __('ui.description') }}</th>
-            <th width="180">{{ __('ui.action') }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        @forelse($roles as $role)
-            <tr>
-                <td class="text-muted fw-semibold">{{ $roles->firstItem() + $loop->index }}</td>
-                <td class="fw-semibold">{{ trans()->has('ui.roles.'.$role->key) ? __('ui.roles.'.$role->key) : $role->name }}</td>
-                <td><code>{{ $role->key }}</code></td>
-                <td>{{ $role->description ?: '-' }}</td>
-                <td>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
-                        <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_role') }}')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger">{{ __('ui.delete') }}</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-        @empty
-            <tr>
-                <td colspan="5" class="text-center py-5">
-                    <div class="text-muted">{{ __('ui.no_roles') }}</div>
-                </td>
-            </tr>
-        @endforelse
-        </tbody>
-    </table>
-
-    {{ $roles->links() }}
+    <div class="erp-pagination">{{ $roles->links() }}</div>
 </div>
 @endsection

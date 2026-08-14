@@ -59,6 +59,10 @@ class UserController extends Controller
         $data = $request->validated();
         $data['is_active'] = $request->boolean('is_active');
 
+        if (! $data['is_active'] && $user->workflowStepsAsApprover()->exists()) {
+            return back()->withInput()->with('error', __('messages.user_deactivate_approver_forbidden'));
+        }
+
         if (! empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
@@ -73,6 +77,14 @@ class UserController extends Controller
 
     public function destroy(User $user): RedirectResponse
     {
+        if ($user->is(auth()->user())) {
+            return back()->with('error', __('messages.user_self_delete_forbidden'));
+        }
+
+        if ($user->hasOperationalHistory()) {
+            return back()->with('error', __('messages.user_delete_use_deactivate'));
+        }
+
         $old = $user->toArray();
         $this->auditLogService->log('user.deleted', $user, $old, null);
         $user->delete();

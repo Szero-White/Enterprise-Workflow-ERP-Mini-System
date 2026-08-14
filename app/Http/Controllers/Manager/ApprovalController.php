@@ -23,11 +23,7 @@ class ApprovalController extends Controller
 
         $query = WorkflowRequest::with(['formTemplate', 'creator', 'currentStep.approverRole', 'currentStep.approverDepartment'])
             ->where('status', WorkflowRequest::STATUS_PENDING)
-            ->whereHas('currentStep', function ($q) use ($user) {
-                $q->where('approver_user_id', $user->id)
-                    ->orWhere('approver_role_id', $user->role_id)
-                    ->orWhere('approver_department_id', $user->department_id);
-            })
+            ->whereHas('currentStep', fn ($step) => $step->approverFor($user))
             ->latest();
 
         if ($request->filled('keyword')) {

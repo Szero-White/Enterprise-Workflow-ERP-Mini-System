@@ -4,15 +4,11 @@
 @section('page_eyebrow', 'Theo dõi các đơn đã tạo')
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.my_requests') }}</h2>
-        <p class="text-muted mb-0">Theo dõi trạng thái và tiếp tục xử lý các đơn bị trả về.</p>
-    </div>
-    <a href="{{ route('employee.requests.select-template') }}" class="btn btn-primary rounded-3">
-        <i class="bi bi-plus-circle me-2"></i>Tạo đơn
-    </a>
-</div>
+<x-erp.page-header :title="__('menu.my_requests')" eyebrow="Yêu cầu nội bộ" description="Theo dõi trạng thái, lịch sử duyệt và tiếp tục xử lý các đơn bị trả về.">
+    <x-slot:actions>
+        <a href="{{ route('employee.requests.select-template') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Tạo đơn</a>
+    </x-slot:actions>
+</x-erp.page-header>
 
 <div class="content-card p-3 mb-3">
     <form method="GET" class="row g-2">

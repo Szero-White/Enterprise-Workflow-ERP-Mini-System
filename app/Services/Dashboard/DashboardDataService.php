@@ -118,21 +118,7 @@ class DashboardDataService
 
     private function visibleWorkflowRequests(User $user): Builder
     {
-        $query = WorkflowRequest::query();
-
-        if ($user->hasRole('admin')) {
-            return $query;
-        }
-
-        return $query->where(function (Builder $builder) use ($user) {
-            $builder->where('created_by', $user->id)
-                ->orWhereHas('histories', fn (Builder $history) => $history->where('actor_id', $user->id))
-                ->orWhere(function (Builder $currentApproval) use ($user) {
-                    $currentApproval
-                        ->where('status', WorkflowRequest::STATUS_PENDING)
-                        ->whereHas('currentStep', fn (Builder $step) => $this->scopeApprover($step, $user));
-                });
-        });
+        return WorkflowRequest::query()->visibleTo($user);
     }
 
     private function pendingApprovalQuery(User $user): Builder
@@ -144,16 +130,6 @@ class DashboardDataService
 
     private function scopeApprover(Builder $query, User $user): Builder
     {
-        return $query->where(function (Builder $approver) use ($user) {
-            $approver->where('approver_user_id', $user->id);
-
-            if ($user->role_id) {
-                $approver->orWhere('approver_role_id', $user->role_id);
-            }
-
-            if ($user->department_id) {
-                $approver->orWhere('approver_department_id', $user->department_id);
-            }
-        });
+        return $query->approverFor($user);
     }
 }

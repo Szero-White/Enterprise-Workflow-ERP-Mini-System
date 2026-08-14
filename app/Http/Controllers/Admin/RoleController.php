@@ -17,7 +17,8 @@ class RoleController extends Controller
 
     public function index(): View
     {
-        $roles = Role::latest()->paginate(10);
+        $roles = Role::orderByDesc('is_system')->orderBy('name')->paginate(10);
+
         return view('admin.roles.index', compact('roles'));
     }
 
@@ -28,8 +29,9 @@ class RoleController extends Controller
 
     public function store(RoleRequest $request): RedirectResponse
     {
-        $role = Role::create($request->validated());
+        $role = Role::create(array_merge($request->validated(), ['is_system' => false]));
         $this->auditLogService->log('role.created', $role, null, $role->toArray());
+
         return redirect()->route('admin.roles.index')->with('success', __('messages.role_created'));
     }
 
@@ -41,16 +43,33 @@ class RoleController extends Controller
     public function update(RoleRequest $request, Role $role): RedirectResponse
     {
         $old = $role->toArray();
-        $role->update($request->validated());
+        $data = $request->validated();
+
+        if ($role->isSystemRole()) {
+            $data['key'] = $role->key;
+            $data['is_system'] = true;
+        }
+
+        $role->update($data);
         $this->auditLogService->log('role.updated', $role, $old, $role->fresh()->toArray());
+
         return redirect()->route('admin.roles.index')->with('success', __('messages.role_updated'));
     }
 
     public function destroy(Role $role): RedirectResponse
     {
+        if ($role->isSystemRole()) {
+            return back()->with('error', __('messages.system_role_delete_forbidden'));
+        }
+
+        if ($role->users()->exists() || $role->workflowSteps()->exists()) {
+            return back()->with('error', __('messages.role_in_use'));
+        }
+
         $old = $role->toArray();
         $this->auditLogService->log('role.deleted', $role, $old, null);
         $role->delete();
+
         return back()->with('success', __('messages.role_deleted'));
     }
 }

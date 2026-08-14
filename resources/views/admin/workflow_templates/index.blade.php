@@ -4,15 +4,11 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.workflow_templates'))
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.workflow_templates') }}</h2>
-        <p class="text-muted mb-0">Gắn các bước duyệt vào từng biểu mẫu theo đúng quy trình kiểm soát.</p>
-    </div>
-    <a href="{{ route('admin.workflow-templates.create') }}" class="btn btn-primary rounded-3">
-        <i class="bi bi-plus-circle me-2"></i>Tạo quy trình
-    </a>
-</div>
+<x-erp.page-header :title="__('menu.workflow_templates')" :eyebrow="__('menu.admin')" description="Cấu hình các tuyến phê duyệt và chiến lược người duyệt cho từng biểu mẫu.">
+    <x-slot:actions>
+        <a href="{{ route('admin.workflow-templates.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Tạo quy trình</a>
+    </x-slot:actions>
+</x-erp.page-header>
 
 <div class="content-card p-3 table-responsive">
     <table class="table align-middle">

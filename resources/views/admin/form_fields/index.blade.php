@@ -4,22 +4,42 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.form_templates'))
 
 @section('content')
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Trường biểu mẫu: {{ $formTemplate->name }}</h2>
-    <a href="{{ route('admin.form-templates.fields.create', $formTemplate) }}" class="btn btn-primary">Thêm trường</a>
-</div>
-<div class="content-card p-3 table-responsive">
-<table class="table align-middle">
-<thead><tr><th>{{ __('ui.order') }}</th><th>{{ __('ui.label') }}</th><th>{{ __('ui.key') }}</th><th>{{ __('ui.type') }}</th><th>{{ __('ui.required') }}</th><th>{{ __('ui.options') }}</th><th width="160">{{ __('ui.action') }}</th></tr></thead>
-<tbody>
-@forelse($fields as $field)
-<tr>
-<td>{{ $field->sort_order }}</td><td>{{ $field->label }}</td><td>{{ $field->field_key }}</td><td>{{ $field->field_type }}</td><td>{{ $field->is_required ? __('status.required') : __('status.optional') }}</td><td>{{ is_array($field->options) ? implode(', ', $field->options) : '-' }}</td>
-<td><a href="{{ route('admin.form-templates.fields.edit', [$formTemplate, $field]) }}" class="btn btn-sm btn-warning">{{ __('ui.edit') }}</a>
-<form action="{{ route('admin.form-templates.fields.destroy', [$formTemplate, $field]) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('ui.confirm_delete_field') }}')">@csrf @method('DELETE') <button class="btn btn-sm btn-danger">{{ __('ui.delete') }}</button></form></td>
-</tr>
-@empty<tr><td colspan="7" class="text-center text-muted">{{ __('ui.no_fields') }}</td></tr>@endforelse
-</tbody></table>
-{{ $fields->links() }}
+<x-erp.page-header
+    :title="$formTemplate->name"
+    :eyebrow="__('menu.form_templates')"
+    description="Quản lý cấu trúc dữ liệu động, thứ tự hiển thị và quy tắc bắt buộc của biểu mẫu."
+>
+    <x-slot:actions>
+        <a href="{{ route('admin.form-templates.fields.create', $formTemplate) }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Thêm trường</a>
+    </x-slot:actions>
+</x-erp.page-header>
+
+<div class="erp-table-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>{{ __('ui.order') }}</th><th>{{ __('ui.label') }}</th><th>{{ __('ui.key') }}</th><th>{{ __('ui.type') }}</th><th>{{ __('ui.required') }}</th><th>{{ __('ui.options') }}</th><th width="160">{{ __('ui.action') }}</th></tr></thead>
+            <tbody>
+            @forelse($fields as $field)
+                <tr>
+                    <td><span class="erp-order-chip">{{ $field->sort_order }}</span></td>
+                    <td><span class="erp-record-primary">{{ $field->label }}</span></td>
+                    <td><code class="erp-record-code">{{ $field->field_key }}</code></td>
+                    <td>{{ $field->field_type }}</td>
+                    <td>@include('partials.boolean_badge', ['value' => $field->is_required, 'trueLabel' => __('status.required'), 'falseLabel' => __('status.optional')])</td>
+                    <td>{{ is_array($field->options) ? implode(', ', $field->options) : '-' }}</td>
+                    <td>
+                        <div class="erp-row-actions">
+                            <a href="{{ route('admin.form-templates.fields.edit', [$formTemplate, $field]) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('ui.edit') }}"><i class="bi bi-pencil"></i></a>
+                            <form action="{{ route('admin.form-templates.fields.destroy', [$formTemplate, $field]) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_field') }}')">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('ui.delete') }}"><i class="bi bi-trash"></i></button></form>
+                        </div>
+                    </td>
+                </tr>
+            @empty
+                <tr><td colspan="7"><x-erp.empty-state icon="bi-ui-checks-grid" :title="__('ui.no_fields')" /></td></tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+    <div class="erp-pagination">{{ $fields->links() }}</div>
 </div>
 @endsection

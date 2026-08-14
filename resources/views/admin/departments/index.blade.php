@@ -4,15 +4,11 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.departments'))
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.departments') }}</h2>
-        <p class="text-muted mb-0">Quản lý cơ cấu phòng ban để tổ chức người dùng và tuyến duyệt rõ ràng.</p>
-    </div>
-    <a href="{{ route('admin.departments.create') }}" class="btn btn-primary rounded-3">
-        <i class="bi bi-plus-circle me-2"></i>Tạo phòng ban
-    </a>
-</div>
+<x-erp.page-header :title="__('menu.departments')" :eyebrow="__('menu.admin')" description="Quản lý cơ cấu phòng ban để tổ chức người dùng và tuyến duyệt rõ ràng.">
+    <x-slot:actions>
+        <a href="{{ route('admin.departments.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Tạo phòng ban</a>
+    </x-slot:actions>
+</x-erp.page-header>
 
 <div class="content-card p-3 table-responsive">
     <table class="table align-middle">

@@ -82,6 +82,7 @@ trait BuildsProcurementFixture
                 'workflow_template_id' => $workflow->id,
                 'step_name' => ucfirst($key),
                 'step_order' => $index + 1,
+                'approver_type' => WorkflowStep::APPROVER_ROLE,
                 'approver_role_id' => $roles[$key]->id,
             ]);
         }

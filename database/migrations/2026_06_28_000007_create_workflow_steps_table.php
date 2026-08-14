@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('workflow_template_id')->constrained()->cascadeOnDelete();
             $table->string('step_name');
             $table->unsignedInteger('step_order');
+            $table->string('approver_type', 20)->default('role');
             $table->foreignId('approver_role_id')->nullable()->constrained('roles')->nullOnDelete();
             $table->foreignId('approver_department_id')->nullable()->constrained('departments')->nullOnDelete();
             $table->foreignId('approver_user_id')->nullable()->constrained('users')->nullOnDelete();

@@ -4,12 +4,7 @@
 @section('page_eyebrow', 'Lịch sử duyệt')
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.approval_history') }}</h2>
-        <p class="text-muted mb-0">Lịch sử các đơn bạn đã thực hiện hành động (duệt, từ chối, trả về).</p>
-    </div>
-</div>
+<x-erp.page-header :title="__('menu.approval_history')" eyebrow="Phê duyệt" description="Tra cứu những yêu cầu bạn đã duyệt, từ chối hoặc trả về trước đó." />
 
 <div class="content-card p-3 mb-3">
     <form method="GET" class="row g-2">

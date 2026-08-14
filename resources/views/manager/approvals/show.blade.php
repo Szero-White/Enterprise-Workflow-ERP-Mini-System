@@ -10,18 +10,18 @@
 @section('page_eyebrow', $pageEyebrow)
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ $pageTitle }}: {{ $workflowRequest->request_code }}</h2>
-        <p class="text-muted mb-0">{{ $isPending ? 'Kiểm tra dữ liệu đã gửi và chọn thao tác phê duyệt tiếp theo.' : 'Xem chi tiết đơn và lịch sử duyệt.' }}</p>
-    </div>
-    <div class="d-flex gap-2 align-items-center">
-        <a href="{{ $isPending ? route('manager.approvals.index') : route('manager.approvals.history') }}" class="btn btn-light border">
-            <i class="bi bi-arrow-left me-1"></i> Quay lại
-        </a>
-        <span class="badge {{ $isPending ? 'text-bg-primary' : 'text-bg-secondary' }} rounded-pill px-3 py-2 fw-semibold">{{ $workflowRequest->currentStep?->step_name ?? 'Không có bước' }}</span>
-    </div>
-</div>
+<x-erp.page-header
+    :title="$pageTitle.': '.$workflowRequest->request_code"
+    eyebrow="Phê duyệt"
+    :description="$isPending ? 'Kiểm tra dữ liệu đã gửi và chọn thao tác phê duyệt tiếp theo.' : 'Xem chi tiết đơn và lịch sử duyệt.'"
+>
+    <x-slot:actions>
+        <div class="d-flex gap-2 align-items-center">
+            <a href="{{ $isPending ? route('manager.approvals.index') : route('manager.approvals.history') }}" class="btn btn-light border"><i class="bi bi-arrow-left"></i>Quay lại</a>
+            <span class="erp-status-pill {{ $isPending ? 'text-primary bg-primary-subtle' : 'text-secondary bg-light border' }}">{{ $workflowRequest->currentStep?->step_name ?? 'Không có bước' }}</span>
+        </div>
+    </x-slot:actions>
+</x-erp.page-header>
 
 <div class="row g-3">
     <div class="col-lg-7">
@@ -32,7 +32,7 @@
                     <tbody>
                     <tr><th>{{ __('ui.creator') }}</th><td>{{ $workflowRequest->creator?->name ?? '-' }}</td></tr>
                     <tr><th>{{ __('ui.form') }}</th><td>{{ $workflowRequest->formTemplate?->name ?? '-' }}</td></tr>
-                    @foreach($workflowRequest->values as $value)
+                    @foreach($workflowRequest->values->filter(fn ($value) => $value->field?->field_type !== 'file') as $value)
                         <tr><th width="220">{{ $value->field?->label ?? $value->field_key }}</th><td>{{ $value->value ?: '-' }}</td></tr>
                     @endforeach
                     </tbody>
@@ -57,7 +57,7 @@
                     <h6>{{ __('ui.attachments') }}</h6>
                     <div class="d-flex flex-column gap-2">
                         @foreach($workflowRequest->attachments as $file)
-                            <a href="{{ asset('storage/'.$file->path) }}" target="_blank" class="btn btn-light border text-start">{{ $file->original_name }}</a>
+                            <a href="{{ route('attachments.download', $file) }}" class="btn btn-light border text-start erp-attachment-link"><i class="bi bi-paperclip"></i><span class="text-truncate">{{ $file->original_name }}</span></a>
                         @endforeach
                     </div>
                 </div>

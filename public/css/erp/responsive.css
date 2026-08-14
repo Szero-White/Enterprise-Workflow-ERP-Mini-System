@@ -62,3 +62,6 @@
     .erp-login-preview__grid { grid-template-columns: 1fr; }
     .erp-login-title { font-size: 2rem; }
 }
+
+@media (max-width: 991.98px) { .erp-content { padding: 24px 18px 44px; } }
+@media (max-width: 767.98px) { .erp-content { padding: 20px 14px 38px; } .erp-page-header { margin-bottom: 20px; } }

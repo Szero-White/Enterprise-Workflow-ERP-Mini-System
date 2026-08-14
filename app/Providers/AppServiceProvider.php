@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Asset;
+use App\Models\Attachment;
 use App\Models\PurchaseRequest;
 use App\Models\WorkflowRequest;
 use App\Policies\AssetPolicy;
+use App\Policies\AttachmentPolicy;
 use App\Policies\PurchaseRequestPolicy;
 use App\Policies\WorkflowRequestPolicy;
 use App\Services\Procurement\PurchaseRequestWorkflowHandler;
@@ -36,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::policy(Attachment::class, AttachmentPolicy::class);
         Gate::policy(PurchaseRequest::class, PurchaseRequestPolicy::class);
         Gate::policy(Asset::class, AssetPolicy::class);
         Gate::policy(WorkflowRequest::class, WorkflowRequestPolicy::class);

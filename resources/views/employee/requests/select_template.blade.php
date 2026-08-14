@@ -4,10 +4,7 @@
 @section('page_eyebrow', __('menu.employee').' / '.__('menu.my_requests'))
 
 @section('content')
-<div class="mb-3">
-    <h2 class="h4 mb-1">Chọn biểu mẫu</h2>
-    <p class="text-muted mb-0">Chọn biểu mẫu phù hợp với loại đơn bạn muốn gửi.</p>
-</div>
+<x-erp.page-header title="Chọn biểu mẫu" eyebrow="Yêu cầu nội bộ" description="Chọn biểu mẫu phù hợp với loại đơn bạn muốn gửi." />
 
 <div class="row g-3">
 @forelse($templates as $template)

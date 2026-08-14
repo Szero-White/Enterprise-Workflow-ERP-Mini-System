@@ -219,3 +219,26 @@
 .erp-login-form .btn-primary { min-height: 46px; box-shadow: 0 10px 22px rgba(102, 94, 232, .14); }
 .erp-login-footer { margin-top: 17px; padding-top: 15px; border-top: 1px solid #f0f1f4; color: #a0a7b3; font-size: .64rem; }
 
+
+
+/* Brighter dashboard and authentication surfaces */
+.erp-dashboard-welcome { padding: 22px 24px; border: 1px solid #dfe5ed; border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #fbfcff 65%, #f4f7ff 100%); box-shadow: 0 1px 2px rgba(16,24,40,.025), 0 9px 26px rgba(16,24,40,.035); }
+.erp-dashboard-welcome__title { color: #172033; font-weight: 600; }
+.erp-dashboard-welcome__text { color: #647389; }
+.erp-metric-card { border-color: #dfe5ed; background: #fff; box-shadow: 0 1px 2px rgba(16,24,40,.025), 0 7px 20px rgba(16,24,40,.035); }
+.erp-metric-card__value { color: #172033; font-weight: 600; letter-spacing: -.035em; }
+.erp-metric-card__label { color: #68768a; font-weight: 500; }
+.erp-auth-wrapper { background: radial-gradient(circle at 10% 8%, rgba(79,70,229,.07), transparent 30%), radial-gradient(circle at 90% 92%, rgba(14,165,233,.055), transparent 30%), #f3f6fb; }
+.erp-login-shell { border: 1px solid #dce3ec; background: #fff; box-shadow: 0 26px 70px rgba(30,41,59,.12); }
+.erp-login-brand-panel { background: radial-gradient(circle at 18% 10%, rgba(79,70,229,.09), transparent 35%), radial-gradient(circle at 83% 75%, rgba(59,130,246,.08), transparent 31%), linear-gradient(145deg, #f9faff 0%, #f4f7ff 58%, #f1f8ff 120%); }
+.erp-login-logo__name { color: #172033; font-weight: 600; }
+.erp-login-title { color: #172033; font-weight: 600; letter-spacing: -.045em; }
+.erp-login-description { color: #5f6e83; }
+.erp-login-capability { border-color: #dce3ef; color: #4e5c71; background: rgba(255,255,255,.88); }
+.erp-login-preview { border-color: #dde4ef; background: rgba(255,255,255,.92); box-shadow: 0 16px 38px rgba(51,65,85,.08); backdrop-filter: none; }
+.erp-login-preview__chart, .erp-login-preview__activity { background: #f7f9fc; }
+.erp-login-form-panel { background: #fff; }
+.erp-login-form__title { color: #172033; font-weight: 600; }
+.erp-login-form__subtitle { color: #718096; }
+.erp-demo-credential { border-color: #dfe5ed; background: #f8fafc; }
+.erp-login-form .form-control { border-color: #d4dde8; }

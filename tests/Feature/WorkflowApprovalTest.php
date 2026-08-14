@@ -357,6 +357,7 @@ class WorkflowApprovalTest extends TestCase
             'workflow_template_id' => $this->workflowTemplate->id,
             'step_name' => 'Manager Approval',
             'step_order' => 1,
+            'approver_type' => WorkflowStep::APPROVER_ROLE,
             'approver_role_id' => $managerRole->id,
         ]);
 
@@ -364,6 +365,7 @@ class WorkflowApprovalTest extends TestCase
             'workflow_template_id' => $this->workflowTemplate->id,
             'step_name' => 'HR Approval',
             'step_order' => 2,
+            'approver_type' => WorkflowStep::APPROVER_ROLE,
             'approver_role_id' => $hrRole->id,
         ]);
 
@@ -371,6 +373,7 @@ class WorkflowApprovalTest extends TestCase
             'workflow_template_id' => $this->workflowTemplate->id,
             'step_name' => 'Director Approval',
             'step_order' => 3,
+            'approver_type' => WorkflowStep::APPROVER_ROLE,
             'approver_role_id' => $directorRole->id,
         ]);
     }

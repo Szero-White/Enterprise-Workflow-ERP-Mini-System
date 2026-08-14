@@ -15,8 +15,7 @@ class PurchaseRequestPolicy
 
     public function view(User $user, PurchaseRequest $purchaseRequest): bool
     {
-        return $this->isOwner($user, $purchaseRequest)
-            || $user->hasRole(['manager', 'procurement', 'finance', 'director', 'admin']);
+        return $purchaseRequest->canBeViewedBy($user);
     }
 
     public function create(User $user): bool

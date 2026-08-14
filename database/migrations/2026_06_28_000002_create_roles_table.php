@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('key')->unique();
+            $table->boolean('is_system')->default(false)->index();
             $table->text('description')->nullable();
             $table->timestamps();
         });

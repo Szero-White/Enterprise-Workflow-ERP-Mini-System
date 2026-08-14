@@ -44,6 +44,37 @@ class PurchaseRequest extends Model
         return $this->hasMany(PurchaseOrder::class);
     }
 
+    public function canBeViewedBy(User $user): bool
+    {
+        $this->loadMissing('workflowRequest.currentStep');
+        $workflowRequest = $this->workflowRequest;
+
+        if (! $workflowRequest) {
+            return false;
+        }
+
+        if ($workflowRequest->canBeViewedOperationallyBy($user)) {
+            return true;
+        }
+
+        return $user->hasRole('procurement')
+            && $workflowRequest->status === WorkflowRequest::STATUS_APPROVED;
+    }
+
+    public function scopeVisibleTo($query, User $user)
+    {
+        return $query->where(function ($builder) use ($user): void {
+            $builder->whereHas('workflowRequest', fn ($workflow) => $workflow->visibleTo($user));
+
+            if ($user->hasRole('procurement')) {
+                $builder->orWhereHas(
+                    'workflowRequest',
+                    fn ($workflow) => $workflow->where('status', WorkflowRequest::STATUS_APPROVED)
+                );
+            }
+        });
+    }
+
     public function activePurchaseOrder(): HasOne
     {
         return $this->hasOne(PurchaseOrder::class)

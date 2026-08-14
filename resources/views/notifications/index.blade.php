@@ -4,18 +4,14 @@
 @section('page_eyebrow', 'Tài khoản')
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ __('menu.notifications') }}</h2>
-        <p class="text-muted mb-0">Theo dõi cập nhật đơn và các nhiệm vụ duyệt được giao cho bạn.</p>
-    </div>
-    <form method="POST" action="{{ route('notifications.read-all') }}">
-        @csrf
-        <button class="btn btn-outline-primary rounded-3">
-            <i class="bi bi-check2-all me-1"></i> {{ __('ui.mark_all_as_read') }}
-        </button>
-    </form>
-</div>
+<x-erp.page-header :title="__('menu.notifications')" eyebrow="Tài khoản" description="Theo dõi cập nhật yêu cầu và các nhiệm vụ phê duyệt được giao cho bạn.">
+    <x-slot:actions>
+        <form method="POST" action="{{ route('notifications.read-all') }}">
+            @csrf
+            <button class="btn btn-light border"><i class="bi bi-check2-all"></i>{{ __('ui.mark_all_as_read') }}</button>
+        </form>
+    </x-slot:actions>
+</x-erp.page-header>
 
 <div class="content-card p-0 overflow-hidden">
     @forelse($notifications as $notification)

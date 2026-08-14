@@ -4,15 +4,15 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.form_templates'))
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ $formTemplate->name }}</h2>
-        <p class="text-muted mb-0">{{ __('ui.entity_code') }}: <code>{{ $formTemplate->code }}</code></p>
-    </div>
-    <a href="{{ route('admin.form-templates.fields.create', $formTemplate) }}" class="btn btn-primary rounded-3">
-        <i class="bi bi-plus-circle me-2"></i>Thêm trường
-    </a>
-</div>
+<x-erp.page-header
+    :title="$formTemplate->name"
+    :eyebrow="__('menu.form_templates')"
+    :description="__('ui.entity_code').': '.$formTemplate->code"
+>
+    <x-slot:actions>
+        <a href="{{ route('admin.form-templates.fields.create', $formTemplate) }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Thêm trường</a>
+    </x-slot:actions>
+</x-erp.page-header>
 
 <div class="content-card p-3 table-responsive">
     <table class="table align-middle">

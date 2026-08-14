@@ -1,3 +1,5 @@
+@php($editingSystemRole = isset($role) && $role->isSystemRole())
+
 <div class="row g-3">
     <div class="col-md-6">
         <label for="role_name" class="form-label erp-required">{{ __('ui.name') }}</label>
@@ -6,8 +8,21 @@
     </div>
     <div class="col-md-6">
         <label for="role_key" class="form-label erp-required">{{ __('ui.key') }}</label>
-        <input id="role_key" name="key" class="form-control @error('key') is-invalid @enderror" value="{{ old('key', $role->key ?? '') }}" required>
-        <div class="erp-form-hint">Dùng key ổn định như <code>admin</code> hoặc <code>manager</code>.</div>
+        <input
+            id="role_key"
+            name="key"
+            class="form-control @error('key') is-invalid @enderror"
+            value="{{ old('key', $role->key ?? '') }}"
+            @readonly($editingSystemRole)
+            required
+        >
+        <div class="erp-form-hint">
+            @if($editingSystemRole)
+                <i class="bi bi-lock me-1"></i>{{ __('ui.system_role_key_locked') }}
+            @else
+                {{ __('ui.role_key_hint') }}
+            @endif
+        </div>
         @include('partials.form_error', ['field' => 'key'])
     </div>
     <div class="col-12">

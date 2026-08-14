@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\WorkflowStep;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -10,6 +11,17 @@ class WorkflowStepRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $type = $this->input('approver_type');
+
+        $this->merge([
+            'approver_role_id' => $type === WorkflowStep::APPROVER_ROLE ? $this->input('approver_role_id') : null,
+            'approver_department_id' => $type === WorkflowStep::APPROVER_DEPARTMENT ? $this->input('approver_department_id') : null,
+            'approver_user_id' => $type === WorkflowStep::APPROVER_USER ? $this->input('approver_user_id') : null,
+        ]);
     }
 
     public function rules(): array
@@ -27,18 +39,26 @@ class WorkflowStepRequest extends FormRequest
                     ->where('workflow_template_id', $workflowTemplate?->id)
                     ->ignore($step?->id),
             ],
-            'approver_role_id' => ['nullable', 'exists:roles,id'],
-            'approver_department_id' => ['nullable', 'exists:departments,id'],
-            'approver_user_id' => ['nullable', 'exists:users,id'],
+            'approver_type' => ['required', Rule::in([
+                WorkflowStep::APPROVER_ROLE,
+                WorkflowStep::APPROVER_DEPARTMENT,
+                WorkflowStep::APPROVER_USER,
+            ])],
+            'approver_role_id' => [
+                Rule::requiredIf($this->input('approver_type') === WorkflowStep::APPROVER_ROLE),
+                'nullable',
+                'exists:roles,id',
+            ],
+            'approver_department_id' => [
+                Rule::requiredIf($this->input('approver_type') === WorkflowStep::APPROVER_DEPARTMENT),
+                'nullable',
+                'exists:departments,id',
+            ],
+            'approver_user_id' => [
+                Rule::requiredIf($this->input('approver_type') === WorkflowStep::APPROVER_USER),
+                'nullable',
+                Rule::exists('users', 'id')->where(fn ($query) => $query->where('is_active', true)),
+            ],
         ];
-    }
-
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator) {
-            if (! $this->approver_role_id && ! $this->approver_department_id && ! $this->approver_user_id) {
-                $validator->errors()->add('approver_role_id', __('messages.select_approver_required'));
-            }
-        });
     }
 }

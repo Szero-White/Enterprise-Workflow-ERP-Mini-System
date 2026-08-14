@@ -4,13 +4,11 @@
 @section('page_eyebrow', __('menu.employee').' / '.__('menu.my_requests'))
 
 @section('content')
-<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
-    <div>
-        <h2 class="h4 mb-1">{{ $workflowRequest->request_code }}</h2>
-        <p class="text-muted mb-0">Xem dữ liệu đã gửi, tệp đính kèm và tiến độ phê duyệt.</p>
-    </div>
-    @include('partials.status_badge', ['status' => $workflowRequest->status])
-</div>
+<x-erp.page-header :title="$workflowRequest->request_code" eyebrow="Yêu cầu của tôi" description="Xem dữ liệu đã gửi, tệp đính kèm và tiến độ phê duyệt.">
+    <x-slot:actions>
+        @include('partials.status_badge', ['status' => $workflowRequest->status])
+    </x-slot:actions>
+</x-erp.page-header>
 
 <div class="row g-3">
     <div class="col-lg-7">
@@ -19,7 +17,8 @@
             <div class="table-responsive">
                 <table class="table align-middle mb-0">
                     <tbody>
-                    @forelse($workflowRequest->values as $value)
+                    @php($displayValues = $workflowRequest->values->filter(fn ($value) => $value->field?->field_type !== 'file'))
+                    @forelse($displayValues as $value)
                         <tr>
                             <th width="220">{{ $value->field?->label ?? $value->field_key }}</th>
                             <td>{{ $value->value ?: '-' }}</td>
@@ -49,7 +48,7 @@
                     <h6>{{ __('ui.attachments') }}</h6>
                     <div class="d-flex flex-column gap-2">
                         @foreach($workflowRequest->attachments as $file)
-                            <a href="{{ asset('storage/'.$file->path) }}" target="_blank" class="btn btn-light border text-start">{{ $file->original_name }}</a>
+                            <a href="{{ route('attachments.download', $file) }}" class="btn btn-light border text-start erp-attachment-link"><i class="bi bi-paperclip"></i><span class="text-truncate">{{ $file->original_name }}</span></a>
                         @endforeach
                     </div>
                 </div>
