@@ -58,6 +58,16 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'created_by');
+    }
+
+    public function goodsReceipts()
+    {
+        return $this->hasMany(GoodsReceipt::class, 'received_by');
+    }
+
     public function inventoryMovements()
     {
         return $this->hasMany(InventoryMovement::class, 'created_by');

@@ -63,6 +63,11 @@ class WorkflowRequest extends Model
         return $this->hasMany(Attachment::class, 'request_id');
     }
 
+    public function purchaseRequest()
+    {
+        return $this->hasOne(PurchaseRequest::class, 'workflow_request_id');
+    }
+
     public static function statuses(): array
     {
         return [

@@ -24,21 +24,36 @@ class InventoryStockService
         Item $item,
         float $quantity,
         ?float $unitCost = null,
-        ?string $note = null
+        ?string $note = null,
+        ?Model $reference = null,
+        InventoryMovementType $movementType = InventoryMovementType::Receipt
     ): InventoryStock {
-        return DB::transaction(function () use ($actor, $warehouse, $item, $quantity, $unitCost, $note) {
+        return DB::transaction(function () use (
+            $actor,
+            $warehouse,
+            $item,
+            $quantity,
+            $unitCost,
+            $note,
+            $reference,
+            $movementType
+        ) {
             $stock = $this->lockOrCreateStock($warehouse, $item);
             $oldQuantity = (float) $stock->quantity;
-            $stock->update(['quantity' => $oldQuantity + $quantity]);
+
+            $stock->update([
+                'quantity' => $oldQuantity + $quantity,
+            ]);
 
             $this->recordMovement(
                 actor: $actor,
                 warehouse: $warehouse,
                 item: $item,
-                type: InventoryMovementType::Receipt,
+                type: $movementType,
                 quantity: $quantity,
                 balanceAfter: (float) $stock->quantity,
                 unitCost: $unitCost,
+                reference: $reference,
                 note: $note,
             );
 

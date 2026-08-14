@@ -10,6 +10,7 @@ use App\Models\Warehouse;
 use App\Models\FormField;
 use App\Models\FormTemplate;
 use App\Models\Role;
+use App\Models\Supplier;
 use App\Models\User;
 use App\Models\WorkflowStep;
 use App\Models\WorkflowTemplate;
@@ -26,6 +27,8 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Nhân viên', 'key' => 'employee'],
             ['name' => 'Nhân sự', 'key' => 'hr'],
             ['name' => 'Giám đốc', 'key' => 'director'],
+            ['name' => 'Mua sắm', 'key' => 'procurement'],
+            ['name' => 'Tài chính', 'key' => 'finance'],
         ])->mapWithKeys(fn ($role) => [$role['key'] => Role::updateOrCreate(['key' => $role['key']], $role)]);
 
         $departments = collect([
@@ -33,6 +36,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Nhân sự', 'code' => 'HR'],
             ['name' => 'Kỹ thuật', 'code' => 'ENG'],
             ['name' => 'Kế toán', 'code' => 'ACC'],
+            ['name' => 'Mua sắm', 'code' => 'PROC'],
         ])->mapWithKeys(fn ($department) => [$department['code'] => Department::updateOrCreate(['code' => $department['code']], $department)]);
 
         User::updateOrCreate(['email' => 'admin@example.com'], [
@@ -75,11 +79,23 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
+
+        User::updateOrCreate(['email' => 'procurement@example.com'], [
+            'name' => 'Chuyên viên mua sắm', 'password' => Hash::make('password'),
+            'department_id' => $departments['PROC']->id, 'role_id' => $roles['procurement']->id, 'is_active' => true,
+        ]);
+
+        User::updateOrCreate(['email' => 'finance@example.com'], [
+            'name' => 'Chuyên viên tài chính', 'password' => Hash::make('password'),
+            'department_id' => $departments['ACC']->id, 'role_id' => $roles['finance']->id, 'is_active' => true,
+        ]);
+
         $admin = User::where('email', 'admin@example.com')->first();
 
         $leaveTemplate = FormTemplate::updateOrCreate(['code' => 'LEAVE'], [
             'name' => 'Đơn xin nghỉ phép',
             'description' => 'Biểu mẫu đăng ký nghỉ phép của nhân viên.',
+            'submission_type' => 'dynamic',
             'is_active' => true,
             'created_by' => $admin->id,
         ]);
@@ -135,6 +151,48 @@ class DatabaseSeeder extends Seeder
             'approver_role_id' => $roles['director']->id,
             'approver_department_id' => null,
             'approver_user_id' => null,
+        ]);
+
+        $purchaseTemplate = FormTemplate::updateOrCreate(['code' => 'PURCHASE_REQUEST'], [
+            'name' => 'Yêu cầu mua hàng',
+            'description' => 'Yêu cầu mua vật tư nội bộ có danh sách vật tư cấu trúc và quy trình phê duyệt riêng.',
+            'submission_type' => 'procurement',
+            'is_active' => true,
+            'created_by' => $admin->id,
+        ]);
+
+        foreach ([
+            ['label' => 'Mục đích / lý do', 'field_key' => 'purpose', 'field_type' => 'textarea', 'is_required' => true, 'sort_order' => 1],
+            ['label' => 'Ngày cần hàng', 'field_key' => 'required_date', 'field_type' => 'date', 'is_required' => false, 'sort_order' => 2],
+            ['label' => 'Ngân sách dự kiến', 'field_key' => 'estimated_total', 'field_type' => 'number', 'is_required' => true, 'sort_order' => 3],
+        ] as $field) {
+            FormField::updateOrCreate(
+                ['form_template_id' => $purchaseTemplate->id, 'field_key' => $field['field_key']],
+                array_merge($field, ['form_template_id' => $purchaseTemplate->id, 'options' => null])
+            );
+        }
+
+        $purchaseWorkflow = WorkflowTemplate::updateOrCreate(
+            ['form_template_id' => $purchaseTemplate->id, 'name' => 'Quy trình duyệt yêu cầu mua hàng'],
+            ['is_active' => true, 'created_by' => $admin->id]
+        );
+
+        foreach ([
+            [1, 'Quản lý bộ phận duyệt', 'manager'],
+            [2, 'Mua sắm thẩm định', 'procurement'],
+            [3, 'Tài chính kiểm tra ngân sách', 'finance'],
+            [4, 'Giám đốc phê duyệt', 'director'],
+        ] as [$order, $name, $roleKey]) {
+            WorkflowStep::updateOrCreate(
+                ['workflow_template_id' => $purchaseWorkflow->id, 'step_order' => $order],
+                ['step_name' => $name, 'approver_role_id' => $roles[$roleKey]->id, 'approver_department_id' => null, 'approver_user_id' => null]
+            );
+        }
+
+        Supplier::updateOrCreate(['code' => 'SUP-TECH'], [
+            'name' => 'Công ty Công nghệ Demo', 'tax_code' => '0312345678', 'contact_name' => 'Nguyễn Minh',
+            'email' => 'sales@supplier-demo.test', 'phone' => '0900000001', 'payment_terms' => 'Net 30', 'lead_time_days' => 5,
+            'address' => 'TP. Hồ Chí Minh', 'is_active' => true,
         ]);
 
         $electronics = ItemCategory::updateOrCreate(['code' => 'ELEC'], [

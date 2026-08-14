@@ -3,6 +3,7 @@
 return [
     'overview' => 'TỔNG QUAN',
     'item_inventory' => 'VẬT TƯ & KHO',
+    'procurement' => 'MUA SẮM',
     'system_admin' => 'QUẢN TRỊ HỆ THỐNG',
     'internal_requests' => 'YÊU CẦU NỘI BỘ',
     'approval' => 'PHÊ DUYỆT',
@@ -15,6 +16,10 @@ return [
     'item_categories' => 'Nhóm vật tư',
     'inventory_stocks' => 'Tồn kho',
     'warehouses' => 'Kho hàng',
+    'purchase_requests' => 'Yêu cầu mua hàng',
+    'suppliers' => 'Nhà cung cấp',
+    'purchase_orders' => 'Đơn mua hàng',
+    'goods_receipts' => 'Phiếu nhận hàng',
     'users' => 'Người dùng',
     'roles' => 'Vai trò',
     'departments' => 'Phòng ban',

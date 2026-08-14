@@ -19,6 +19,10 @@ use App\Http\Controllers\Inventory\ItemController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\Manager\ApprovalController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Procurement\GoodsReceiptController;
+use App\Http\Controllers\Procurement\PurchaseOrderController;
+use App\Http\Controllers\Procurement\PurchaseRequestController;
+use App\Http\Controllers\Procurement\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
@@ -36,7 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 
-    Route::middleware('role:admin,manager')->group(function () {
+    Route::middleware('role:admin,manager,procurement')->group(function () {
         Route::prefix('internal-api/v1')->name('internal-api.v1.')->group(function () {
             Route::get('items', [ApiItemController::class, 'index'])->name('items.index');
             Route::get('inventory-stocks', [ApiInventoryStockController::class, 'index'])->name('inventory-stocks.index');
@@ -49,6 +53,36 @@ Route::middleware('auth')->group(function () {
             Route::get('stocks', [InventoryController::class, 'index'])->name('stocks.index');
             Route::get('receipts/create', [InventoryController::class, 'createReceipt'])->name('receipts.create');
             Route::post('receipts', [InventoryController::class, 'storeReceipt'])->name('receipts.store');
+        });
+    });
+
+
+    Route::prefix('procurement')->name('procurement.')->group(function () {
+        Route::middleware('role:employee,admin')->group(function () {
+            Route::get('purchase-requests/create', [PurchaseRequestController::class, 'create'])->name('purchase-requests.create');
+            Route::post('purchase-requests', [PurchaseRequestController::class, 'store'])->name('purchase-requests.store');
+            Route::get('purchase-requests/{purchaseRequest}/edit', [PurchaseRequestController::class, 'edit'])->name('purchase-requests.edit');
+            Route::put('purchase-requests/{purchaseRequest}', [PurchaseRequestController::class, 'update'])->name('purchase-requests.update');
+        });
+
+        Route::middleware('role:employee,manager,procurement,finance,director,admin')->group(function () {
+            Route::get('purchase-requests', [PurchaseRequestController::class, 'index'])->name('purchase-requests.index');
+            Route::get('purchase-requests/{purchaseRequest}', [PurchaseRequestController::class, 'show'])->name('purchase-requests.show');
+        });
+
+        Route::middleware('role:procurement,admin')->group(function () {
+            Route::resource('suppliers', SupplierController::class)->except(['show']);
+            Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
+            Route::get('purchase-orders/create/{purchaseRequest}', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
+            Route::post('purchase-orders/{purchaseRequest}', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
+            Route::get('purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show'])->name('purchase-orders.show');
+            Route::post('purchase-orders/{purchaseOrder}/issue', [PurchaseOrderController::class, 'issue'])->name('purchase-orders.issue');
+            Route::post('purchase-orders/{purchaseOrder}/cancel', [PurchaseOrderController::class, 'cancel'])->name('purchase-orders.cancel');
+
+            Route::get('goods-receipts', [GoodsReceiptController::class, 'index'])->name('goods-receipts.index');
+            Route::get('goods-receipts/create/{purchaseOrder}', [GoodsReceiptController::class, 'create'])->name('goods-receipts.create');
+            Route::post('goods-receipts/{purchaseOrder}', [GoodsReceiptController::class, 'store'])->name('goods-receipts.store');
+            Route::get('goods-receipts/{goodsReceipt}', [GoodsReceiptController::class, 'show'])->name('goods-receipts.show');
         });
     });
 
@@ -83,7 +117,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/requests/{workflowRequest}', [RequestSubmissionController::class, 'update'])->name('requests.update');
     });
 
-    Route::prefix('manager')->name('manager.')->middleware('role:manager,hr,director,admin')->group(function () {
+    Route::prefix('manager')->name('manager.')->middleware('role:manager,hr,procurement,finance,director,admin')->group(function () {
         Route::get('/approvals', [ApprovalController::class, 'index'])->name('approvals.index');
         Route::get('/approvals/history', [ApprovalController::class, 'history'])->name('approvals.history');
         Route::get('/approvals/{workflowRequest}', [ApprovalController::class, 'show'])->name('approvals.show');

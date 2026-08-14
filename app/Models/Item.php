@@ -38,6 +38,16 @@ class Item extends Model
         return $this->hasMany(InventoryStock::class, 'item_id');
     }
 
+    public function purchaseRequestItems(): HasMany
+    {
+        return $this->hasMany(PurchaseRequestItem::class);
+    }
+
+    public function purchaseOrderItems(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderItem::class);
+    }
+
     public function inventoryMovements(): HasMany
     {
         return $this->hasMany(InventoryMovement::class, 'item_id');

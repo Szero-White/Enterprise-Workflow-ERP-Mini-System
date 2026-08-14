@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\Procurement\PurchaseRequestWorkflowHandler;
+use App\Services\Workflow\WorkflowTransitionDispatcher;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +14,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->tag([PurchaseRequestWorkflowHandler::class], 'workflow.transition.handlers');
+
+        $this->app->singleton(
+            WorkflowTransitionDispatcher::class,
+            fn ($app) => new WorkflowTransitionDispatcher(
+                $app->tagged('workflow.transition.handlers')
+            )
+        );
     }
 
     /**

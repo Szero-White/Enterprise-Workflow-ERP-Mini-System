@@ -52,7 +52,7 @@ class ApprovalController extends Controller
 
     public function show(WorkflowRequest $workflowRequest): View
     {
-        $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'creator', 'currentStep', 'workflowTemplate.steps']);
+        $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'creator', 'currentStep', 'workflowTemplate.steps', 'purchaseRequest.items.item']);
 
         if ($workflowRequest->status === WorkflowRequest::STATUS_PENDING) {
             $this->approvalService->ensureCanAct(auth()->user(), $workflowRequest);

@@ -74,7 +74,8 @@ return [
     ],
 
     'movement' => [
-        'receipt' => 'Nhập kho',
+        'receipt' => 'Nhập kho thủ công',
+        'purchase_receipt' => 'Nhận hàng theo PO',
         'adjustment_in' => 'Điều chỉnh tăng',
         'adjustment_out' => 'Điều chỉnh giảm',
     ],

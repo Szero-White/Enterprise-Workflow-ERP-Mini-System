@@ -21,6 +21,7 @@ class RequestSubmissionController extends Controller
     {
         $query = WorkflowRequest::with(['formTemplate', 'currentStep'])
             ->where('created_by', $request->user()->id)
+            ->whereHas('formTemplate', fn ($builder) => $builder->dynamicSubmission())
             ->latest();
 
         if ($request->filled('keyword')) {
@@ -47,6 +48,7 @@ class RequestSubmissionController extends Controller
     public function selectTemplate(): View
     {
         $templates = FormTemplate::where('is_active', true)
+            ->dynamicSubmission()
             ->withCount('fields')
             ->orderBy('name')
             ->get();
@@ -56,6 +58,7 @@ class RequestSubmissionController extends Controller
 
     public function create(FormTemplate $formTemplate): View
     {
+        abort_unless($formTemplate->submission_type === 'dynamic', 404);
         $formTemplate->load('fields');
 
         return view('employee.requests.form', compact('formTemplate'));
@@ -63,6 +66,7 @@ class RequestSubmissionController extends Controller
 
     public function store(WorkflowRequestSubmissionRequest $request, FormTemplate $formTemplate): RedirectResponse
     {
+        abort_unless($formTemplate->submission_type === 'dynamic', 404);
         $formTemplate->load('fields');
 
         $workflowRequest = $this->dynamicRequestService->create($request->user(), $formTemplate, $request);
@@ -73,7 +77,7 @@ class RequestSubmissionController extends Controller
     public function show(WorkflowRequest $workflowRequest): View
     {
         $this->authorizeOwner($workflowRequest);
-        $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'currentStep']);
+        $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'currentStep', 'purchaseRequest.items.item']);
 
         return view('employee.requests.show', compact('workflowRequest'));
     }
@@ -81,6 +85,7 @@ class RequestSubmissionController extends Controller
     public function edit(WorkflowRequest $workflowRequest): View
     {
         $this->authorizeOwner($workflowRequest);
+        abort_unless($workflowRequest->formTemplate?->submission_type === 'dynamic', 404);
         abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, __('messages.returned_request_only'));
 
         $workflowRequest->load(['formTemplate.fields', 'values']);
@@ -93,6 +98,7 @@ class RequestSubmissionController extends Controller
     public function update(WorkflowRequestSubmissionRequest $request, WorkflowRequest $workflowRequest): RedirectResponse
     {
         $this->authorizeOwner($workflowRequest);
+        abort_unless($workflowRequest->formTemplate?->submission_type === 'dynamic', 404);
         abort_if($workflowRequest->status !== WorkflowRequest::STATUS_RETURNED, 403, __('messages.returned_request_only'));
 
         $workflowRequest->load('formTemplate.fields');

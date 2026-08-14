@@ -6,15 +6,16 @@ use App\Models\ApprovalHistory;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\WorkflowRequest;
+use App\Services\Workflow\WorkflowTransitionDispatcher;
 use Illuminate\Support\Facades\DB;
 
 class ApprovalService
 {
     public function __construct(
         private AuditLogService $auditLogService,
-        private NotificationService $notificationService
-    )
-    {
+        private NotificationService $notificationService,
+        private WorkflowTransitionDispatcher $workflowTransitionDispatcher
+    ) {
     }
 
     public function approve(User $actor, WorkflowRequest $workflowRequest, ?string $comment = null): WorkflowRequest
@@ -53,6 +54,7 @@ class ApprovalService
 
             $freshRequest = $workflowRequest->fresh(['currentStep', 'creator', 'formTemplate']);
             $this->auditLogService->log('request.approved', $workflowRequest, $old, $freshRequest->toArray());
+            $this->workflowTransitionDispatcher->dispatch($freshRequest);
 
             if ($nextStep) {
                 $this->notificationService->notifyCurrentApprovers($freshRequest, Notification::TYPE_REQUEST_APPROVED);
@@ -92,6 +94,7 @@ class ApprovalService
 
             $freshRequest = $workflowRequest->fresh(['creator', 'formTemplate']);
             $this->auditLogService->log('request.rejected', $workflowRequest, $old, $freshRequest->toArray());
+            $this->workflowTransitionDispatcher->dispatch($freshRequest);
             $this->notificationService->notifyCreator(
                 $freshRequest,
                 'Đơn đã bị từ chối',
@@ -123,6 +126,7 @@ class ApprovalService
 
             $freshRequest = $workflowRequest->fresh(['creator', 'formTemplate']);
             $this->auditLogService->log('request.returned', $workflowRequest, $old, $freshRequest->toArray());
+            $this->workflowTransitionDispatcher->dispatch($freshRequest);
             $this->notificationService->notifyCreator(
                 $freshRequest,
                 'Đơn đã được trả về',

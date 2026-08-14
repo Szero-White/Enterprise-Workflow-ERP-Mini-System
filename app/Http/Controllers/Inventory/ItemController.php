@@ -81,7 +81,7 @@ class ItemController extends Controller
 
     public function destroy(Item $item): RedirectResponse
     {
-        if ($item->inventoryMovements()->exists() || $item->stocks()->where('quantity', '!=', 0)->exists()) {
+        if ($item->inventoryMovements()->exists() || $item->purchaseRequestItems()->exists() || $item->purchaseOrderItems()->exists() || $item->stocks()->where('quantity', '!=', 0)->exists()) {
             return back()->with('error', __('items.messages.item_delete_blocked'));
         }
 

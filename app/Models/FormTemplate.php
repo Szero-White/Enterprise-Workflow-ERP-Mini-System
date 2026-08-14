@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class FormTemplate extends Model
 {
-    protected $fillable = ['name', 'code', 'description', 'is_active', 'created_by'];
+    protected $fillable = ['name', 'code', 'description', 'submission_type', 'is_active', 'created_by'];
 
     protected function casts(): array
     {
@@ -21,6 +21,11 @@ class FormTemplate extends Model
     public function workflows()
     {
         return $this->hasMany(WorkflowTemplate::class);
+    }
+
+    public function scopeDynamicSubmission($query)
+    {
+        return $query->where('submission_type', 'dynamic');
     }
 
     public function activeWorkflow()

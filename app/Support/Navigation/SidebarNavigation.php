@@ -20,13 +20,27 @@ class SidebarNavigation
             ]),
         ];
 
-        if ($user->hasRole(['admin', 'manager'])) {
+        if ($user->hasRole(['admin', 'manager', 'procurement'])) {
             $groups[] = $this->group(__('menu.item_inventory'), [
                 $this->item(__('menu.items'), 'inventory.items.index', ['inventory.items.*'], 'bi-box-seam-fill'),
                 $this->item(__('menu.item_categories'), 'inventory.item-categories.index', ['inventory.item-categories.*'], 'bi-tags-fill'),
                 $this->item(__('menu.inventory_stocks'), 'inventory.stocks.index', ['inventory.stocks.*', 'inventory.receipts.*'], 'bi-boxes'),
                 $this->item(__('menu.warehouses'), 'inventory.warehouses.index', ['inventory.warehouses.*'], 'bi-buildings-fill'),
             ]);
+        }
+
+        if ($user->hasRole(['employee', 'manager', 'procurement', 'finance', 'director', 'admin'])) {
+            $items = [
+                $this->item(__('menu.purchase_requests'), 'procurement.purchase-requests.index', ['procurement.purchase-requests.*'], 'bi-cart-check-fill'),
+            ];
+
+            if ($user->hasRole(['procurement', 'admin'])) {
+                $items[] = $this->item(__('menu.suppliers'), 'procurement.suppliers.index', ['procurement.suppliers.*'], 'bi-truck');
+                $items[] = $this->item(__('menu.purchase_orders'), 'procurement.purchase-orders.index', ['procurement.purchase-orders.*'], 'bi-file-earmark-text-fill');
+                $items[] = $this->item(__('menu.goods_receipts'), 'procurement.goods-receipts.index', ['procurement.goods-receipts.*'], 'bi-box-arrow-in-down');
+            }
+
+            $groups[] = $this->group(__('menu.procurement'), $items);
         }
 
         if ($user->hasRole('admin')) {
@@ -56,7 +70,7 @@ class SidebarNavigation
             ]);
         }
 
-        if ($user->hasRole(['manager', 'hr', 'director', 'admin'])) {
+        if ($user->hasRole(['manager', 'hr', 'procurement', 'finance', 'director', 'admin'])) {
             $groups[] = $this->group(__('menu.approval'), [
                 $this->item(__('menu.pending_approvals'), 'manager.approvals.index', [
                     'manager.approvals.index',
