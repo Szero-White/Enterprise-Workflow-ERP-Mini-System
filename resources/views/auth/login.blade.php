@@ -19,24 +19,36 @@
                     <div class="erp-login-kicker">{{ __('auth.kicker') }}</div>
                     <h1 class="erp-login-title">{{ __('auth.hero_title') }}</h1>
                     <p class="erp-login-description">{{ __('auth.hero_description') }}</p>
+
+                    <div class="erp-login-capabilities" aria-label="{{ __('auth.capabilities') }}">
+                        <span class="erp-login-capability"><i class="bi bi-receipt"></i>{{ __('auth.feature_sales') }}</span>
+                        <span class="erp-login-capability"><i class="bi bi-boxes"></i>{{ __('auth.feature_inventory') }}</span>
+                        <span class="erp-login-capability"><i class="bi bi-bezier2"></i>{{ __('auth.feature_workflow') }}</span>
+                    </div>
                 </div>
 
-                <div class="erp-login-feature-grid">
-                    <article class="erp-login-feature">
-                        <i class="bi bi-receipt-cutoff erp-login-feature__icon"></i>
-                        <div class="erp-login-feature__title">{{ __('auth.feature_sales') }}</div>
-                        <div class="erp-login-feature__text">{{ __('auth.feature_sales_text') }}</div>
-                    </article>
-                    <article class="erp-login-feature">
-                        <i class="bi bi-boxes erp-login-feature__icon"></i>
-                        <div class="erp-login-feature__title">{{ __('auth.feature_inventory') }}</div>
-                        <div class="erp-login-feature__text">{{ __('auth.feature_inventory_text') }}</div>
-                    </article>
-                    <article class="erp-login-feature">
-                        <i class="bi bi-bezier2 erp-login-feature__icon"></i>
-                        <div class="erp-login-feature__title">{{ __('auth.feature_workflow') }}</div>
-                        <div class="erp-login-feature__text">{{ __('auth.feature_workflow_text') }}</div>
-                    </article>
+                <div>
+                    <div class="erp-login-preview" aria-hidden="true">
+                        <div class="erp-login-preview__top">
+                            <span class="erp-login-preview__label">{{ __('auth.preview_title') }}</span>
+                            <span class="erp-login-preview__status">{{ __('auth.preview_status') }}</span>
+                        </div>
+                        <div class="erp-login-preview__grid">
+                            <div class="erp-login-preview__chart">
+                                <div class="erp-login-preview__chart-title">{{ __('auth.preview_revenue') }}</div>
+                                <div class="erp-login-preview__bars"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+                            </div>
+                            <div class="erp-login-preview__activity">
+                                <div class="erp-login-preview__activity-title">{{ __('auth.preview_activity') }}</div>
+                                <div class="erp-login-preview__activity-lines">
+                                    <div class="erp-login-preview__activity-line"><span></span></div>
+                                    <div class="erp-login-preview__activity-line"><span></span></div>
+                                    <div class="erp-login-preview__activity-line"><span></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="erp-login-brand-footer">{{ __('auth.footer') }}</div>
                 </div>
             </section>
         </div>
@@ -50,11 +62,11 @@
 
                     <div class="erp-demo-credential">
                         <div class="d-flex align-items-center justify-content-between gap-3">
-                            <div>
+                            <div class="min-w-0">
                                 <div class="erp-demo-credential__label">{{ __('auth.demo_account') }}</div>
-                                <div class="erp-demo-credential__value">admin@example.com · password</div>
+                                <div class="erp-demo-credential__value text-truncate">admin@example.com · password</div>
                             </div>
-                            <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis px-3 py-2">{{ __('ui.roles.admin') }}</span>
+                            <i class="bi bi-copy text-muted" aria-hidden="true"></i>
                         </div>
                     </div>
 
@@ -66,7 +78,7 @@
                                 id="email"
                                 type="email"
                                 name="email"
-                                class="form-control form-control-lg @error('email') is-invalid @enderror"
+                                class="form-control @error('email') is-invalid @enderror"
                                 value="{{ old('email', 'admin@example.com') }}"
                                 autocomplete="email"
                                 required
@@ -81,7 +93,7 @@
                                 id="password"
                                 type="password"
                                 name="password"
-                                class="form-control form-control-lg @error('password') is-invalid @enderror"
+                                class="form-control @error('password') is-invalid @enderror"
                                 value="password"
                                 autocomplete="current-password"
                                 required
@@ -98,12 +110,12 @@
                         </div>
 
                         <button class="btn btn-primary btn-lg w-100">
-                            <i class="bi bi-arrow-right-circle"></i>
                             {{ __('auth.login_button') }}
+                            <i class="bi bi-arrow-right"></i>
                         </button>
                     </form>
 
-                    <div class="erp-login-footer">{{ __('auth.footer') }}</div>
+                    <div class="erp-login-footer">{{ __('auth.form_footer') }}</div>
                 </div>
             </section>
         </div>

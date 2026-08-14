@@ -18,12 +18,12 @@
     </div>
 
     <div class="erp-workspace-card">
-        <div class="erp-workspace-card__icon"><i class="bi bi-shop"></i></div>
+        <div class="erp-workspace-card__icon"><i class="bi bi-grid-1x2"></i></div>
         <div class="min-w-0 flex-grow-1">
-            <div class="erp-workspace-card__label">{{ __('layout.workspace') }}</div>
             <div class="erp-workspace-card__name text-truncate">{{ __('layout.workspace_name') }}</div>
+            <div class="erp-workspace-card__meta text-truncate">{{ __('layout.system_ready') }}</div>
         </div>
-        <span class="erp-live-dot" title="{{ __('layout.system_ready') }}"></span>
+        <span class="erp-live-dot" aria-hidden="true"></span>
     </div>
 
     <div class="erp-sidebar__scroll">

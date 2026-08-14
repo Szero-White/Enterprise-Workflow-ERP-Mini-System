@@ -1,20 +1,29 @@
 # ERP UI Design System
 
-This project uses a small application-specific design system instead of spreading page-specific inline styles across Blade templates.
+The interface follows a lightweight product-UI system for an internal commerce ERP. The goal is to feel like a modern SaaS workspace rather than a dense admin template while preserving the information density required for operations.
 
-## Goals
+## Product principles
 
-- Keep the ERP dense enough for operational work without looking like a default admin template.
-- Separate visual concerns from business logic.
-- Reuse page headers, panels, metric cards, form shells, empty states, navigation and interaction scripts.
-- Keep the implementation compatible with Laravel Blade + Bootstrap 5; no heavy frontend framework is required.
-- Support desktop, tablet, mobile sidebar behavior and light/dark themes.
+- Use whitespace and hierarchy before adding borders, shadows or heavy typography.
+- Keep headings short and use medium/semibold weights; avoid oversized marketing copy inside operational screens.
+- Reserve the primary color for actions, active navigation and important signals.
+- Prefer light neutral surfaces and soft status colors. Dark mode remains available but is not the default visual language.
+- Tables are optimized for scanning: normal-case headers, restrained metadata, clear primary fields and compact actions.
+- Forms keep labels readable, inputs calm and action panels predictable.
+- Login is a product entry point, not a marketing landing page: one short value proposition, a subtle workspace preview and a focused form.
 
 ## Main UI layers
 
 ### Design tokens
 
-`public/css/erp.css` is the small entrypoint. Styles are split by responsibility under `public/css/erp/`: `tokens.css`, `shell.css`, `components.css`, `pages.css`, `theme.css`, and `responsive.css`. Design tokens use `--erp-*` CSS custom properties.
+`public/css/erp.css` is the entrypoint. Styles are split by responsibility under `public/css/erp/`:
+
+- `tokens.css`: color, spacing, radius, shadow and typography tokens.
+- `shell.css`: sidebar, topbar, workspace shell and profile navigation.
+- `components.css`: page headers, buttons, panels, tables, forms, badges and shared UI.
+- `pages.css`: dashboard, login and sales-order composer patterns.
+- `theme.css`: dark-theme adjustments only.
+- `responsive.css`: responsive behavior and mobile navigation.
 
 ### Shared Blade components
 
@@ -24,39 +33,31 @@ This project uses a small application-specific design system instead of spreadin
 - `resources/views/components/erp/empty-state.blade.php`
 - `resources/views/components/erp/form-shell.blade.php`
 
-Use these before creating another page-specific card/header implementation.
+Use these before creating page-specific copies of the same patterns.
 
 ### Navigation
 
-`App\Support\Navigation\SidebarNavigation` builds role-aware navigation. The sidebar Blade template is responsible only for rendering it.
+`App\Support\Navigation\SidebarNavigation` builds role-aware navigation. Blade only renders the structure; role and route decisions stay outside the view.
 
 ### Frontend behavior
 
 - `public/js/erp-shell.js`: theme switching and responsive sidebar.
 - `public/js/dashboard.js`: dashboard revenue chart.
-- `public/js/sales-order-form.js`: sales-order line editor and totals.
+- `public/js/sales-order-form.js`: sales-order line editor and presentation totals.
 
-Business calculations remain authoritative on the backend. Frontend calculations are presentation only.
-
-## Visual hierarchy
-
-1. Topbar identifies the current context and exposes global actions.
-2. Page header explains the task and contains primary actions.
-3. Metric cards expose high-signal information only.
-4. Panels group one responsibility per surface.
-5. Tables prioritize scanning: strong primary field, muted secondary metadata, compact actions.
-6. Forms use a content area plus a sticky action summary on wide screens.
+Business calculations remain authoritative on the backend.
 
 ## Clean-code rules for UI work
 
-- Do not add business queries to Blade views.
+- Do not query business data from Blade views.
 - Do not duplicate role-based navigation arrays in views.
 - Avoid inline styles; extend the design system instead.
-- Avoid long inline JavaScript in Blade; pass server data through JSON and keep interaction logic in dedicated JS files.
-- Do not trust client-side prices or totals. The server remains the source of truth.
-- Add translation keys instead of hard-coding new product UI copy.
-- New screens should first attempt to compose existing components before introducing a new component.
+- Avoid long inline JavaScript in Blade; pass server data through JSON and keep interaction code in dedicated JS files.
+- Do not trust client-side prices or totals.
+- Add translation keys instead of hard-coding new product copy.
+- Prefer composition of existing components over one-off markup.
+- Keep page-specific CSS in `pages.css`; reusable rules belong in `components.css`.
 
 ## Storefront boundary
 
-The authenticated ERP is an internal operations product. A future customer-facing storefront should be implemented as a separate presentation boundary (public routes/controllers/views or a dedicated frontend) while reusing the same catalog/order domain services where appropriate. This prevents marketing UI concerns from leaking into ERP administration screens.
+The authenticated ERP is an internal operations product. A future customer-facing storefront should use a separate presentation boundary while reusing the same catalog/order domain services. Marketing and checkout concerns should not leak into ERP administration screens.

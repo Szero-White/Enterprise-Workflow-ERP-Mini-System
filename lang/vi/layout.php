@@ -2,14 +2,14 @@
 
 return [
     'brand_name' => 'ERP Commerce',
-    'brand_meta' => 'Không gian ERP',
-    'workspace' => 'Không gian làm việc',
+    'brand_meta' => 'Business workspace',
+    'workspace' => 'Workspace',
     'workspace_name' => 'Vận hành doanh nghiệp',
-    'system_ready' => 'Hệ thống sẵn sàng',
+    'system_ready' => 'Đang hoạt động',
     'open_menu' => 'Mở menu',
     'close_menu' => 'Đóng menu',
     'main_navigation' => 'Điều hướng chính',
-    'quick_create' => 'Tạo nhanh',
+    'quick_create' => 'Tạo mới',
     'common_actions' => 'Thao tác thường dùng',
     'create_sales_order' => 'Tạo đơn bán',
     'create_sales_order_hint' => 'Bán hàng theo giá catalog',

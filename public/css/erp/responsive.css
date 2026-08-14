@@ -2,10 +2,14 @@
 @media (max-width: 1199.98px) {
     .erp-order-layout, .erp-form-layout { grid-template-columns: 1fr; }
     .erp-order-summary, .erp-form-aside { position: static; }
+    .erp-dashboard-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .erp-login-brand-panel, .erp-login-form-panel { min-height: auto; }
+    .erp-login-brand-panel { padding: 34px; }
+    .erp-login-form-panel { padding: 36px 28px; }
 }
 
 @media (max-width: 991.98px) {
-    .erp-sidebar { transform: translateX(-102%); transition: transform .22s ease; box-shadow: 24px 0 70px rgba(2, 6, 23, .24); }
+    .erp-sidebar { transform: translateX(-102%); transition: transform .2s ease; box-shadow: 24px 0 70px rgba(22, 27, 38, .16); }
     .erp-main { margin-left: 0; }
     .erp-sidebar-open { overflow: hidden; }
     .erp-sidebar-open .erp-sidebar { transform: translateX(0); }
@@ -16,41 +20,45 @@
         display: block;
         visibility: hidden;
         opacity: 0;
-        background: rgba(2, 6, 23, .50);
+        background: rgba(22, 27, 38, .36);
         backdrop-filter: blur(2px);
-        transition: .2s ease;
+        transition: .18s ease;
     }
     .erp-sidebar-open .erp-sidebar-backdrop { visibility: visible; opacity: 1; }
-    .erp-content { padding: 22px 18px 38px; }
+    .erp-content { padding: 22px 18px 40px; }
     .erp-topbar { padding-inline: 18px; }
-    .erp-dashboard-hero__content { align-items: flex-start; flex-direction: column; }
+    .erp-dashboard-welcome { align-items: flex-start; flex-direction: column; }
+    .erp-dashboard-grid { grid-template-columns: 1fr; }
+    .erp-login-brand-panel { min-height: auto; }
 }
 
 @media (max-width: 767.98px) {
     .erp-content { padding-inline: 14px; }
-    .erp-topbar { min-height: 68px; padding-inline: 13px; }
+    .erp-topbar { min-height: 64px; padding-inline: 13px; }
     .erp-topbar__eyebrow { display: none; }
-    .erp-topbar__title { font-size: .92rem; }
+    .erp-topbar__title { font-size: .88rem; }
     .erp-page-header { align-items: flex-start; flex-direction: column; }
     .erp-page-actions { width: 100%; justify-content: flex-start; }
-    .erp-dashboard-hero { padding: 20px; border-radius: 18px; }
-    .erp-dashboard-hero__title { font-size: 1.55rem; }
+    .erp-dashboard-welcome__title { font-size: 1.65rem; }
+    .erp-dashboard-metrics { grid-template-columns: 1fr 1fr; }
     .erp-filter-bar, .erp-filter-search { width: 100%; }
     .erp-filter-bar .form-control, .erp-filter-bar .form-select { width: 100%; max-width: none; }
     .erp-table-toolbar { align-items: stretch; flex-direction: column; }
-    .erp-login-feature-grid { grid-template-columns: 1fr; }
     .erp-login-brand-panel, .erp-login-form-panel { min-height: auto; }
     .erp-login-brand-panel { padding: 28px 24px; }
-    .erp-login-kicker { margin-top: 50px; }
-    .erp-login-form-panel { padding: 28px 22px; }
+    .erp-login-kicker { margin-top: 44px; }
+    .erp-login-form-panel { padding: 30px 22px; }
     .erp-auth-wrapper { padding: 12px; }
     .erp-login-shell { border-radius: 20px; }
 }
 
 @media (max-width: 575.98px) {
     .erp-topbar__actions { gap: 5px; }
-    .erp-icon-btn { width: 39px; height: 39px; }
-    .erp-profile-trigger { padding: 0; min-height: 39px; }
-    .erp-avatar { width: 39px; height: 39px; flex-basis: 39px; }
+    .erp-icon-btn { width: 38px; height: 38px; }
+    .erp-profile-trigger { padding: 0; min-height: 38px; }
+    .erp-avatar { width: 38px; height: 38px; flex-basis: 38px; }
     .erp-page-actions .btn { flex: 1 1 auto; }
+    .erp-dashboard-metrics { grid-template-columns: 1fr; }
+    .erp-login-preview__grid { grid-template-columns: 1fr; }
+    .erp-login-title { font-size: 2rem; }
 }

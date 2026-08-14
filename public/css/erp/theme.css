@@ -1,15 +1,19 @@
 /* Dark adjustments */
-:root[data-theme="dark"] .erp-avatar { color: #c7d2fe; background: #1e293b; border-color: #334155; }
-:root[data-theme="dark"] .erp-product-thumb { color: #c7d2fe; background: #172554; border-color: #283661; }
-:root[data-theme="dark"] .erp-customer-avatar { color: #6ee7b7; background: #082f2a; }
+:root[data-theme="dark"] .erp-sidebar { border-right-color: var(--erp-border); }
+:root[data-theme="dark"] .erp-brand { color: var(--erp-text); }
+:root[data-theme="dark"] .erp-workspace-card { background: rgba(255, 255, 255, .025); }
+:root[data-theme="dark"] .erp-nav-link:hover { background: rgba(255, 255, 255, .035); }
+:root[data-theme="dark"] .erp-nav-link.is-active { background: var(--erp-primary-soft); }
+:root[data-theme="dark"] .erp-avatar { color: #c9c6ff; background: #252443; border-color: #3a385a; }
+:root[data-theme="dark"] .erp-product-thumb { color: #c9c6ff; background: #252443; border-color: #343255; }
+:root[data-theme="dark"] .erp-customer-avatar { color: #79d7b6; background: #18382f; }
 :root[data-theme="dark"] .erp-stock-item__icon,
-:root[data-theme="dark"] .erp-stock-item__qty { color: #fbbf24; background: #422006; }
-:root[data-theme="dark"] .erp-inline-note { color: #93c5fd; border-color: #1e3a5f; background: #0c2340; }
-:root[data-theme="dark"] .erp-metric-card--success .erp-metric-card__icon { color: #6ee7b7; background: #073b31; }
-:root[data-theme="dark"] .erp-metric-card--info .erp-metric-card__icon { color: #7dd3fc; background: #082f49; }
-:root[data-theme="dark"] .erp-metric-card--warning .erp-metric-card__icon { color: #fcd34d; background: #422006; }
-:root[data-theme="dark"] .erp-metric-card--dark .erp-metric-card__icon { color: #cbd5e1; background: #1e293b; }
+:root[data-theme="dark"] .erp-stock-item__qty { color: #f2c270; background: #3b2b16; }
+:root[data-theme="dark"] .erp-inline-note { color: #9dc7e6; border-color: #29445a; background: #162936; }
+:root[data-theme="dark"] .erp-metric-card--success .erp-metric-card__icon { color: #7ad9b8; background: #17382f; }
+:root[data-theme="dark"] .erp-metric-card--info .erp-metric-card__icon { color: #84bfe8; background: #183044; }
+:root[data-theme="dark"] .erp-metric-card--warning .erp-metric-card__icon { color: #efc477; background: #3a2b18; }
+:root[data-theme="dark"] .erp-metric-card--dark .erp-metric-card__icon { color: #c2cad6; background: #252e3b; }
 :root[data-theme="dark"] .bg-light,
 :root[data-theme="dark"] .text-bg-light { background-color: var(--erp-surface-strong) !important; color: var(--erp-text) !important; }
 :root[data-theme="dark"] .border { border-color: var(--erp-border) !important; }
-

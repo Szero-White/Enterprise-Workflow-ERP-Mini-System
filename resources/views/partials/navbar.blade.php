@@ -8,10 +8,7 @@
         <button type="button" class="erp-icon-btn d-lg-none" data-sidebar-open aria-label="{{ __('layout.open_menu') }}">
             <i class="bi bi-list"></i>
         </button>
-        <div class="min-w-0">
-            <div class="erp-topbar__eyebrow text-truncate">@yield('page_eyebrow', 'Enterprise Commerce ERP')</div>
-            <div class="erp-topbar__title text-truncate">@yield('page_title', __('ui.dashboard'))</div>
-        </div>
+        <div class="erp-topbar__title text-truncate">@yield('page_title', __('ui.dashboard'))</div>
     </div>
 
     <div class="erp-topbar__actions">

@@ -5,103 +5,92 @@
 
 @section('content')
 @if($businessSummary)
-    <section class="erp-dashboard-hero">
-        <div class="erp-dashboard-hero__content">
-            <div>
-                <div class="erp-dashboard-hero__kicker">{{ __('dashboard.hero_kicker') }}</div>
-                <h2 class="erp-dashboard-hero__title">{{ __('dashboard.hero_title') }}</h2>
-                <p class="erp-dashboard-hero__description">{{ __('dashboard.hero_description') }}</p>
-            </div>
-            <div class="erp-page-actions flex-shrink-0">
-                <a href="{{ route('inventory.receipts.create') }}" class="btn btn-outline-light">
-                    <i class="bi bi-box-arrow-in-down"></i>{{ __('dashboard.receive_stock') }}
-                </a>
-                <a href="{{ route('sales.orders.create') }}" class="btn btn-light">
-                    <i class="bi bi-plus-lg"></i>{{ __('dashboard.create_sales_order') }}
-                </a>
-            </div>
+    <section class="erp-dashboard-welcome">
+        <div class="erp-dashboard-welcome__copy">
+            <div class="erp-dashboard-welcome__kicker">{{ __('dashboard.hero_kicker') }}</div>
+            <h1 class="erp-dashboard-welcome__title">{{ __('dashboard.hero_title') }}</h1>
+            <p class="erp-dashboard-welcome__description">{{ __('dashboard.hero_description') }}</p>
+        </div>
+        <div class="erp-page-actions flex-shrink-0">
+            <a href="{{ route('inventory.receipts.create') }}" class="btn btn-light border">
+                <i class="bi bi-box-arrow-in-down"></i>{{ __('dashboard.receive_stock') }}
+            </a>
+            <a href="{{ route('sales.orders.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i>{{ __('dashboard.create_sales_order') }}
+            </a>
         </div>
     </section>
 
-    <x-erp.page-header
-        :title="__('dashboard.business_snapshot')"
-        :eyebrow="__('dashboard.business_performance')"
-        :description="__('dashboard.business_snapshot_description')"
-    />
-
     @php
         $businessCards = [
-            ['label' => __('dashboard.confirmed_revenue'), 'value' => number_format($businessSummary['revenue'], 0, ',', '.').' ₫', 'icon' => 'bi-cash-stack', 'tone' => 'success'],
-            ['label' => __('dashboard.total_sales_orders'), 'value' => number_format($businessSummary['orders']), 'icon' => 'bi-receipt-cutoff', 'tone' => 'primary'],
-            ['label' => __('dashboard.active_customers'), 'value' => number_format($businessSummary['customers']), 'icon' => 'bi-people-fill', 'tone' => 'info'],
-            ['label' => __('dashboard.active_products'), 'value' => number_format($businessSummary['products']), 'icon' => 'bi-box-seam-fill', 'tone' => 'dark'],
-            ['label' => __('dashboard.low_stock_alerts'), 'value' => number_format($businessSummary['low_stock']), 'icon' => 'bi-exclamation-triangle-fill', 'tone' => 'warning'],
+            ['label' => __('dashboard.confirmed_revenue'), 'value' => number_format($businessSummary['revenue'], 0, ',', '.').' ₫', 'icon' => 'bi-wallet2', 'tone' => 'success'],
+            ['label' => __('dashboard.total_sales_orders'), 'value' => number_format($businessSummary['orders']), 'icon' => 'bi-receipt', 'tone' => 'primary'],
+            ['label' => __('dashboard.active_customers'), 'value' => number_format($businessSummary['customers']), 'icon' => 'bi-people', 'tone' => 'info'],
+            ['label' => __('dashboard.low_stock_alerts'), 'value' => number_format($businessSummary['low_stock']), 'icon' => 'bi-exclamation-circle', 'tone' => 'warning'],
         ];
     @endphp
 
-    <div class="row g-3 mb-4">
+    <div class="erp-dashboard-metrics">
         @foreach($businessCards as $card)
-            <div class="col-sm-6 col-xl">
-                <x-erp.metric-card
-                    :label="$card['label']"
-                    :value="$card['value']"
-                    :icon="$card['icon']"
-                    :tone="$card['tone']"
-                />
-            </div>
+            <x-erp.metric-card
+                :label="$card['label']"
+                :value="$card['value']"
+                :icon="$card['icon']"
+                :tone="$card['tone']"
+            />
         @endforeach
     </div>
 
-    <div class="row g-3 mb-4">
-        <div class="col-xl-8">
-            <x-erp.panel
-                :title="__('dashboard.revenue_last_7_days')"
-                :subtitle="__('dashboard.confirmed_orders_only')"
-                class="h-100"
-            >
-                <x-slot:actions>
-                    <span class="badge rounded-pill text-bg-light border">{{ __('dashboard.seven_days') }}</span>
-                </x-slot:actions>
-                <div class="erp-chart-wrap"><canvas id="salesChart"></canvas></div>
-            </x-erp.panel>
-        </div>
+    <div class="erp-dashboard-grid">
+        <x-erp.panel
+            :title="__('dashboard.revenue_last_7_days')"
+            :subtitle="__('dashboard.confirmed_orders_only')"
+            class="h-100"
+        >
+            <x-slot:actions>
+                <span class="erp-dashboard-mini-meta"><i class="bi bi-calendar3"></i>{{ __('dashboard.seven_days') }}</span>
+            </x-slot:actions>
+            <div class="erp-chart-wrap"><canvas id="salesChart"></canvas></div>
+        </x-erp.panel>
 
-        <div class="col-xl-4">
-            <x-erp.panel
-                :title="__('dashboard.stock_attention')"
-                :subtitle="__('dashboard.stock_attention_description')"
-                class="h-100"
-            >
-                <x-slot:actions>
-                    <a href="{{ route('inventory.stocks.index', ['low_stock' => 1]) }}" class="btn btn-sm btn-light border">{{ __('dashboard.view_all') }}</a>
-                </x-slot:actions>
+        <x-erp.panel
+            :title="__('dashboard.stock_attention')"
+            :subtitle="__('dashboard.stock_attention_description')"
+            class="h-100"
+        >
+            <x-slot:actions>
+                <a href="{{ route('inventory.stocks.index', ['low_stock' => 1]) }}" class="btn btn-sm btn-light border">{{ __('dashboard.view_all') }}</a>
+            </x-slot:actions>
 
-                <div class="erp-stock-list">
-                    @forelse($lowStockProducts as $stock)
-                        <div class="erp-stock-item">
-                            <div class="erp-stock-item__icon"><i class="bi bi-exclamation-triangle"></i></div>
-                            <div class="min-w-0">
-                                <div class="erp-record-primary text-truncate">{{ $stock->product?->name }}</div>
-                                <div class="erp-record-secondary">{{ $stock->product?->sku }} · {{ $stock->warehouse?->code }}</div>
-                            </div>
-                            <span class="erp-stock-item__qty">{{ rtrim(rtrim(number_format((float)$stock->quantity, 3, '.', ''), '0'), '.') }}</span>
+            <div class="erp-dashboard-mini-meta mb-3">
+                <i class="bi bi-box-seam"></i>
+                {{ number_format($businessSummary['products']) }} {{ __('dashboard.products_in_catalog') }}
+            </div>
+
+            <div class="erp-stock-list">
+                @forelse($lowStockProducts as $stock)
+                    <div class="erp-stock-item">
+                        <div class="erp-stock-item__icon"><i class="bi bi-exclamation-triangle"></i></div>
+                        <div class="min-w-0">
+                            <div class="erp-record-primary text-truncate">{{ $stock->product?->name }}</div>
+                            <div class="erp-record-secondary">{{ $stock->product?->sku }} · {{ $stock->warehouse?->code }}</div>
                         </div>
-                    @empty
-                        <x-erp.empty-state icon="bi-check2-circle" :title="__('dashboard.no_low_stock')" />
-                    @endforelse
-                </div>
-            </x-erp.panel>
-        </div>
+                        <span class="erp-stock-item__qty">{{ rtrim(rtrim(number_format((float)$stock->quantity, 3, '.', ''), '0'), '.') }}</span>
+                    </div>
+                @empty
+                    <x-erp.empty-state icon="bi-check2-circle" :title="__('dashboard.no_low_stock')" />
+                @endforelse
+            </div>
+        </x-erp.panel>
     </div>
 
     <x-erp.panel
         :title="__('dashboard.latest_sales_orders')"
         :subtitle="__('dashboard.latest_sales_orders_description')"
         :flush="true"
-        class="mb-4"
     >
         <x-slot:actions>
-            <a href="{{ route('sales.orders.index') }}" class="btn btn-sm btn-outline-primary">{{ __('dashboard.manage_orders') }}</a>
+            <a href="{{ route('sales.orders.index') }}" class="btn btn-sm btn-light border">{{ __('dashboard.manage_orders') }}</a>
         </x-slot:actions>
 
         <div class="table-responsive">
@@ -134,6 +123,8 @@
         </div>
     </x-erp.panel>
 @endif
+
+<div class="erp-section-divider"></div>
 
 <div class="erp-section-heading">
     <div>
