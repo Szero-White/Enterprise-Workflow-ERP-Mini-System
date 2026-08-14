@@ -28,7 +28,7 @@ class DashboardController extends Controller
         return view('dashboard.index', [
             'workflowStats' => $workflowStats,
             'inventorySummary' => $canViewInventory ? $this->dashboardDataService->inventorySummary() : null,
-            'lowStockProducts' => $canViewInventory ? $this->dashboardDataService->lowStockProducts() : collect(),
+            'lowStockItems' => $canViewInventory ? $this->dashboardDataService->lowStockItems() : collect(),
             'recentInventoryMovements' => $canViewInventory ? $this->dashboardDataService->recentInventoryMovements() : collect(),
             'latestRequests' => $this->dashboardDataService->latestWorkflowRequests(),
         ]);

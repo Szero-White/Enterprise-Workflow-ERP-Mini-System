@@ -24,9 +24,9 @@
                         <span class="erp-quick-menu__icon bg-success-subtle text-success"><i class="bi bi-box-arrow-in-down"></i></span>
                         <span><strong>{{ __('layout.receive_stock') }}</strong><small>{{ __('layout.receive_stock_hint') }}</small></span>
                     </a>
-                    <a class="dropdown-item erp-quick-menu__item" href="{{ route('catalog.products.create') }}">
+                    <a class="dropdown-item erp-quick-menu__item" href="{{ route('inventory.items.create') }}">
                         <span class="erp-quick-menu__icon bg-info-subtle text-info"><i class="bi bi-box-seam"></i></span>
-                        <span><strong>{{ __('layout.create_product') }}</strong><small>{{ __('layout.create_product_hint') }}</small></span>
+                        <span><strong>{{ __('layout.create_item') }}</strong><small>{{ __('layout.create_item_hint') }}</small></span>
                     </a>
                 </div>
             </div>

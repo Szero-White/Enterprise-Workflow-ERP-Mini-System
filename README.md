@@ -41,7 +41,7 @@ The former Sales / CRM domain has been removed so the product has one coherent b
 
 ### Inventory foundation
 
-- Item catalog (temporarily still named `Product` in Step 01; renamed in Step 02).
+- Item master (`Item` / `ItemCategory`) for internal materials and equipment.
 - Item categories.
 - Warehouses.
 - Stock by warehouse + item.
@@ -51,7 +51,7 @@ The former Sales / CRM domain has been removed so the product has one coherent b
 
 ### Internal API v1
 
-- `GET /internal-api/v1/products`
+- `GET /internal-api/v1/items`
 - `GET /internal-api/v1/inventory-stocks`
 
 The API is session-authenticated and intended for internal integration only.
@@ -98,7 +98,7 @@ The uploaded source does not contain `vendor/`, so automated Laravel tests must 
 ## Refactor plan
 
 - Step 01: remove legacy Sales / CRM. ✅
-- Step 02: rename Product catalog to Item / ItemCategory and remove sales-oriented fields.
+- Step 02: Item / ItemCategory domain cleanup completed; sales-oriented pricing removed.
 - Step 03: implement Supplier + Purchase Request + Purchase Order + Goods Receipt.
 - Step 04: connect completed Purchase Request workflow to Procurement.
 - Step 05: implement Asset + Assignment / Return, then final cleanup and test pass.

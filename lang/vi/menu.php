@@ -2,7 +2,7 @@
 
 return [
     'overview' => 'TỔNG QUAN',
-    'catalog_inventory' => 'HÀNG HÓA & KHO',
+    'item_inventory' => 'VẬT TƯ & KHO',
     'system_admin' => 'QUẢN TRỊ HỆ THỐNG',
     'internal_requests' => 'YÊU CẦU NỘI BỘ',
     'approval' => 'PHÊ DUYỆT',
@@ -11,8 +11,8 @@ return [
 
     'dashboard' => 'Tổng quan',
     'notifications' => 'Thông báo',
-    'products' => 'Vật tư',
-    'product_categories' => 'Danh mục vật tư',
+    'items' => 'Danh mục vật tư',
+    'item_categories' => 'Nhóm vật tư',
     'inventory_stocks' => 'Tồn kho',
     'warehouses' => 'Kho hàng',
     'users' => 'Người dùng',

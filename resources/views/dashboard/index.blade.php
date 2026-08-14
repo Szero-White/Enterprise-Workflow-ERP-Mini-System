@@ -118,12 +118,12 @@
             </x-slot:actions>
 
             <div class="erp-stock-list">
-                @forelse($lowStockProducts as $stock)
+                @forelse($lowStockItems as $stock)
                     <div class="erp-stock-item">
                         <div class="erp-stock-item__icon"><i class="bi bi-exclamation-triangle"></i></div>
                         <div class="min-w-0">
-                            <div class="erp-record-primary text-truncate">{{ $stock->product?->name }}</div>
-                            <div class="erp-record-secondary">{{ $stock->product?->sku }} · {{ $stock->warehouse?->code }}</div>
+                            <div class="erp-record-primary text-truncate">{{ $stock->item?->name }}</div>
+                            <div class="erp-record-secondary">{{ $stock->item?->sku }} · {{ $stock->warehouse?->code }}</div>
                         </div>
                         <span class="erp-stock-item__qty">{{ rtrim(rtrim(number_format((float)$stock->quantity, 3, '.', ''), '0'), '.') }}</span>
                     </div>
@@ -143,7 +143,7 @@
                     <div class="erp-stock-item">
                         <div class="erp-stock-item__icon"><i class="bi bi-arrow-left-right"></i></div>
                         <div class="min-w-0">
-                            <div class="erp-record-primary text-truncate">{{ $movement->product?->name }}</div>
+                            <div class="erp-record-primary text-truncate">{{ $movement->item?->name }}</div>
                             <div class="erp-record-secondary">{{ $movement->type->label() }} · {{ $movement->warehouse?->code }}</div>
                         </div>
                         <span class="erp-stock-item__qty">{{ $movement->quantity > 0 ? '+' : '' }}{{ rtrim(rtrim(number_format((float)$movement->quantity, 3, '.', ''), '0'), '.') }}</span>

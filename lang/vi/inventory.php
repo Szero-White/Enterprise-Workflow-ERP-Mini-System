@@ -43,7 +43,7 @@ return [
         'stock_by_warehouse' => 'Số lượng tồn theo kho',
         'stock_by_warehouse_description' => 'Mỗi SKU được quản lý độc lập tại từng kho.',
         'warehouse' => 'Kho',
-        'product' => 'Sản phẩm',
+        'item' => 'Vật tư',
         'category' => 'Danh mục',
         'current_stock' => 'Tồn hiện tại',
         'reorder_level' => 'Mức cảnh báo',
@@ -63,11 +63,11 @@ return [
         'description' => 'Tác vụ này cập nhật tồn kho và đồng thời tạo lịch sử biến động kho cùng audit log.',
         'warehouse' => 'Kho nhận',
         'select_warehouse' => '-- Chọn kho --',
-        'product' => 'Sản phẩm',
-        'select_product' => '-- Chọn sản phẩm --',
+        'item' => 'Vật tư',
+        'select_item' => '-- Chọn vật tư --',
         'quantity' => 'Số lượng',
         'unit_cost' => 'Đơn giá nhập',
-        'unit_cost_hint' => 'Dùng cho lịch sử nghiệp vụ; chưa tự động cập nhật giá vốn sản phẩm.',
+        'unit_cost_hint' => 'Dùng cho lịch sử nghiệp vụ; chưa tự động cập nhật giá tham chiếu vật tư.',
         'note' => 'Ghi chú / số chứng từ',
         'confirm' => 'Xác nhận nhập kho',
         'back' => 'Quay lại',
@@ -87,10 +87,12 @@ return [
         'warehouse_delete_blocked' => 'Không thể xóa kho đã có lịch sử biến động hoặc còn tồn kho.',
     ],
 
-    'validation' => ['Sản phẩm :sku chưa có tồn kho tại kho :warehouse.',
+    'validation' => [
+        'stock_not_found' => 'Vật tư :sku chưa có tồn kho tại kho :warehouse.',
+        'insufficient_stock' => 'Vật tư :sku không đủ tồn tại kho :warehouse. Tồn hiện tại: :available :unit.',
     ],
 
     'audit' => [
-        'received' => 'Nhập :quantity :unit vào kho :warehouse.','Hoàn kho do hủy :order_code',
+        'received' => 'Nhập :quantity :unit vào kho :warehouse.',
     ],
 ];

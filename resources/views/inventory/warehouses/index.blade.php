@@ -28,7 +28,7 @@
                     <td><span class="erp-record-code">{{ $warehouse->code }}</span></td>
                     <td>
                         <div class="d-flex align-items-center gap-2">
-                            <div class="erp-product-thumb"><i class="bi bi-buildings"></i></div>
+                            <div class="erp-item-thumb"><i class="bi bi-buildings"></i></div>
                             <div class="erp-record-primary">{{ $warehouse->name }}</div>
                         </div>
                     </td>

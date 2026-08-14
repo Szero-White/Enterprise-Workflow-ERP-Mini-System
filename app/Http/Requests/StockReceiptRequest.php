@@ -19,13 +19,13 @@ class StockReceiptRequest extends FormRequest
                 'required',
                 Rule::exists('warehouses', 'id')->where(fn ($query) => $query->where('is_active', true)),
             ],
-            'product_id' => [
+            'item_id' => [
                 'required',
-                Rule::exists('products', 'id')->where(fn ($query) => $query->where('is_active', true)),
+                Rule::exists('items', 'id')->where(fn ($query) => $query->where('is_active', true)),
             ],
             'quantity' => ['required', 'numeric', 'gt:0'],
             'unit_cost' => ['nullable', 'numeric', 'min:0'],
-            'note' => ['nullable', 'string', 'max:2000'],
+            'note' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

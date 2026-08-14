@@ -6,18 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Product extends Model
+class Item extends Model
 {
     protected $fillable = [
-        'category_id', 'sku', 'name', 'description', 'unit',
-        'cost_price', 'sale_price', 'reorder_level', 'is_active',
+        'category_id',
+        'sku',
+        'name',
+        'description',
+        'unit',
+        'cost_price',
+        'reorder_level',
+        'is_active',
     ];
 
     protected function casts(): array
     {
         return [
             'cost_price' => 'decimal:2',
-            'sale_price' => 'decimal:2',
             'reorder_level' => 'decimal:3',
             'is_active' => 'boolean',
         ];
@@ -25,16 +30,16 @@ class Product extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(ProductCategory::class, 'category_id');
+        return $this->belongsTo(ItemCategory::class, 'category_id');
     }
 
     public function stocks(): HasMany
     {
-        return $this->hasMany(InventoryStock::class);
+        return $this->hasMany(InventoryStock::class, 'item_id');
     }
 
     public function inventoryMovements(): HasMany
     {
-        return $this->hasMany(InventoryMovement::class);
+        return $this->hasMany(InventoryMovement::class, 'item_id');
     }
 }

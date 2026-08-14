@@ -10,8 +10,16 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 class InventoryMovement extends Model
 {
     protected $fillable = [
-        'warehouse_id', 'product_id', 'created_by', 'type', 'quantity',
-        'balance_after', 'unit_cost', 'reference_type', 'reference_id', 'note',
+        'warehouse_id',
+        'item_id',
+        'created_by',
+        'type',
+        'quantity',
+        'balance_after',
+        'unit_cost',
+        'reference_type',
+        'reference_id',
+        'note',
     ];
 
     protected function casts(): array
@@ -29,9 +37,9 @@ class InventoryMovement extends Model
         return $this->belongsTo(Warehouse::class);
     }
 
-    public function product(): BelongsTo
+    public function item(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Item::class);
     }
 
     public function creator(): BelongsTo

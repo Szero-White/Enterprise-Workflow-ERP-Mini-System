@@ -31,24 +31,24 @@
 
     <div class="table-responsive">
         <table class="table table-hover align-middle">
-            <thead><tr><th>{{ __('inventory.stock.product') }}</th><th>{{ __('inventory.stock.warehouse') }}</th><th>{{ __('inventory.stock.category') }}</th><th>{{ __('inventory.stock.current_stock') }}</th><th>{{ __('inventory.stock.reorder_level') }}</th><th>{{ __('inventory.stock.condition') }}</th></tr></thead>
+            <thead><tr><th>{{ __('inventory.stock.item') }}</th><th>{{ __('inventory.stock.warehouse') }}</th><th>{{ __('inventory.stock.category') }}</th><th>{{ __('inventory.stock.current_stock') }}</th><th>{{ __('inventory.stock.reorder_level') }}</th><th>{{ __('inventory.stock.condition') }}</th></tr></thead>
             <tbody>
             @forelse($stocks as $stock)
-                @php($isLow = (float)$stock->quantity <= (float)$stock->product->reorder_level)
+                @php($isLow = (float)$stock->quantity <= (float)$stock->item->reorder_level)
                 <tr>
                     <td>
-                        <div class="erp-product-cell">
-                            <div class="erp-product-thumb"><i class="bi bi-box-seam"></i></div>
+                        <div class="erp-item-cell">
+                            <div class="erp-item-thumb"><i class="bi bi-box-seam"></i></div>
                             <div class="min-w-0">
-                                <div class="erp-record-primary text-truncate">{{ $stock->product->name }}</div>
-                                <div class="erp-record-secondary"><span class="erp-record-code">{{ $stock->product->sku }}</span></div>
+                                <div class="erp-record-primary text-truncate">{{ $stock->item->name }}</div>
+                                <div class="erp-record-secondary"><span class="erp-record-code">{{ $stock->item->sku }}</span></div>
                             </div>
                         </div>
                     </td>
                     <td><span class="badge rounded-pill text-bg-light border">{{ $stock->warehouse->code }}</span></td>
-                    <td>{{ $stock->product->category?->name ?? '-' }}</td>
-                    <td class="erp-money">{{ rtrim(rtrim(number_format((float)$stock->quantity, 3, '.', ''), '0'), '.') }} {{ $stock->product->unit }}</td>
-                    <td>{{ rtrim(rtrim(number_format((float)$stock->product->reorder_level, 3, '.', ''), '0'), '.') }}</td>
+                    <td>{{ $stock->item->category?->name ?? '-' }}</td>
+                    <td class="erp-money">{{ rtrim(rtrim(number_format((float)$stock->quantity, 3, '.', ''), '0'), '.') }} {{ $stock->item->unit }}</td>
+                    <td>{{ rtrim(rtrim(number_format((float)$stock->item->reorder_level, 3, '.', ''), '0'), '.') }}</td>
                     <td><span class="badge rounded-pill {{ $isLow ? 'text-bg-warning' : 'text-bg-success' }}">{{ $isLow ? __('inventory.stock.low') : __('inventory.stock.healthy') }}</span></td>
                 </tr>
             @empty
@@ -68,7 +68,7 @@
                     <div class="erp-stock-item__icon"><i class="bi bi-arrow-left-right"></i></div>
                     <div class="min-w-0 flex-grow-1">
                         <div class="d-flex align-items-center justify-content-between gap-2">
-                            <span class="erp-record-code">{{ $movement->product?->sku }}</span>
+                            <span class="erp-record-code">{{ $movement->item?->sku }}</span>
                             <span class="{{ (float)$movement->quantity >= 0 ? 'text-success' : 'text-danger' }} fw-bold small">{{ (float)$movement->quantity >= 0 ? '+' : '' }}{{ rtrim(rtrim(number_format((float)$movement->quantity, 3, '.', ''), '0'), '.') }}</span>
                         </div>
                         <div class="erp-record-secondary">{{ $movement->type->label() }} · {{ $movement->warehouse?->code }} · {{ $movement->created_at->format('d/m H:i') }}</div>

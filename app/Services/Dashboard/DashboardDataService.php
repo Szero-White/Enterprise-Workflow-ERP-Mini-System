@@ -4,7 +4,7 @@ namespace App\Services\Dashboard;
 
 use App\Models\InventoryMovement;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\Warehouse;
 use App\Models\WorkflowRequest;
 use Illuminate\Support\Collection;
@@ -14,22 +14,22 @@ class DashboardDataService
     public function inventorySummary(): array
     {
         return [
-            'active_items' => Product::where('is_active', true)->count(),
+            'active_items' => Item::where('is_active', true)->count(),
             'active_warehouses' => Warehouse::where('is_active', true)->count(),
             'stock_positions' => InventoryStock::count(),
             'low_stock' => InventoryStock::query()
-                ->join('products', 'products.id', '=', 'inventory_stocks.product_id')
-                ->whereColumn('inventory_stocks.quantity', '<=', 'products.reorder_level')
+                ->join('items', 'items.id', '=', 'inventory_stocks.item_id')
+                ->whereColumn('inventory_stocks.quantity', '<=', 'items.reorder_level')
                 ->count(),
         ];
     }
 
-    public function lowStockProducts(int $limit = 6): Collection
+    public function lowStockItems(int $limit = 6): Collection
     {
         return InventoryStock::query()
-            ->with(['product', 'warehouse'])
-            ->join('products', 'products.id', '=', 'inventory_stocks.product_id')
-            ->whereColumn('inventory_stocks.quantity', '<=', 'products.reorder_level')
+            ->with(['item', 'warehouse'])
+            ->join('items', 'items.id', '=', 'inventory_stocks.item_id')
+            ->whereColumn('inventory_stocks.quantity', '<=', 'items.reorder_level')
             ->orderBy('inventory_stocks.quantity')
             ->select('inventory_stocks.*')
             ->limit($limit)
@@ -38,7 +38,7 @@ class DashboardDataService
 
     public function recentInventoryMovements(int $limit = 6): Collection
     {
-        return InventoryMovement::with(['product', 'warehouse', 'creator'])
+        return InventoryMovement::with(['item', 'warehouse', 'creator'])
             ->latest()
             ->limit($limit)
             ->get();

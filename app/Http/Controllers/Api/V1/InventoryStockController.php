@@ -13,14 +13,17 @@ class InventoryStockController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $stocks = InventoryStock::query()
-            ->with(['warehouse', 'product'])
-            ->when($request->integer('warehouse_id'), fn ($query, $warehouseId) => $query->where('warehouse_id', $warehouseId))
+            ->with(['warehouse', 'item'])
+            ->when(
+                $request->integer('warehouse_id'),
+                fn ($query, $warehouseId) => $query->where('warehouse_id', $warehouseId)
+            )
             ->when($request->boolean('low_stock'), fn ($query) => $query->whereHas(
-                'product',
-                fn ($builder) => $builder->whereColumn('inventory_stocks.quantity', '<=', 'products.reorder_level')
+                'item',
+                fn ($builder) => $builder->whereColumn('inventory_stocks.quantity', '<=', 'items.reorder_level')
             ))
             ->orderBy('warehouse_id')
-            ->orderBy('product_id')
+            ->orderBy('item_id')
             ->paginate($this->perPage($request));
 
         return InventoryStockResource::collection($stocks);

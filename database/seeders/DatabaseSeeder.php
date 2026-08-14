@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Department;
 use App\Models\InventoryStock;
-use App\Models\Product;
-use App\Models\ProductCategory;
+use App\Models\Item;
+use App\Models\ItemCategory;
 use App\Models\Warehouse;
 use App\Models\FormField;
 use App\Models\FormTemplate;
@@ -137,30 +137,30 @@ class DatabaseSeeder extends Seeder
             'approver_user_id' => null,
         ]);
 
-        $electronics = ProductCategory::updateOrCreate(['code' => 'ELEC'], [
+        $electronics = ItemCategory::updateOrCreate(['code' => 'ELEC'], [
             'name' => 'Thiết bị điện tử',
             'description' => 'Nhóm vật tư điện tử và thiết bị công nghệ nội bộ.',
             'is_active' => true,
         ]);
-        $office = ProductCategory::updateOrCreate(['code' => 'OFFICE'], [
+        $office = ItemCategory::updateOrCreate(['code' => 'OFFICE'], [
             'name' => 'Thiết bị văn phòng',
             'description' => 'Vật tư và thiết bị phục vụ vận hành văn phòng.',
             'is_active' => true,
         ]);
 
-        $products = collect([
-            ['sku' => 'LAP-PRO-14', 'name' => 'Laptop Business Pro 14', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 18500000, 'sale_price' => 22900000, 'reorder_level' => 8],
-            ['sku' => 'MON-27-QHD', 'name' => 'Màn hình 27 inch QHD', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 4200000, 'sale_price' => 5690000, 'reorder_level' => 12],
-            ['sku' => 'KEY-MECH-87', 'name' => 'Bàn phím cơ 87 phím', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 850000, 'sale_price' => 1290000, 'reorder_level' => 20],
-            ['sku' => 'CHAIR-ERG-01', 'name' => 'Ghế công thái học Office Pro', 'category_id' => $office->id, 'unit' => 'cái', 'cost_price' => 2600000, 'sale_price' => 3490000, 'reorder_level' => 10],
-            ['sku' => 'HUB-USBC-12', 'name' => 'Hub USB-C 12 in 1', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 980000, 'sale_price' => 1490000, 'reorder_level' => 18],
+        $items = collect([
+            ['sku' => 'LAP-PRO-14', 'name' => 'Laptop Business Pro 14', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 18500000, 'reorder_level' => 8],
+            ['sku' => 'MON-27-QHD', 'name' => 'Màn hình 27 inch QHD', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 4200000, 'reorder_level' => 12],
+            ['sku' => 'KEY-MECH-87', 'name' => 'Bàn phím cơ 87 phím', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 850000, 'reorder_level' => 20],
+            ['sku' => 'CHAIR-ERG-01', 'name' => 'Ghế công thái học Office Pro', 'category_id' => $office->id, 'unit' => 'cái', 'cost_price' => 2600000, 'reorder_level' => 10],
+            ['sku' => 'HUB-USBC-12', 'name' => 'Hub USB-C 12 in 1', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 980000, 'reorder_level' => 18],
         ])->mapWithKeys(function (array $data) {
-            $product = Product::updateOrCreate(['sku' => $data['sku']], array_merge($data, [
+            $item = Item::updateOrCreate(['sku' => $data['sku']], array_merge($data, [
                 'description' => 'Vật tư demo cho nền tảng quản lý kho và vận hành nội bộ.',
                 'is_active' => true,
             ]));
 
-            return [$data['sku'] => $product];
+            return [$data['sku'] => $item];
         });
 
         $mainWarehouse = Warehouse::updateOrCreate(['code' => 'WH-HCM'], [
@@ -184,11 +184,11 @@ class DatabaseSeeder extends Seeder
 
         foreach ($stockLevels as $sku => [$hcmQty, $dnQty]) {
             InventoryStock::updateOrCreate(
-                ['warehouse_id' => $mainWarehouse->id, 'product_id' => $products[$sku]->id],
+                ['warehouse_id' => $mainWarehouse->id, 'item_id' => $items[$sku]->id],
                 ['quantity' => $hcmQty]
             );
             InventoryStock::updateOrCreate(
-                ['warehouse_id' => $backupWarehouse->id, 'product_id' => $products[$sku]->id],
+                ['warehouse_id' => $backupWarehouse->id, 'item_id' => $items[$sku]->id],
                 ['quantity' => $dnQty]
             );
         }

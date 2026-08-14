@@ -39,10 +39,10 @@ class OperationsUiRenderingTest extends TestCase
     {
         $routes = [
             route('dashboard'),
-            route('catalog.products.index'),
-            route('catalog.products.create'),
-            route('catalog.categories.index'),
-            route('catalog.categories.create'),
+            route('inventory.items.index'),
+            route('inventory.items.create'),
+            route('inventory.item-categories.index'),
+            route('inventory.item-categories.create'),
             route('inventory.stocks.index'),
             route('inventory.receipts.create'),
             route('inventory.warehouses.index'),

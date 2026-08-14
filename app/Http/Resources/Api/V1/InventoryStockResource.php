@@ -10,7 +10,7 @@ class InventoryStockResource extends JsonResource
     public function toArray(Request $request): array
     {
         $quantity = (float) $this->quantity;
-        $reorderLevel = (float) $this->product->reorder_level;
+        $reorderLevel = (float) $this->item->reorder_level;
 
         return [
             'id' => $this->id,
@@ -21,11 +21,11 @@ class InventoryStockResource extends JsonResource
                 'code' => $this->warehouse->code,
                 'name' => $this->warehouse->name,
             ],
-            'product' => [
-                'id' => $this->product->id,
-                'sku' => $this->product->sku,
-                'name' => $this->product->name,
-                'unit' => $this->product->unit,
+            'item' => [
+                'id' => $this->item->id,
+                'sku' => $this->item->sku,
+                'name' => $this->item->name,
+                'unit' => $this->item->unit,
                 'reorder_level' => $reorderLevel,
             ],
         ];

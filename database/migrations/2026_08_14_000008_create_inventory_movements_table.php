@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('inventory_movements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('warehouse_id')->constrained()->restrictOnDelete();
-            $table->foreignId('product_id')->constrained()->restrictOnDelete();
+            $table->foreignId('item_id')->constrained('items')->restrictOnDelete();
             $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
             $table->string('type', 40)->index();
             $table->decimal('quantity', 15, 3);
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->timestamps();
 
-            $table->index(['warehouse_id', 'product_id', 'created_at']);
+            $table->index(['warehouse_id', 'item_id', 'created_at']);
         });
     }
 

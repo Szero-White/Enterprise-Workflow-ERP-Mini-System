@@ -13,8 +13,8 @@ return [
     'common_actions' => 'Thao tác thường dùng',
     'receive_stock' => 'Nhập kho',
     'receive_stock_hint' => 'Cập nhật tồn và lịch sử kho',
-    'create_product' => 'Thêm vật tư',
-    'create_product_hint' => 'Tạo mã vật tư mới',
+    'create_item' => 'Thêm vật tư',
+    'create_item_hint' => 'Tạo mã vật tư mới',
     'toggle_theme' => 'Đổi giao diện sáng/tối',
     'notifications' => 'Thông báo',
 ];

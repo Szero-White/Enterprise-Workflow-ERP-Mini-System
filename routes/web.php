@@ -9,13 +9,13 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WorkflowStepController;
 use App\Http\Controllers\Admin\WorkflowTemplateController;
 use App\Http\Controllers\Api\V1\InventoryStockController as ApiInventoryStockController;
-use App\Http\Controllers\Api\V1\ProductController as ApiProductController;
+use App\Http\Controllers\Api\V1\ItemController as ApiItemController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Catalog\ProductCategoryController;
-use App\Http\Controllers\Catalog\ProductController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Employee\RequestSubmissionController;
 use App\Http\Controllers\Inventory\InventoryController;
+use App\Http\Controllers\Inventory\ItemCategoryController;
+use App\Http\Controllers\Inventory\ItemController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\Manager\ApprovalController;
 use App\Http\Controllers\NotificationController;
@@ -38,16 +38,13 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin,manager')->group(function () {
         Route::prefix('internal-api/v1')->name('internal-api.v1.')->group(function () {
-            Route::get('products', [ApiProductController::class, 'index'])->name('products.index');
+            Route::get('items', [ApiItemController::class, 'index'])->name('items.index');
             Route::get('inventory-stocks', [ApiInventoryStockController::class, 'index'])->name('inventory-stocks.index');
         });
 
-        Route::prefix('catalog')->name('catalog.')->group(function () {
-            Route::resource('categories', ProductCategoryController::class)->except(['show']);
-            Route::resource('products', ProductController::class)->except(['show']);
-        });
-
         Route::prefix('inventory')->name('inventory.')->group(function () {
+            Route::resource('item-categories', ItemCategoryController::class)->except(['show']);
+            Route::resource('items', ItemController::class)->except(['show']);
             Route::resource('warehouses', WarehouseController::class)->except(['show']);
             Route::get('stocks', [InventoryController::class, 'index'])->name('stocks.index');
             Route::get('receipts/create', [InventoryController::class, 'createReceipt'])->name('receipts.create');

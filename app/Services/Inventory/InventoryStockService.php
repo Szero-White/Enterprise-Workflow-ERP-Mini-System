@@ -5,7 +5,7 @@ namespace App\Services\Inventory;
 use App\Enums\InventoryMovementType;
 use App\Models\InventoryMovement;
 use App\Models\InventoryStock;
-use App\Models\Product;
+use App\Models\Item;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Services\AuditLogService;
@@ -21,20 +21,20 @@ class InventoryStockService
     public function receive(
         User $actor,
         Warehouse $warehouse,
-        Product $product,
+        Item $item,
         float $quantity,
         ?float $unitCost = null,
         ?string $note = null
     ): InventoryStock {
-        return DB::transaction(function () use ($actor, $warehouse, $product, $quantity, $unitCost, $note) {
-            $stock = $this->lockOrCreateStock($warehouse, $product);
+        return DB::transaction(function () use ($actor, $warehouse, $item, $quantity, $unitCost, $note) {
+            $stock = $this->lockOrCreateStock($warehouse, $item);
             $oldQuantity = (float) $stock->quantity;
             $stock->update(['quantity' => $oldQuantity + $quantity]);
 
             $this->recordMovement(
                 actor: $actor,
                 warehouse: $warehouse,
-                product: $product,
+                item: $item,
                 type: InventoryMovementType::Receipt,
                 quantity: $quantity,
                 balanceAfter: (float) $stock->quantity,
@@ -49,20 +49,20 @@ class InventoryStockService
                 ['quantity' => (float) $stock->quantity],
                 __('inventory.audit.received', [
                     'quantity' => $quantity,
-                    'unit' => $product->unit,
+                    'unit' => $item->unit,
                     'warehouse' => $warehouse->code,
                 ])
             );
 
-            return $stock->fresh(['warehouse', 'product']);
+            return $stock->fresh(['warehouse', 'item']);
         });
     }
 
-    private function lockOrCreateStock(Warehouse $warehouse, Product $product): InventoryStock
+    private function lockOrCreateStock(Warehouse $warehouse, Item $item): InventoryStock
     {
         InventoryStock::query()->insertOrIgnore([
             'warehouse_id' => $warehouse->id,
-            'product_id' => $product->id,
+            'item_id' => $item->id,
             'quantity' => 0,
             'created_at' => now(),
             'updated_at' => now(),
@@ -70,7 +70,7 @@ class InventoryStockService
 
         return InventoryStock::query()
             ->where('warehouse_id', $warehouse->id)
-            ->where('product_id', $product->id)
+            ->where('item_id', $item->id)
             ->lockForUpdate()
             ->firstOrFail();
     }
@@ -78,7 +78,7 @@ class InventoryStockService
     private function recordMovement(
         User $actor,
         Warehouse $warehouse,
-        Product $product,
+        Item $item,
         InventoryMovementType $type,
         float $quantity,
         float $balanceAfter,
@@ -88,7 +88,7 @@ class InventoryStockService
     ): void {
         InventoryMovement::create([
             'warehouse_id' => $warehouse->id,
-            'product_id' => $product->id,
+            'item_id' => $item->id,
             'created_by' => $actor->id,
             'type' => $type,
             'quantity' => $quantity,

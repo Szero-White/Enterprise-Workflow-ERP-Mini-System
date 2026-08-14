@@ -11,12 +11,12 @@ return new class extends Migration
         Schema::create('inventory_stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('warehouse_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('item_id')->constrained('items')->cascadeOnDelete();
             $table->decimal('quantity', 15, 3)->default(0);
             $table->timestamps();
 
-            $table->unique(['warehouse_id', 'product_id']);
-            $table->index(['product_id', 'quantity']);
+            $table->unique(['warehouse_id', 'item_id']);
+            $table->index(['item_id', 'quantity']);
         });
     }
 

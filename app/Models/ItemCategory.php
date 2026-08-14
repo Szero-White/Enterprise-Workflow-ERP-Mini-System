@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ProductCategory extends Model
+class ItemCategory extends Model
 {
     protected $fillable = ['name', 'code', 'description', 'is_active'];
 
@@ -14,8 +14,8 @@ class ProductCategory extends Model
         return ['is_active' => 'boolean'];
     }
 
-    public function products(): HasMany
+    public function items(): HasMany
     {
-        return $this->hasMany(Product::class, 'category_id');
+        return $this->hasMany(Item::class, 'category_id');
     }
 }
