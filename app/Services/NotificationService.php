@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendRealtimeNotification;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\WorkflowRequest;
@@ -10,10 +11,6 @@ use Illuminate\Support\Collection;
 
 class NotificationService
 {
-    public function __construct(private RealtimeNotificationService $realtimeNotificationService)
-    {
-    }
-
     public function createForUser(User|int $recipient, string $title, string $message, string $type, array $data = []): Notification
     {
         $notification = Notification::create([
@@ -24,7 +21,9 @@ class NotificationService
             'data' => $data,
         ]);
 
-        $this->realtimeNotificationService->send($notification);
+        if (config('services.node_notification.url')) {
+            SendRealtimeNotification::dispatch($notification->id)->afterCommit();
+        }
 
         return $notification;
     }

@@ -1,23 +1,166 @@
-# Enterprise Workflow & ERP Mini System
+# Enterprise Commerce ERP & Workflow System
 
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
-[![Tests](https://img.shields.io/badge/tests-17%20passed-success)](#automated-tests)
-[![Assertions](https://img.shields.io/badge/assertions-61-success)](#automated-tests)
+[![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white)](#quality-and-testing)
 
-A Laravel-based internal workflow management system for configurable business approval processes.
+A Laravel monolith that combines **sales operations, product catalog, customer management, multi-warehouse inventory and configurable internal approval workflows**.
 
-The application provides dynamic forms, multi-step approvals, role-based authorization, notifications, audit logging, file attachments, approval history, dashboard statistics, and automated feature testing.
+The project is intentionally designed as a portfolio system that is still easy to explain in an interview: controllers stay thin, validation lives in Form Requests, business transactions are coordinated by focused services, and important state changes are covered by audit logs and feature tests.
 
-The current demo focuses on a leave-request workflow and is structured so the same workflow engine can support additional internal processes such as purchase requests, payment requests, business trips, and document approvals.
+## Current business modules
 
----
+### Sales order management
 
-## Live Demo
+- Create sales orders as `draft`.
+- Add multiple product lines with immutable SKU/name/unit/price snapshots.
+- Recalculate catalog price, subtotal, discount and order total on the backend; client-supplied prices are ignored.
+- Confirm an order only when sufficient stock is available.
+- Deduct stock inside a database transaction.
+- Cancel a confirmed order and restore stock.
+- Search, filter and paginate sales orders.
 
-**Application:** https://workflow-erp.alwaysdata.net
+### Product catalog
 
-### Demo Accounts
+- Product categories.
+- SKU-based product management.
+- Cost price, sale price, unit and reorder level.
+- Active/inactive lifecycle instead of deleting products that already have business history.
+
+### Customer / CRM basics
+
+- Customer code and contact information.
+- Company and tax information.
+- Order count and search.
+- Safe delete rules when business transactions already exist.
+
+### Multi-warehouse inventory
+
+- Warehouse management.
+- Stock quantity per `warehouse + product`.
+- Stock receipt flow.
+- Inventory movement ledger.
+- Low-stock warning based on product reorder level.
+- Pessimistic row locking during sales confirmation to reduce overselling risk.
+
+### Enterprise workflow
+
+The original configurable workflow engine remains a separate module and supports:
+
+- Dynamic form templates and dynamic fields.
+- Sequential multi-step approval.
+- Role / department / user based approvers.
+- Approve, reject, return and resubmit flows.
+- Approval history.
+- Audit log.
+- Database notifications.
+
+### Dashboard
+
+Admin and Manager roles get an operations dashboard with:
+
+- Confirmed revenue.
+- Sales order count.
+- Active customer and product counts.
+- Low-stock alerts.
+- Seven-day revenue chart.
+- Recent sales orders.
+- Workflow summary and recent internal requests.
+
+The UI includes a redesigned enterprise sidebar, card/table system, responsive layouts and light/dark theme toggle.
+
+### Internal REST API v1
+
+The authenticated admin/manager area also exposes read-only JSON endpoints for same-origin/internal integrations:
+
+- `GET /internal-api/v1/products`
+- `GET /internal-api/v1/inventory-stocks`
+- `GET /internal-api/v1/sales-orders`
+- `GET /internal-api/v1/sales-orders/{order}`
+
+The API uses dedicated Laravel API Resources, pagination and a versioned namespace. It intentionally reuses the existing session authentication because it is an internal API. External/mobile consumers should use a separate `/api/v1` surface with Sanctum/JWT/OAuth-style token authentication in a later iteration.
+
+## Architecture
+
+```text
+HTTP Request
+    ↓
+Route + Role Middleware
+    ↓
+Controller
+    ↓
+FormRequest
+    ↓
+Domain-focused Service
+    ↓
+Eloquent Models
+    ↓
+Database Transaction / Row Lock where required
+    ↓
+Audit Log + Queueable side effects
+```
+
+Examples:
+
+```text
+SalesOrderController
+    → SalesOrderStoreRequest
+    → SalesOrderService
+        → InventoryStockService
+        → SalesOrder / SalesOrderItem
+        → InventoryStock / InventoryMovement
+        → AuditLogService
+```
+
+```text
+NotificationService
+    → persist database notification
+    → dispatch SendRealtimeNotification after commit
+    → queue worker
+    → optional external realtime service
+```
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for design decisions and transaction boundaries.
+
+## Tech stack
+
+**Backend**
+
+- PHP 8.2+
+- Laravel 12
+- Eloquent ORM
+- Form Requests
+- Service layer
+- PHP backed enums
+- Database transactions
+- Pessimistic locking (`lockForUpdate`)
+- Database queue
+- Audit logging
+
+**Frontend**
+
+- Blade
+- Bootstrap 5
+- Bootstrap Icons
+- Chart.js
+- Vanilla JavaScript
+- Responsive admin dashboard
+- Light / dark theme
+
+**Database**
+
+- SQLite for local quick start and automated tests
+- MySQL supported and included in Docker Compose
+
+**Engineering tooling**
+
+- PHPUnit feature tests
+- Laravel Pint compatible structure
+- GitHub Actions CI
+- Docker / Docker Compose
+- Vite / npm build
+
+## Demo accounts
 
 | Role | Email | Password |
 |---|---|---|
@@ -27,452 +170,91 @@ The current demo focuses on a leave-request workflow and is structured so the sa
 | HR | `hr@example.com` | `password` |
 | Director | `director@example.com` | `password` |
 
----
+The seeder also creates sample products, customers, warehouses, inventory balances and confirmed sales orders so the business dashboard is populated immediately.
 
-## Tech Stack
-
-**Backend**
-- PHP 8.2+
-- Laravel 12
-- Eloquent ORM
-- Laravel Session Authentication
-- Laravel Notifications
-- Laravel Validation
-- Database Transactions
-
-**Frontend**
-- Blade
-- Bootstrap 5
-- HTML / CSS
-- JavaScript
-- AJAX for selected interactions
-- Vite
-
-**Database**
-- SQLite for local development/demo
-- MySQL configuration supported
-
-**Testing & Tooling**
-- PHPUnit
-- Laravel Feature Tests
-- Composer
-- npm
-- Git
-- Vite
-
----
-
-## Architecture
-
-```text
-HTTP Request
-    ↓
-Controller
-    ↓
-FormRequest
-    ↓
-Service Layer
-    ↓
-Eloquent Models
-    ↓
-Database
-```
-
-### Responsibilities
-
-**Controllers**
-- Receive HTTP requests
-- Call application services
-- Return Blade views or redirects
-- Keep business rules out of controllers
-
-**Form Requests**
-- Validate request payloads
-- Define request-specific validation rules
-- Stop invalid data before it reaches the service layer
-
-**Service Layer**
-- Submit workflow requests
-- Process approval actions
-- Transition workflow steps
-- Create notifications
-- Persist approval history
-- Record audit logs
-- Coordinate database transactions
-
-**Models**
-- Define Eloquent relationships
-- Represent request and workflow state
-- Store domain metadata and persisted data
-
----
-
-## Core Modules
-
-### Authentication & Authorization
-- Session-based login/logout
-- Role-based access control
-- Separate access levels for Admin, Employee, Manager, HR, and Director
-- Resource ownership checks
-- Current-step approval authorization
-
-### Organization Management
-- Role management
-- Department management
-- User management
-- User assignment by department and role
-
-### Dynamic Form Management
-
-Administrators can create reusable form templates without hard-coding a dedicated request form for every business process.
-
-Supported field types:
-- Text
-- Textarea
-- Number
-- Date
-- Select
-- File upload
-
-Request metadata and dynamic field values are stored separately so the same request engine can support multiple form types.
-
-### Workflow Management
-- Workflow templates
-- Workflow steps
-- Sequential approval flow
-- Current-step tracking
-- Approve / Reject / Return actions
-- Required comments for Reject and Return
-
-### Employee Portal
-Employees can:
-- Select an available form template
-- Submit a request
-- Upload attachments
-- View their own requests
-- Track request status
-- Review approval progress
-- Receive notifications
-
-### Approval Center
-Approvers can:
-- View requests assigned to their current step
-- Review request details
-- Approve requests
-- Reject requests
-- Return requests for correction
-- View approval history
-- Filter completed approval actions
-
-### Notifications
-- Laravel database notifications
-- Mark one notification as read
-- Mark all notifications as read
-- Notification ownership protection
-- Employee notification after workflow completion
-- Optional external realtime notification endpoint
-
-### Approval History
-Each approval action records:
-- Request
-- Workflow step
-- Approver
-- Action
-- Comment
-- Action timestamp
-
-### Audit Log
-Important operations may record:
-- Acting user
-- Action description
-- Previous values
-- New values
-- Related request
-- Timestamp
-
-### Dashboard
-- Request statistics
-- Workflow status summaries
-
-### Search, Filtering & Pagination
-- Search
-- Filtering
-- Pagination
-
----
-
-## Approval Workflow
-
-```text
-Employee
-   ↓ Submit
-Manager
-   ↓ Approve
-HR
-   ↓ Approve
-Director
-   ↓ Approve
-Approved
-   ↓
-Employee Notification
-```
-
-The same workflow engine can be reused for:
-- Leave Request
-- Purchase Request
-- Payment Request
-- Business Trip Request
-- Document Approval
-
----
-
-## Workflow States
-
-```text
-pending
-approved
-rejected
-returned
-```
-
-Workflow progress is tracked separately through the request's current workflow step.
-
----
-
-## Data Integrity & Authorization
-
-Important workflow operations are executed inside database transactions so related changes remain consistent.
-
-A typical approval action can update:
-- Request status
-- Current workflow step
-- Approval history
-- Audit log
-- Notification
-
-The application also prevents:
-- Approval by users outside the active workflow step
-- Re-approval of completed requests
-- Employees accessing restricted administration pages
-- Employees viewing requests owned by other employees
-- Users modifying notifications that do not belong to them
-
----
-
-## Main Domain Flow
-
-```text
-Employee submits request
-        ↓
-Request values persisted
-        ↓
-Initial workflow step assigned
-        ↓
-Approver notified
-        ↓
-Approver performs action
-        ↓
-Service validates current step
-        ↓
-Database transaction
-        ↓
-Request state updated
-        ↓
-Approval history persisted
-        ↓
-Audit log persisted
-        ↓
-Next workflow step selected
-        ↓
-Next approver notified
-        ↓
-Final approval
-        ↓
-Employee notified
-```
-
----
-
-## Localization
-
-```env
-APP_LOCALE=vi
-APP_FALLBACK_LOCALE=en
-APP_TIMEZONE=Asia/Ho_Chi_Minh
-```
-
-Internal status keys remain in English while user-facing labels are translated through Laravel language files.
-
----
-
-## Local Development
-
-### Requirements
-- PHP 8.2+
-- Composer
-- Node.js
-- npm
+## Local quick start
 
 ```bash
-git clone https://github.com/Szero-White/Enterprise-Workflow-ERP-Mini-System.git
-cd Enterprise-Workflow-ERP-Mini-System
-
-composer install
 cp .env.example .env
+composer install
 php artisan key:generate
+touch database/database.sqlite
+php artisan migrate --seed
 php artisan storage:link
-
 npm install
 npm run build
-
-php artisan migrate:fresh --seed
 php artisan serve
 ```
 
-Open:
+In a second terminal, run the queue worker:
 
-```text
-http://127.0.0.1:8000
+```bash
+php artisan queue:work --queue=notifications,default
 ```
 
----
+Then open `http://127.0.0.1:8000`.
 
-## Database Configuration
+## Docker quick start
 
-### SQLite
-
-```env
-DB_CONNECTION=sqlite
+```bash
+docker compose up -d --build
+docker compose exec app php artisan migrate --seed
 ```
 
-Database file:
+Application: `http://localhost:8000`
 
-```text
-database/database.sqlite
-```
+MySQL is exposed on host port `3307` for database tools.
 
-### MySQL
+## Quality and testing
 
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=enterprise_workflow_erp
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
----
-
-## Optional Realtime Notification Integration
-
-```env
-NODE_NOTIFICATION_URL=http://127.0.0.1:3001/api/notify
-NODE_NOTIFICATION_TIMEOUT=2
-```
-
-If the external endpoint is unavailable:
-- Workflow processing continues normally
-- Database notifications are still persisted
-- The failure is logged as a warning
-
-The realtime service is not required for the core workflow system.
-
----
-
-## Automated Tests
+Run:
 
 ```bash
 php artisan test
 ```
 
-Current local result:
+Important feature-test scenarios include:
 
-```text
-17 tests passed
-61 assertions
-```
+- Employee workflow submission and approval authorization.
+- Approval history and audit logging.
+- Notification ownership.
+- Sales order draft → confirmation.
+- Inventory deduction.
+- Insufficient-stock rollback.
+- Confirmed-order cancellation and stock restoration.
+- Role protection for sales modules.
+- Internal REST API authorization and resource response shape.
+- Server-side catalog price enforcement and order-item snapshot history.
 
-Coverage includes:
-- Authentication redirects
-- Login page rendering
-- Employee request submission
-- Manager notification after submission
-- Manager approval transition
-- HR approval transition
-- Director approval completion
-- Employee notification after completion
-- Reject validation
-- Return validation
-- Wrong-step authorization
-- Completed-request protection
-- Admin-page authorization
-- Request ownership protection
-- Notification ownership protection
-- Approval history persistence
-- Audit log persistence
-- Realtime service failure handling
+GitHub Actions installs PHP/npm dependencies, builds frontend assets and runs the Laravel test suite on pushes and pull requests.
 
----
+## Business consistency rules worth discussing in interviews
 
-## Project Structure
+1. A sales order starts as a draft, so creating it does not mutate stock.
+2. Confirmation locks the sales order and each stock row inside one transaction.
+3. If one item lacks stock, the entire confirmation fails and no product is partially deducted.
+4. Cancelling a confirmed order creates compensating inventory movements and restores stock.
+5. Historical order SKU, name, unit and price are snapshotted on order items instead of depending on mutable product master data.
+6. Products, customers and warehouses with transaction history are generally deactivated instead of hard deleted.
+7. External realtime notification work is queued after the database transaction commits.
 
-```text
-app/
-├── Http/
-│   ├── Controllers/
-│   ├── Middleware/
-│   └── Requests/
-├── Models/
-└── Services/
+## Suggested next iterations
 
-database/
-├── migrations/
-└── seeders/
+The current branch focuses on a coherent sales + inventory core instead of adding unrelated CRUD screens. The next valuable increments are documented in [PROJECT_ROADMAP.md](PROJECT_ROADMAP.md), especially:
 
-lang/
-└── vi/
+- Purchase orders and suppliers.
+- Laravel Policy/Gate authorization.
+- External `/api/v1` with token authentication, OpenAPI documentation and write endpoints.
+- Redis cache / queue and Horizon.
+- Inventory reservation for concurrent checkout flows.
+- Returns / refunds.
+- Reporting export.
+- CI quality gates such as Pint and static analysis.
 
-resources/
-└── views/
+## Current hosted demo
 
-routes/
-└── web.php
+The existing deployment is:
 
-tests/
-├── Feature/
-└── Unit/
-```
+`https://workflow-erp.alwaysdata.net`
 
----
-
-## Current Demo Scope
-
-The current demo focuses on the workflow engine through a leave-request process.
-
-Planned request templates:
-- Purchase Request
-- Payment Request
-- Business Trip Request
-- Document Approval
-
----
-
-## Roadmap
-
-- Additional request templates
-- Improved dashboard analytics
-- Export to Excel/CSV
-- REST API
-- Email notifications
-- Queue-based notification processing
-- Docker Compose
-- CI/CD pipeline
-- Production deployment
-- Optional Socket.IO realtime notification service
-
----
-
-## Repository
-
-**GitHub:** https://github.com/Szero-White/Enterprise-Workflow-ERP-Mini-System
+After pulling this upgraded branch, redeploy and run the new migrations/seeder so the hosted demo matches the commerce modules described above.

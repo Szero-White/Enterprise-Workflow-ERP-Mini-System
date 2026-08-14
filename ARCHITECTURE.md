@@ -1,133 +1,235 @@
 # Architecture
 
-## Tổng quan
+## 1. System shape
 
-Enterprise Workflow & ERP Mini System dùng Laravel làm core system cho auth, phân quyền, cấu hình biểu mẫu động, workflow approval, audit log và notification. Ứng dụng đang ưu tiên monolith Laravel gọn, dễ chạy local và dễ giải thích khi phỏng vấn.
-
-Kiến trúc chính:
+The application is a Laravel monolith split by business responsibility rather than by arbitrary technical folders alone.
 
 ```text
-Route -> Controller -> FormRequest -> Service -> Model -> Database
+Route
+  → Middleware
+  → Controller
+  → FormRequest
+  → Application / Domain Service
+  → Eloquent Models
+  → Database
 ```
 
-## Vì sao dùng Laravel làm core
+The goal is to keep HTTP concerns, validation and business state transitions separate while avoiding unnecessary enterprise patterns for a portfolio-sized system.
 
-Laravel phù hợp vì project cần xử lý nghiệp vụ backend nhiều hơn là UI phức tạp. Framework cung cấp sẵn routing, middleware, auth session, validation, migration, Eloquent relationship, transaction và PHPUnit integration.
+## 2. Module boundaries
 
-## Vì sao dùng Blade thay vì React/Vue
+### Catalog
 
-Ở giai đoạn portfolio Backend PHP/Laravel, Blade giúp giữ project nhẹ và tập trung vào nghiệp vụ. UI hiện tại chỉ cần form, table, badge, filter, pagination và trang chi tiết request. React/Vue có thể là future improvement nếu cần dashboard tương tác nhiều hơn.
+Owns product categories and products.
 
-## Dynamic form
+Key entities:
 
-Dynamic form cho phép Admin tạo mẫu đơn mà không cần sửa code. `form_templates` lưu thông tin mẫu, `form_fields` lưu field động, còn `request_values` lưu dữ liệu employee nhập theo từng field.
+- `ProductCategory`
+- `Product`
 
-Điểm cần nhớ khi giải thích:
+Product records contain master data such as SKU, unit, cost price, sale price and reorder level. Transaction history never depends on mutable product master data; a sales order item stores SKU, product name, unit and unit-price snapshots.
 
-- Form field có type rõ ràng: text, textarea, number, date, select, file.
-- Select field cần options hợp lệ.
-- Validation request được tạo động từ cấu hình field.
+### CRM
 
-## Workflow template và workflow step
+Owns customer master data.
 
-`workflow_templates` mô tả luồng duyệt của một form template. `workflow_steps` mô tả từng bước duyệt và điều kiện người duyệt theo role, department hoặc user cụ thể.
+Key entity:
 
-Request đang chờ ở bước nào được xác định bằng `current_step_id` trong bảng `requests`.
+- `Customer`
 
-## Approval flow
+A customer with sales history cannot be hard deleted through the UI. The safer lifecycle is to set `is_active = false`.
 
-Khi Employee gửi request:
+### Inventory
 
-1. Tạo record trong `requests`.
-2. Gán workflow active của form.
-3. Gán current step đầu tiên.
-4. Lưu dynamic values và attachments.
-5. Ghi approval history action `submit`.
-6. Ghi audit log.
-7. Tạo notification cho approver hiện tại.
+Owns warehouses, current stock balances and the append-style movement ledger.
 
-Khi approve:
+Key entities:
 
-1. Kiểm tra request còn `pending`.
-2. Kiểm tra user có quyền duyệt current step.
-3. Ghi approval history action `approve`.
-4. Tìm next step.
-5. Nếu còn next step, cập nhật `current_step_id`.
-6. Nếu hết step, chuyển request sang `approved`.
-7. Ghi audit log.
-8. Tạo notification cho approver kế tiếp hoặc creator.
+- `Warehouse`
+- `InventoryStock`
+- `InventoryMovement`
 
-Khi reject/return:
+`inventory_stocks` has a unique pair of `warehouse_id + product_id`. It stores the current balance for fast reads.
 
-1. Kiểm tra quyền và trạng thái.
-2. Bắt buộc comment.
-3. Ghi approval history.
-4. Cập nhật status `rejected` hoặc `returned`.
-5. Ghi audit log.
-6. Tạo notification cho Employee.
+`inventory_movements` records why a balance changed. The movement and current balance serve different purposes: fast operational reads versus traceability.
 
-## Vì sao cần transaction
+### Sales
 
-Approval action thay đổi nhiều bảng cùng lúc: `requests`, `approval_histories`, `audit_logs`, `notifications`. Nếu một bước lỗi, transaction giúp rollback để dữ liệu không bị lệch, ví dụ request đã approved nhưng chưa có approval history.
+Owns sales order state and order lines.
 
-Các service chính dùng transaction:
+Key entities:
 
-- `DynamicRequestService`
-- `ApprovalService`
+- `SalesOrder`
+- `SalesOrderItem`
 
-## Approval history
+State machine:
 
-`approval_histories` lưu lịch sử hành động theo request:
+```text
+draft ──confirm──> confirmed ──cancel──> cancelled
+  └────────────────cancel────────────────> cancelled
+```
 
-- `request_id`
-- `workflow_step_id`
-- `actor_id`
-- `action`
-- `comment`
-- `acted_at`
+### Workflow
 
-Bảng này dùng để giải thích ai đã làm gì, ở bước nào, vào lúc nào.
+The existing dynamic workflow engine remains independent from sales. It is suitable for leave requests, purchase approval, payment requests, document approval and other internal processes.
 
-## Audit log
+## 3. Sales order transaction boundary
 
-`audit_logs` ghi thao tác quan trọng của hệ thống, gồm actor, action, description, model bị tác động, old values và new values. Audit log khác approval history ở chỗ audit log dùng rộng cho nhiều module, còn approval history chỉ phục vụ workflow request.
+### Create draft
 
-## Notification
+`SalesOrderService::createDraft()`:
 
-Notification được lưu trong Laravel database bằng bảng `notifications`. Cách này đảm bảo thông báo vẫn tồn tại dù user offline hoặc realtime service chưa chạy.
+1. Validates product IDs from the Form Request.
+2. Loads active products.
+3. Calculates line totals on the backend.
+4. Validates discount against subtotal.
+5. Creates `sales_orders`.
+6. Creates `sales_order_items`.
+7. Writes an audit record.
 
-Các loại notification chính:
+No stock is changed at this step.
 
-- `request_submitted`
-- `request_approved`
-- `request_rejected`
-- `request_returned`
-- `request_completed`
+### Confirm order
 
-Laravel có `RealtimeNotificationService` optional để gọi HTTP sang NodeJS sau này. NodeJS không thay thế Laravel và không lưu database.
+`SalesOrderService::confirm()` performs one database transaction:
 
-## NodeJS realtime optional
+1. Locks the order row.
+2. Confirms the order is still `draft`.
+3. Loads warehouse and order items.
+4. For each item, `InventoryStockService` locks the relevant stock row.
+5. Rejects the whole operation if any item is short of stock.
+6. Deducts stock.
+7. Adds inventory movement records.
+8. Changes order status to `confirmed`.
+9. Writes the audit record.
 
-Project chưa thêm service NodeJS Socket.IO riêng trong repo. Lý do là batch hiện tại ưu tiên backend Laravel bền trước: database notification, authorization, transaction và test. Khi cần realtime demo không reload trang, có thể thêm service NodeJS ở `notification-service/` với endpoint `POST /api/notify` và Socket.IO room theo `user_{id}`.
+This prevents a partial-success case such as item A being deducted while item B fails.
 
-Nếu NodeJS tắt, Laravel vẫn chạy bình thường vì realtime call được bọc try/catch và timeout ngắn.
+### Cancel confirmed order
 
-## Database chính
+Cancellation is compensating business logic rather than deleting history:
 
-- `users`, `roles`, `departments`
-- `form_templates`, `form_fields`
-- `workflow_templates`, `workflow_steps`
-- `requests`, `request_values`, `attachments`
-- `approval_histories`
-- `audit_logs`
-- `notifications`
+1. Lock the order.
+2. Restore each item to its warehouse balance.
+3. Create `sale_cancellation` movements.
+4. Mark the order `cancelled`.
+5. Keep the original order and its lines for traceability.
 
-## Nâng cấp sau
+## 4. Concurrency and stock integrity
 
-- Docker Compose cho Laravel/MySQL
-- REST API version cho mobile/frontend riêng
-- NodeJS Socket.IO realtime notification service
-- Queue cho notification và audit log nặng
-- Policy/Gate chi tiết hơn cho từng resource
-- CI chạy `php artisan test`
-- Deployment guide
+Stock deduction uses `lockForUpdate()` on the row representing a product in a warehouse. This is a pragmatic first protection against two requests reading the same available stock and both trying to consume it.
+
+For a higher-throughput system, the next design step would add stock reservation, idempotency keys and retry handling around deadlocks.
+
+## 5. Validation responsibilities
+
+Form Requests validate HTTP payload shape and simple relational constraints:
+
+- required fields
+- numeric ranges
+- database existence
+- unique SKU / code
+- distinct products in order lines
+
+Services validate business rules that require current state:
+
+- active product requirement
+- discount cannot exceed subtotal
+- only draft orders can be confirmed
+- stock must be sufficient at confirmation time
+- cancelled order cannot be cancelled twice
+
+## 6. Queue and side effects
+
+Database notifications are persisted synchronously because they are part of the product experience.
+
+Optional realtime delivery is asynchronous:
+
+```text
+NotificationService
+  → save notification
+  → SendRealtimeNotification::dispatch(...)->afterCommit()
+  → queue worker
+  → RealtimeNotificationService
+```
+
+This avoids holding an approval or sales transaction open while waiting for an external HTTP service.
+
+## 7. Authorization
+
+Current access control uses role middleware:
+
+- `admin`: all system management plus business modules
+- `manager`: business modules and approval center
+- `employee`: internal request portal
+- `hr`, `director`: approval center
+
+The next authorization upgrade should introduce Laravel Policies for resource-specific rules, while role middleware remains useful for broad module access.
+
+## 8. Dashboard query separation
+
+`DashboardController` delegates aggregation to `DashboardDataService` instead of collecting many unrelated database queries inside the controller.
+
+The service provides:
+
+- business summary
+- seven-day sales chart data
+- recent orders
+- low-stock products
+- recent workflow requests
+
+This keeps controller code focused on request/response orchestration.
+
+## 9. Internal REST API boundary
+
+The project includes a read-only, versioned JSON surface under `/internal-api/v1`. It is intentionally protected by the existing session authentication plus `admin,manager` module authorization because it serves same-origin/internal consumers.
+
+```text
+/internal-api/v1/*
+  → auth + role middleware
+  → Controllers/Api/V1
+  → Eloquent query
+  → Resources/Api/V1
+  → paginated JSON
+```
+
+Dedicated API Resources keep transport formatting separate from Eloquent models. A future external `/api/v1` should add token authentication and OpenAPI documentation instead of weakening authentication on the current endpoints.
+
+## 10. File naming conventions
+
+Names intentionally include the domain responsibility:
+
+```text
+Services/Inventory/InventoryStockService.php
+Services/Sales/SalesOrderService.php
+Services/Dashboard/DashboardDataService.php
+Controllers/Inventory/InventoryController.php
+Controllers/Sales/SalesOrderController.php
+```
+
+Avoid generic names such as `CommonService`, `Helper`, `Manager`, or one service that handles catalog + orders + stock + notifications.
+
+## 11. Testing strategy
+
+Feature tests focus on state transitions and authorization rather than only checking that pages return HTTP 200.
+
+Important test cases:
+
+- workflow authorization
+- workflow transition history
+- database notification ownership
+- sales draft creation
+- confirmation stock deduction
+- insufficient-stock rollback
+- cancellation stock restoration
+- role restrictions
+- internal API authentication, filtering and resource shape
+- immutable order-item product snapshots
+
+## 12. Deployment and delivery
+
+- SQLite remains convenient for a zero-setup local demo and test environment.
+- MySQL is supported for deployment and Docker development.
+- Database queue is the default so queue concepts work without additional infrastructure.
+- Docker Compose separates web app, queue worker and MySQL services.
+- GitHub Actions is included as a basic CI gate.

@@ -1,0 +1,97 @@
+<?php
+
+return [
+    'eyebrow' => 'Quản lý kho',
+
+    'warehouse' => [
+        'index_title' => 'Kho hàng',
+        'create_title' => 'Thêm kho hàng',
+        'edit_title' => 'Cập nhật kho hàng',
+        'code' => 'Mã kho',
+        'name' => 'Tên kho',
+        'address' => 'Địa chỉ',
+        'is_active' => 'Kho đang hoạt động',
+        'search_placeholder' => 'Tên hoặc mã kho...',
+        'search' => 'Tìm',
+        'add' => 'Thêm kho',
+        'tracked_skus' => 'SKU đang theo dõi',
+        'status' => 'Trạng thái',
+        'actions' => 'Thao tác',
+        'active' => 'Hoạt động',
+        'inactive' => 'Tạm dừng',
+        'edit' => 'Sửa',
+        'delete' => 'Xóa',
+        'confirm_delete' => 'Xóa kho này?',
+        'empty' => 'Chưa có kho hàng.',
+        'save' => 'Lưu kho',
+        'save_changes' => 'Lưu thay đổi',
+        'cancel' => 'Hủy',
+        'back' => 'Quay lại',
+    ],
+
+    'stock' => [
+        'index_title' => 'Tồn kho',
+        'search_placeholder' => 'Tên hoặc SKU...',
+        'all_warehouses' => 'Tất cả kho',
+        'low_stock_only' => 'Chỉ tồn thấp',
+        'filter' => 'Lọc',
+        'receive' => 'Nhập kho',
+        'stock_by_warehouse' => 'Số lượng tồn theo kho',
+        'stock_by_warehouse_description' => 'Mỗi SKU được quản lý độc lập tại từng kho.',
+        'warehouse' => 'Kho',
+        'product' => 'Sản phẩm',
+        'category' => 'Danh mục',
+        'current_stock' => 'Tồn hiện tại',
+        'reorder_level' => 'Mức cảnh báo',
+        'condition' => 'Tình trạng',
+        'low' => 'Cần nhập thêm',
+        'healthy' => 'Ổn định',
+        'empty' => 'Chưa có dữ liệu tồn kho.',
+        'recent_movements' => 'Biến động gần đây',
+        'recent_movements_description' => 'Lịch sử nhập, xuất và hoàn kho.',
+        'no_movements' => 'Chưa có biến động kho.',
+    ],
+
+    'receipt' => [
+        'title' => 'Nhập kho',
+        'quick_receipt' => 'Phiếu nhập kho nhanh',
+        'description' => 'Tác vụ này cập nhật tồn kho và đồng thời tạo lịch sử biến động kho cùng audit log.',
+        'warehouse' => 'Kho nhận',
+        'select_warehouse' => '-- Chọn kho --',
+        'product' => 'Sản phẩm',
+        'select_product' => '-- Chọn sản phẩm --',
+        'quantity' => 'Số lượng',
+        'unit_cost' => 'Đơn giá nhập',
+        'unit_cost_hint' => 'Dùng cho lịch sử nghiệp vụ; chưa tự động cập nhật giá vốn sản phẩm.',
+        'note' => 'Ghi chú / số chứng từ',
+        'confirm' => 'Xác nhận nhập kho',
+        'back' => 'Quay lại',
+    ],
+
+    'movement' => [
+        'receipt' => 'Nhập kho',
+        'sale' => 'Xuất bán',
+        'sale_cancellation' => 'Hoàn kho do hủy đơn',
+        'adjustment_in' => 'Điều chỉnh tăng',
+        'adjustment_out' => 'Điều chỉnh giảm',
+    ],
+
+    'messages' => [
+        'receipt_recorded' => 'Đã ghi nhận phiếu nhập kho.',
+        'warehouse_created' => 'Đã tạo kho hàng.',
+        'warehouse_updated' => 'Đã cập nhật kho hàng.',
+        'warehouse_deleted' => 'Đã xóa kho hàng.',
+        'warehouse_delete_blocked' => 'Không thể xóa kho đã phát sinh đơn hàng hoặc còn tồn kho.',
+    ],
+
+    'validation' => [
+        'insufficient_stock' => 'Sản phẩm :sku chỉ còn :available :unit tại kho :warehouse, không đủ để xác nhận đơn.',
+        'stock_not_found' => 'Sản phẩm :sku chưa có tồn kho tại kho :warehouse.',
+    ],
+
+    'audit' => [
+        'received' => 'Nhập :quantity :unit vào kho :warehouse.',
+        'sale_note' => 'Xuất kho cho :order_code',
+        'sale_cancel_note' => 'Hoàn kho do hủy :order_code',
+    ],
+];

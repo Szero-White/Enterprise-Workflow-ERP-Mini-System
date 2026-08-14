@@ -1,0 +1,118 @@
+:root {
+    --erp-bg: #f5f7fb;
+    --erp-surface: #ffffff;
+    --erp-surface-soft: #f8fafc;
+    --erp-text: #111827;
+    --erp-muted: #667085;
+    --erp-border: #e5e7eb;
+    --erp-sidebar: #0b1220;
+    --erp-sidebar-soft: #111b2f;
+    --erp-sidebar-text: #cbd5e1;
+    --erp-primary: #4f46e5;
+    --erp-radius: 16px;
+    --erp-shadow: 0 10px 32px rgba(15, 23, 42, .07);
+}
+
+:root[data-theme="dark"] {
+    --erp-bg: #0b1020;
+    --erp-surface: #111827;
+    --erp-surface-soft: #182235;
+    --erp-text: #e5e7eb;
+    --erp-muted: #94a3b8;
+    --erp-border: #243147;
+    --erp-sidebar: #060b15;
+    --erp-sidebar-soft: #111827;
+    --erp-shadow: 0 14px 38px rgba(0, 0, 0, .24);
+}
+
+* { box-sizing: border-box; }
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--erp-text);
+    background: var(--erp-bg);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.erp-shell { min-height: 100vh; }
+.erp-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 272px;
+    z-index: 1040;
+    overflow-y: auto;
+    color: var(--erp-sidebar-text);
+    background: linear-gradient(180deg, var(--erp-sidebar), var(--erp-sidebar-soft));
+    border-right: 1px solid rgba(255,255,255,.06);
+}
+.erp-main { min-height: 100vh; margin-left: 272px; }
+.erp-content { padding: 24px 28px 42px; }
+
+.erp-brand { display: flex; gap: 12px; align-items: center; color: #fff; text-decoration: none; }
+.erp-brand-badge {
+    width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px;
+    background: linear-gradient(135deg, #6366f1, #22c55e); font-weight: 800; box-shadow: 0 10px 30px rgba(79,70,229,.28);
+}
+.erp-brand-title { font-weight: 750; letter-spacing: -.02em; }
+.erp-user-card { background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.08); border-radius: 16px; }
+.erp-sidebar-section { margin: 22px 10px 8px; font-size: .72rem; font-weight: 800; letter-spacing: .09em; color: #7c8aa5; text-transform: uppercase; }
+.erp-sidebar-link {
+    display: flex; align-items: center; gap: 12px; padding: 11px 13px; margin: 3px 0; border-radius: 11px;
+    color: var(--erp-sidebar-text); text-decoration: none; transition: .18s ease;
+}
+.erp-sidebar-link i { width: 20px; font-size: 1.02rem; }
+.erp-sidebar-link:hover { color: #fff; background: rgba(255,255,255,.07); }
+.erp-sidebar-link.active { color: #fff; background: linear-gradient(135deg, rgba(99,102,241,.34), rgba(34,197,94,.14)); box-shadow: inset 3px 0 #818cf8; }
+
+.erp-navbar {
+    position: sticky; top: 0; z-index: 1030; min-height: 78px; padding: 14px 28px;
+    background: color-mix(in srgb, var(--erp-surface) 88%, transparent); backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--erp-border);
+}
+.erp-page-title { margin: 0; font-size: 1.55rem; font-weight: 750; letter-spacing: -.025em; }
+.erp-page-subtitle { margin: 0 0 2px; color: var(--erp-muted); font-size: .85rem; }
+.erp-icon-button { width: 42px; height: 42px; display: inline-grid; place-items: center; border-radius: 12px; }
+.erp-avatar { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 13px; background: #eef2ff; color: #4338ca; font-weight: 800; }
+
+.content-card, .erp-stat-card {
+    background: var(--erp-surface); border: 1px solid var(--erp-border); border-radius: var(--erp-radius); box-shadow: var(--erp-shadow);
+}
+.erp-stat-card { padding: 20px; height: 100%; }
+.erp-stat-icon { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 13px; font-size: 1.15rem; }
+.erp-stat-value { font-size: 1.75rem; font-weight: 800; line-height: 1.2; letter-spacing: -.03em; }
+.erp-stat-label { color: var(--erp-muted); font-size: .86rem; font-weight: 650; }
+.erp-section-title { margin: 0; font-size: 1.05rem; font-weight: 750; }
+.erp-section-subtitle { margin: 4px 0 0; color: var(--erp-muted); font-size: .88rem; }
+.erp-money { font-variant-numeric: tabular-nums; font-weight: 700; }
+.erp-soft-panel { background: var(--erp-surface-soft); border: 1px solid var(--erp-border); border-radius: 14px; }
+
+.table { --bs-table-bg: transparent; --bs-table-color: var(--erp-text); margin-bottom: 0; }
+.table thead th { padding: .82rem .9rem; color: var(--erp-muted); background: var(--erp-surface-soft); border-bottom-color: var(--erp-border); font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .035em; white-space: nowrap; }
+.table tbody td { padding: .88rem .9rem; border-color: var(--erp-border); vertical-align: middle; }
+.table-hover > tbody > tr:hover > * { --bs-table-bg-state: var(--erp-surface-soft); }
+
+.form-control, .form-select { min-height: 44px; border-color: var(--erp-border); background: var(--erp-surface); color: var(--erp-text); border-radius: 11px; }
+.form-control:focus, .form-select:focus { border-color: #818cf8; box-shadow: 0 0 0 .2rem rgba(99,102,241,.12); background: var(--erp-surface); color: var(--erp-text); }
+.form-label { font-size: .86rem; font-weight: 700; }
+.form-text, .text-muted { color: var(--erp-muted) !important; }
+.btn { border-radius: 11px; font-weight: 650; }
+.btn-primary { --bs-btn-bg: #4f46e5; --bs-btn-border-color: #4f46e5; --bs-btn-hover-bg: #4338ca; --bs-btn-hover-border-color: #4338ca; }
+
+.erp-filter-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.erp-filter-bar .form-control, .erp-filter-bar .form-select { min-width: 165px; }
+.erp-page-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.erp-empty { padding: 44px 20px; color: var(--erp-muted); text-align: center; }
+.erp-empty i { display: block; margin-bottom: 10px; font-size: 2rem; }
+.erp-form-card { max-width: 980px; }
+.erp-required::after { content: " *"; color: #dc3545; }
+.erp-form-hint { margin-top: 5px; color: var(--erp-muted); font-size: .82rem; }
+.erp-breadcrumb .breadcrumb-item, .erp-breadcrumb .breadcrumb-item a { color: var(--erp-muted); text-decoration: none; }
+
+.erp-auth-wrapper { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at top left, #e0e7ff, transparent 35%), var(--erp-bg); }
+.erp-auth-card { width: min(1280px, 100%); }
+
+@media (max-width: 991.98px) {
+    .erp-sidebar { position: relative; width: 100%; max-height: none; }
+    .erp-main { margin-left: 0; }
+    .erp-content, .erp-navbar { padding-left: 16px; padding-right: 16px; }
+}

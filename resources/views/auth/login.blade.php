@@ -19,11 +19,11 @@
                     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
                         <div class="d-inline-flex align-items-center gap-3">
                             <div class="rounded-4 d-inline-flex align-items-center justify-content-center fw-bold fs-5" style="width: 58px; height: 58px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.14);">
-                                EW
+                                EC
                             </div>
                             <div>
-                                <div class="text-uppercase small fw-semibold" style="letter-spacing: 0.16em; color: rgba(191, 219, 254, 0.88);">Bản demo portfolio backend</div>
-                                <div class="fs-6 fw-semibold">Enterprise Workflow ERP Mini</div>
+                                <div class="text-uppercase small fw-semibold" style="letter-spacing: 0.16em; color: rgba(191, 219, 254, 0.88);">Enterprise business portfolio</div>
+                                <div class="fs-6 fw-semibold">Enterprise Commerce ERP</div>
                             </div>
                         </div>
 
@@ -36,10 +36,10 @@
                     <div class="row align-items-end g-4">
                         <div class="col-lg-8">
                             <h1 class="fw-bold lh-sm mb-3" style="font-size: clamp(2rem, 3.1vw, 3.6rem); max-width: 14ch;">
-                                Quy trình phê duyệt rõ ràng, nhanh và dễ demo.
+                                Bán hàng, tồn kho và workflow trên cùng một hệ thống.
                             </h1>
                             <p class="mb-0" style="max-width: 40rem; color: rgba(226, 232, 240, 0.84); font-size: 1.05rem;">
-                                Một hệ thống ERP mini gọn nhẹ cho biểu mẫu động, phê duyệt nhiều cấp, phân quyền theo vai trò và audit log bằng Laravel, Blade và Bootstrap.
+                                Portfolio ERP mô phỏng doanh nghiệp bán sản phẩm: catalog, khách hàng, sales order, tồn kho đa kho, workflow phê duyệt, phân quyền và audit log.
                             </p>
                         </div>
                         <div class="col-lg-4">
@@ -47,9 +47,8 @@
                                 <div class="small text-uppercase fw-semibold mb-2" style="letter-spacing: 0.12em; color: rgba(191, 219, 254, 0.88);">Vai trò demo</div>
                                 <div class="d-flex flex-wrap gap-2">
                                     <span class="badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.12);">Quản trị</span>
-                                    <span class="badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.12);">Nhân viên</span>
                                     <span class="badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.12);">Quản lý</span>
-                                    <span class="badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.12);">Nhân sự</span>
+                                    <span class="badge rounded-pill px-3 py-2" style="background: rgba(255,255,255,0.12);">Nhân viên</span>
                                 </div>
                             </div>
                         </div>
@@ -60,15 +59,15 @@
                     <div class="col-md-4">
                         <div class="rounded-4 p-3 h-100" style="background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.12);">
                             <div class="small text-uppercase fw-semibold mb-2" style="letter-spacing: 0.12em; color: rgba(191, 219, 254, 0.88);">Module</div>
-                            <div class="fs-2 fw-bold">06+</div>
-                            <div class="small" style="color: rgba(226, 232, 240, 0.76);">Người dùng, biểu mẫu, quy trình, phê duyệt, audit log.</div>
+                            <div class="fs-2 fw-bold">10+</div>
+                            <div class="small" style="color: rgba(226, 232, 240, 0.76);">Catalog, CRM, sales, inventory, workflow, audit log.</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="rounded-4 p-3 h-100" style="background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.12);">
                             <div class="small text-uppercase fw-semibold mb-2" style="letter-spacing: 0.12em; color: rgba(191, 219, 254, 0.88);">Luồng</div>
-                            <div class="fs-2 fw-bold">3 bước</div>
-                            <div class="small" style="color: rgba(226, 232, 240, 0.76);">Chuỗi duyệt Quản lý, Nhân sự và Giám đốc.</div>
+                            <div class="fs-2 fw-bold">2 luồng</div>
+                            <div class="small" style="color: rgba(226, 232, 240, 0.76);">Sales–Inventory và Request–Approval chạy độc lập, rõ trách nhiệm.</div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -88,7 +87,7 @@
                     <div class="mb-4">
                         <div class="text-uppercase small fw-semibold text-primary mb-2" style="letter-spacing: 0.14em;">Truy cập bảo mật</div>
                         <h2 class="fw-bold mb-2" style="font-size: 1.7rem;">Đăng nhập dashboard</h2>
-                        <p class="text-muted mb-0">Dùng tài khoản demo bên dưới để khám phá luồng phê duyệt.</p>
+                        <p class="text-muted mb-0">Dùng tài khoản demo bên dưới để khám phá bán hàng, tồn kho và workflow.</p>
                     </div>
 
                     <div class="rounded-4 p-3 mb-4" style="background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%); border: 1px solid rgba(148, 163, 184, 0.16);">
@@ -133,15 +132,15 @@
                         <div class="d-flex flex-column gap-2 small">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-check-circle-fill text-success"></i>
-                                <span>Tạo biểu mẫu yêu cầu động</span>
+                                <span>Quản lý sản phẩm, khách hàng và sales order</span>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-check-circle-fill text-success"></i>
-                                <span>Duyệt theo vai trò và từng bước quy trình</span>
+                                <span>Transaction + row lock khi xác nhận và hoàn kho</span>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-check-circle-fill text-success"></i>
-                                <span>Theo dõi audit log và lịch sử duyệt</span>
+                                <span>Workflow phê duyệt, queue notification và audit log</span>
                             </div>
                         </div>
                     </div>
