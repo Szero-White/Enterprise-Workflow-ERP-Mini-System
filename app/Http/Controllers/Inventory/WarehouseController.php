@@ -63,8 +63,7 @@ class WarehouseController extends Controller
     public function destroy(Warehouse $warehouse): RedirectResponse
     {
         if (
-            $warehouse->salesOrders()->exists()
-            || $warehouse->inventoryMovements()->exists()
+            $warehouse->inventoryMovements()->exists()
             || $warehouse->stocks()->where('quantity', '!=', 0)->exists()
         ) {
             return back()->with('error', __('inventory.messages.warehouse_delete_blocked'));

@@ -9,7 +9,7 @@ return [
         'create_title' => 'Thêm kho hàng',
         'edit_title' => 'Cập nhật kho hàng',
         'form_heading' => 'Thông tin kho',
-        'form_hint' => 'Mã kho nên ổn định vì được tham chiếu bởi tồn kho và đơn bán.',
+        'form_hint' => 'Mã kho nên ổn định vì được tham chiếu bởi tồn kho và lịch sử biến động.',
         'code' => 'Mã kho',
         'name' => 'Tên kho',
         'address' => 'Địa chỉ',
@@ -52,7 +52,7 @@ return [
         'healthy' => 'Ổn định',
         'empty' => 'Chưa có dữ liệu tồn kho.',
         'recent_movements' => 'Biến động gần đây',
-        'recent_movements_description' => 'Lịch sử nhập, xuất và hoàn kho.',
+        'recent_movements_description' => 'Lịch sử nhập và điều chỉnh tồn kho.',
         'no_movements' => 'Chưa có biến động kho.',
     ],
 
@@ -75,8 +75,6 @@ return [
 
     'movement' => [
         'receipt' => 'Nhập kho',
-        'sale' => 'Xuất bán',
-        'sale_cancellation' => 'Hoàn kho do hủy đơn',
         'adjustment_in' => 'Điều chỉnh tăng',
         'adjustment_out' => 'Điều chỉnh giảm',
     ],
@@ -86,17 +84,13 @@ return [
         'warehouse_created' => 'Đã tạo kho hàng.',
         'warehouse_updated' => 'Đã cập nhật kho hàng.',
         'warehouse_deleted' => 'Đã xóa kho hàng.',
-        'warehouse_delete_blocked' => 'Không thể xóa kho đã phát sinh đơn hàng hoặc còn tồn kho.',
+        'warehouse_delete_blocked' => 'Không thể xóa kho đã có lịch sử biến động hoặc còn tồn kho.',
     ],
 
-    'validation' => [
-        'insufficient_stock' => 'Sản phẩm :sku chỉ còn :available :unit tại kho :warehouse, không đủ để xác nhận đơn.',
-        'stock_not_found' => 'Sản phẩm :sku chưa có tồn kho tại kho :warehouse.',
+    'validation' => ['Sản phẩm :sku chưa có tồn kho tại kho :warehouse.',
     ],
 
     'audit' => [
-        'received' => 'Nhập :quantity :unit vào kho :warehouse.',
-        'sale_note' => 'Xuất kho cho :order_code',
-        'sale_cancel_note' => 'Hoàn kho do hủy :order_code',
+        'received' => 'Nhập :quantity :unit vào kho :warehouse.','Hoàn kho do hủy :order_code',
     ],
 ];

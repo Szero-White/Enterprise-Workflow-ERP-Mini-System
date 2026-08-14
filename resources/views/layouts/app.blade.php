@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#f7f8fb">
-    <title>@yield('page_title', 'ERP Commerce') - {{ config('app.name', 'Enterprise Commerce ERP') }}</title>
+    <title>@yield('page_title', 'Workflow Operations') - {{ config('app.name', 'Enterprise Workflow & Operations') }}</title>
 
     <script>
         (() => {

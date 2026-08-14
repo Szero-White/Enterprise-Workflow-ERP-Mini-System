@@ -5,7 +5,7 @@
 
 <aside class="erp-sidebar" id="erp-sidebar" aria-label="{{ __('layout.main_navigation') }}">
     <div class="erp-sidebar__header">
-        <a href="{{ route('dashboard') }}" class="erp-brand" aria-label="ERP Commerce">
+        <a href="{{ route('dashboard') }}" class="erp-brand" aria-label="Enterprise Workflow & Operations">
             <span class="erp-brand__mark"><i class="bi bi-layers-fill"></i></span>
             <span class="erp-brand__copy">
                 <span class="erp-brand__name">{{ __('layout.brand_name') }}</span>

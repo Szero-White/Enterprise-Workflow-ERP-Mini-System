@@ -23,14 +23,13 @@ class DashboardController extends Controller
             ['label' => __('dashboard.workflow_pending'), 'value' => WorkflowRequest::where('status', WorkflowRequest::STATUS_PENDING)->count(), 'icon' => 'bi-hourglass-split', 'tone' => 'warning'],
         ];
 
-        $canViewBusiness = auth()->user()->hasRole(['admin', 'manager']);
+        $canViewInventory = auth()->user()->hasRole(['admin', 'manager']);
 
         return view('dashboard.index', [
             'workflowStats' => $workflowStats,
-            'businessSummary' => $canViewBusiness ? $this->dashboardDataService->businessSummary() : null,
-            'salesChart' => $canViewBusiness ? $this->dashboardDataService->salesChart() : null,
-            'recentOrders' => $canViewBusiness ? $this->dashboardDataService->recentSalesOrders() : collect(),
-            'lowStockProducts' => $canViewBusiness ? $this->dashboardDataService->lowStockProducts() : collect(),
+            'inventorySummary' => $canViewInventory ? $this->dashboardDataService->inventorySummary() : null,
+            'lowStockProducts' => $canViewInventory ? $this->dashboardDataService->lowStockProducts() : collect(),
+            'recentInventoryMovements' => $canViewInventory ? $this->dashboardDataService->recentInventoryMovements() : collect(),
             'latestRequests' => $this->dashboardDataService->latestWorkflowRequests(),
         ]);
     }

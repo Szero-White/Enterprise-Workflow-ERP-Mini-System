@@ -104,7 +104,6 @@
 .erp-money { color: var(--erp-text); font-variant-numeric: tabular-nums; font-weight: 620; white-space: nowrap; }
 .erp-product-cell { display: flex; align-items: center; gap: 10px; min-width: 210px; }
 .erp-product-thumb { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 10px; color: #5d55d9; background: #f2f1ff; border: 1px solid #e8e6ff; }
-.erp-customer-avatar { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 11px; color: #17805f; background: #edf9f4; font-size: .67rem; font-weight: 650; }
 .erp-row-actions { display: inline-flex; align-items: center; justify-content: flex-end; gap: 5px; }
 .erp-action-btn { width: 33px; height: 33px; min-height: 33px; padding: 0; display: inline-grid; place-items: center; border-radius: 9px; }
 .erp-pagination { padding: 11px 15px; border-top: 1px solid var(--erp-border); }

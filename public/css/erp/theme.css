@@ -6,7 +6,6 @@
 :root[data-theme="dark"] .erp-nav-link.is-active { background: var(--erp-primary-soft); }
 :root[data-theme="dark"] .erp-avatar { color: #c9c6ff; background: #252443; border-color: #3a385a; }
 :root[data-theme="dark"] .erp-product-thumb { color: #c9c6ff; background: #252443; border-color: #343255; }
-:root[data-theme="dark"] .erp-customer-avatar { color: #79d7b6; background: #18382f; }
 :root[data-theme="dark"] .erp-stock-item__icon,
 :root[data-theme="dark"] .erp-stock-item__qty { color: #f2c270; background: #3b2b16; }
 :root[data-theme="dark"] .erp-inline-note { color: #9dc7e6; border-color: #29445a; background: #162936; }

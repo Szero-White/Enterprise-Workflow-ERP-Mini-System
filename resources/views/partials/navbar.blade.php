@@ -20,10 +20,6 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-end erp-quick-menu">
                     <div class="erp-quick-menu__heading">{{ __('layout.common_actions') }}</div>
-                    <a class="dropdown-item erp-quick-menu__item" href="{{ route('sales.orders.create') }}">
-                        <span class="erp-quick-menu__icon bg-primary-subtle text-primary"><i class="bi bi-receipt-cutoff"></i></span>
-                        <span><strong>{{ __('layout.create_sales_order') }}</strong><small>{{ __('layout.create_sales_order_hint') }}</small></span>
-                    </a>
                     <a class="dropdown-item erp-quick-menu__item" href="{{ route('inventory.receipts.create') }}">
                         <span class="erp-quick-menu__icon bg-success-subtle text-success"><i class="bi bi-box-arrow-in-down"></i></span>
                         <span><strong>{{ __('layout.receive_stock') }}</strong><small>{{ __('layout.receive_stock_hint') }}</small></span>
@@ -31,10 +27,6 @@
                     <a class="dropdown-item erp-quick-menu__item" href="{{ route('catalog.products.create') }}">
                         <span class="erp-quick-menu__icon bg-info-subtle text-info"><i class="bi bi-box-seam"></i></span>
                         <span><strong>{{ __('layout.create_product') }}</strong><small>{{ __('layout.create_product_hint') }}</small></span>
-                    </a>
-                    <a class="dropdown-item erp-quick-menu__item" href="{{ route('crm.customers.create') }}">
-                        <span class="erp-quick-menu__icon bg-warning-subtle text-warning"><i class="bi bi-person-plus"></i></span>
-                        <span><strong>{{ __('layout.create_customer') }}</strong><small>{{ __('layout.create_customer_hint') }}</small></span>
                     </a>
                 </div>
             </div>

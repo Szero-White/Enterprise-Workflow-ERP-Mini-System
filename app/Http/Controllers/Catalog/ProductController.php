@@ -78,8 +78,7 @@ class ProductController extends Controller
     public function destroy(Product $product): RedirectResponse
     {
         if (
-            $product->salesOrderItems()->exists()
-            || $product->inventoryMovements()->exists()
+            $product->inventoryMovements()->exists()
             || $product->stocks()->where('quantity', '!=', 0)->exists()
         ) {
             return back()->with('error', __('catalog.messages.product_delete_blocked'));

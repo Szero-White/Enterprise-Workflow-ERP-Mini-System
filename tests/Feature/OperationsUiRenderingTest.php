@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CommerceUiRenderingTest extends TestCase
+class OperationsUiRenderingTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -35,7 +35,7 @@ class CommerceUiRenderingTest extends TestCase
         ]);
     }
 
-    public function test_admin_commerce_workspace_pages_render_successfully(): void
+    public function test_admin_operations_workspace_pages_render_successfully(): void
     {
         $routes = [
             route('dashboard'),
@@ -43,14 +43,10 @@ class CommerceUiRenderingTest extends TestCase
             route('catalog.products.create'),
             route('catalog.categories.index'),
             route('catalog.categories.create'),
-            route('crm.customers.index'),
-            route('crm.customers.create'),
             route('inventory.stocks.index'),
             route('inventory.receipts.create'),
             route('inventory.warehouses.index'),
             route('inventory.warehouses.create'),
-            route('sales.orders.index'),
-            route('sales.orders.create'),
         ];
 
         foreach ($routes as $url) {

@@ -1,7 +1,7 @@
 /* Responsive */
 @media (max-width: 1199.98px) {
-    .erp-order-layout, .erp-form-layout { grid-template-columns: 1fr; }
-    .erp-order-summary, .erp-form-aside { position: static; }
+    .erp-form-layout { grid-template-columns: 1fr; }
+    .erp-form-aside { position: static; }
     .erp-dashboard-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .erp-login-brand-panel, .erp-login-form-panel { min-height: auto; }
     .erp-login-brand-panel { padding: 34px; }

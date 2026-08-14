@@ -108,16 +108,7 @@
 .erp-section-heading__text { margin: 3px 0 0; color: var(--erp-muted); font-size: .72rem; }
 .erp-section-divider { height: 1px; margin: 30px 0 22px; background: var(--erp-border); }
 
-/* Sales order composer */
-.erp-order-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
-.erp-order-summary { position: sticky; top: calc(var(--erp-topbar-height) + 18px); }
-.erp-order-summary__hero { margin: -1px -1px 16px; padding: 18px; border-radius: 16px 16px 0 0; color: #f7f7ff; background: linear-gradient(135deg, #5149c9, #726bee); }
-.erp-order-summary__label { color: #dddafe; font-size: .64rem; font-weight: 600; letter-spacing: .035em; }
-.erp-order-summary__total { margin-top: 6px; font-size: 1.65rem; font-weight: 650; letter-spacing: -.038em; }
-.erp-order-summary__line { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 7px; font-size: .77rem; }
-.erp-order-items-table .form-control, .erp-order-items-table .form-select { min-height: 40px; }
-.erp-order-items-table tbody td { background: var(--erp-surface); }
-.erp-order-line-total { color: var(--erp-text); font-weight: 620; white-space: nowrap; }
+/* Form workspace */
 .erp-inline-note { display: flex; gap: 8px; padding: 11px 12px; border: 1px solid #dbe7f2; border-radius: 11px; color: #386483; background: #f4f9fc; font-size: .7rem; }
 
 /* Login */
@@ -228,8 +219,3 @@
 .erp-login-form .btn-primary { min-height: 46px; box-shadow: 0 10px 22px rgba(102, 94, 232, .14); }
 .erp-login-footer { margin-top: 17px; padding-top: 15px; border-top: 1px solid #f0f1f4; color: #a0a7b3; font-size: .64rem; }
 
-.erp-order-col-product { min-width: 300px; }
-.erp-order-col-quantity { width: 140px; }
-.erp-order-col-price { width: 160px; }
-.erp-order-col-total { width: 170px; }
-.erp-order-col-action { width: 56px; }

@@ -2,7 +2,6 @@
 
 return [
     'overview' => 'TỔNG QUAN',
-    'business' => 'KINH DOANH',
     'catalog_inventory' => 'HÀNG HÓA & KHO',
     'system_admin' => 'QUẢN TRỊ HỆ THỐNG',
     'internal_requests' => 'YÊU CẦU NỘI BỘ',
@@ -12,10 +11,8 @@ return [
 
     'dashboard' => 'Tổng quan',
     'notifications' => 'Thông báo',
-    'sales_orders' => 'Đơn bán hàng',
-    'customers' => 'Khách hàng',
-    'products' => 'Sản phẩm',
-    'product_categories' => 'Danh mục',
+    'products' => 'Vật tư',
+    'product_categories' => 'Danh mục vật tư',
     'inventory_stocks' => 'Tồn kho',
     'warehouses' => 'Kho hàng',
     'users' => 'Người dùng',

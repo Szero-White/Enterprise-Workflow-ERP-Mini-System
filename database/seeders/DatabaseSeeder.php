@@ -3,12 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Department;
-use App\Enums\SalesOrderStatus;
-use App\Models\Customer;
 use App\Models\InventoryStock;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Models\SalesOrder;
 use App\Models\Warehouse;
 use App\Models\FormField;
 use App\Models\FormTemplate;
@@ -142,12 +139,12 @@ class DatabaseSeeder extends Seeder
 
         $electronics = ProductCategory::updateOrCreate(['code' => 'ELEC'], [
             'name' => 'Thiết bị điện tử',
-            'description' => 'Nhóm sản phẩm điện tử và phụ kiện công nghệ.',
+            'description' => 'Nhóm vật tư điện tử và thiết bị công nghệ nội bộ.',
             'is_active' => true,
         ]);
         $office = ProductCategory::updateOrCreate(['code' => 'OFFICE'], [
             'name' => 'Thiết bị văn phòng',
-            'description' => 'Thiết bị phục vụ vận hành văn phòng và doanh nghiệp.',
+            'description' => 'Vật tư và thiết bị phục vụ vận hành văn phòng.',
             'is_active' => true,
         ]);
 
@@ -159,7 +156,7 @@ class DatabaseSeeder extends Seeder
             ['sku' => 'HUB-USBC-12', 'name' => 'Hub USB-C 12 in 1', 'category_id' => $electronics->id, 'unit' => 'cái', 'cost_price' => 980000, 'sale_price' => 1490000, 'reorder_level' => 18],
         ])->mapWithKeys(function (array $data) {
             $product = Product::updateOrCreate(['sku' => $data['sku']], array_merge($data, [
-                'description' => 'Sản phẩm demo cho module bán hàng và quản lý tồn kho.',
+                'description' => 'Vật tư demo cho nền tảng quản lý kho và vận hành nội bộ.',
                 'is_active' => true,
             ]));
 
@@ -194,60 +191,6 @@ class DatabaseSeeder extends Seeder
                 ['warehouse_id' => $backupWarehouse->id, 'product_id' => $products[$sku]->id],
                 ['quantity' => $dnQty]
             );
-        }
-
-        $customers = collect([
-            ['code' => 'CUS-001', 'name' => 'Công ty Minh Phát', 'company_name' => 'Công ty TNHH Minh Phát', 'email' => 'contact@minhphat.example', 'phone' => '0909000001'],
-            ['code' => 'CUS-002', 'name' => 'Nguyễn Hoàng Nam', 'company_name' => null, 'email' => 'nam@example.com', 'phone' => '0909000002'],
-            ['code' => 'CUS-003', 'name' => 'Công ty Sao Việt', 'company_name' => 'Công ty Cổ phần Sao Việt', 'email' => 'hello@saoviet.example', 'phone' => '0909000003'],
-        ])->mapWithKeys(function (array $data) {
-            $customer = Customer::updateOrCreate(['code' => $data['code']], array_merge($data, [
-                'address' => 'Việt Nam',
-                'is_active' => true,
-            ]));
-
-            return [$data['code'] => $customer];
-        });
-
-        $demoOrders = [
-            ['code' => 'SO-DEMO-001', 'customer' => 'CUS-001', 'days_ago' => 1, 'discount' => 500000, 'items' => [['LAP-PRO-14', 2], ['HUB-USBC-12', 3]]],
-            ['code' => 'SO-DEMO-002', 'customer' => 'CUS-002', 'days_ago' => 3, 'discount' => 0, 'items' => [['MON-27-QHD', 2], ['KEY-MECH-87', 2]]],
-            ['code' => 'SO-DEMO-003', 'customer' => 'CUS-003', 'days_ago' => 5, 'discount' => 300000, 'items' => [['CHAIR-ERG-01', 4]]],
-        ];
-
-        foreach ($demoOrders as $demo) {
-            $lineItems = collect($demo['items'])->map(function (array $item) use ($products) {
-                [$sku, $quantity] = $item;
-                $product = $products[$sku];
-                $unitPrice = (float) $product->sale_price;
-
-                return [
-                    'product_id' => $product->id,
-                    'product_sku' => $product->sku,
-                    'product_name' => $product->name,
-                    'unit' => $product->unit,
-                    'quantity' => $quantity,
-                    'unit_price' => $unitPrice,
-                    'line_total' => $unitPrice * $quantity,
-                ];
-            });
-            $subtotal = (float) $lineItems->sum('line_total');
-
-            $order = SalesOrder::updateOrCreate(['order_code' => $demo['code']], [
-                'customer_id' => $customers[$demo['customer']]->id,
-                'warehouse_id' => $mainWarehouse->id,
-                'created_by' => $admin->id,
-                'status' => SalesOrderStatus::Confirmed,
-                'order_date' => now()->subDays($demo['days_ago'])->toDateString(),
-                'subtotal' => $subtotal,
-                'discount_amount' => $demo['discount'],
-                'total_amount' => $subtotal - $demo['discount'],
-                'notes' => 'Đơn hàng demo phục vụ portfolio.',
-                'confirmed_at' => now()->subDays($demo['days_ago']),
-            ]);
-
-            $order->items()->delete();
-            $order->items()->createMany($lineItems->all());
         }
 
     }

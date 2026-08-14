@@ -21,7 +21,7 @@
                     <p class="erp-login-description">{{ __('auth.hero_description') }}</p>
 
                     <div class="erp-login-capabilities" aria-label="{{ __('auth.capabilities') }}">
-                        <span class="erp-login-capability"><i class="bi bi-receipt"></i>{{ __('auth.feature_sales') }}</span>
+                        <span class="erp-login-capability"><i class="bi bi-ui-checks-grid"></i>{{ __('auth.feature_requests') }}</span>
                         <span class="erp-login-capability"><i class="bi bi-boxes"></i>{{ __('auth.feature_inventory') }}</span>
                         <span class="erp-login-capability"><i class="bi bi-bezier2"></i>{{ __('auth.feature_workflow') }}</span>
                     </div>
@@ -35,7 +35,7 @@
                         </div>
                         <div class="erp-login-preview__grid">
                             <div class="erp-login-preview__chart">
-                                <div class="erp-login-preview__chart-title">{{ __('auth.preview_revenue') }}</div>
+                                <div class="erp-login-preview__chart-title">{{ __('auth.preview_workflow') }}</div>
                                 <div class="erp-login-preview__bars"><span></span><span></span><span></span><span></span><span></span><span></span></div>
                             </div>
                             <div class="erp-login-preview__activity">

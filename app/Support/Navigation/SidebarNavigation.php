@@ -21,11 +21,6 @@ class SidebarNavigation
         ];
 
         if ($user->hasRole(['admin', 'manager'])) {
-            $groups[] = $this->group(__('menu.business'), [
-                $this->item(__('menu.sales_orders'), 'sales.orders.index', ['sales.orders.*'], 'bi-receipt-cutoff'),
-                $this->item(__('menu.customers'), 'crm.customers.index', ['crm.customers.*'], 'bi-person-vcard-fill'),
-            ]);
-
             $groups[] = $this->group(__('menu.catalog_inventory'), [
                 $this->item(__('menu.products'), 'catalog.products.index', ['catalog.products.*'], 'bi-box-seam-fill'),
                 $this->item(__('menu.product_categories'), 'catalog.categories.index', ['catalog.categories.*'], 'bi-tags-fill'),
