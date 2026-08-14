@@ -12,7 +12,7 @@
         method="PUT"
         :submit-label="__('procurement.purchase_request.resubmit')"
         :cancel-url="route('procurement.purchase-requests.show', $purchaseRequest)"
-        aside-hint="Sau khi gửi lại, yêu cầu tiếp tục từ bước phê duyệt hiện tại."
+        :aside-hint="__('procurement.purchase_request.resubmit_hint')"
     >
         @include('procurement.purchase-requests._form', [
             'purchaseRequest' => $purchaseRequest,

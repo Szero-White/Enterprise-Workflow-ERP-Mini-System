@@ -1,8 +1,8 @@
 @include('partials.form_page', [
-    'pageTitle' => 'Thêm trường',
+    'pageTitle' => __('ui.create_form_field'),
     'pageEyebrow' => __('menu.admin').' / '.__('menu.form_templates'),
-    'heading' => 'Thêm trường: '.$formTemplate->name,
-    'subtitle' => 'Cấu hình trường động mới cho biểu mẫu này.',
+    'heading' => __('ui.create_form_field_for', ['name' => $formTemplate->name]),
+    'subtitle' => __('ui.create_form_field_description'),
     'formAction' => route('admin.form-templates.fields.store', $formTemplate),
     'formPartial' => 'admin.form_fields._form',
 ])

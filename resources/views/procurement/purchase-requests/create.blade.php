@@ -11,7 +11,7 @@
         :action="route('procurement.purchase-requests.store')"
         :submit-label="__('procurement.purchase_request.submit')"
         :cancel-url="route('procurement.purchase-requests.index')"
-        aside-hint="Yêu cầu sẽ đi qua workflow phê duyệt trước khi bộ phận mua sắm có thể tạo PO."
+        :aside-hint="__('procurement.purchase_request.workflow_hint')"
     >
         @include('procurement.purchase-requests._form')
     </x-erp.form-shell>

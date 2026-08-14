@@ -62,8 +62,8 @@ class ApprovalService
             } else {
                 $this->notificationService->notifyCreator(
                     $freshRequest,
-                    'Đơn đã được duyệt',
-                    sprintf('Đơn %s của bạn đã được duyệt hoàn tất.', $freshRequest->request_code),
+                    __('messages.notification_request_approved_title'),
+                    __('messages.notification_request_approved_body', ['code' => $freshRequest->request_code]),
                     Notification::TYPE_REQUEST_COMPLETED,
                     'approved'
                 );
@@ -99,8 +99,8 @@ class ApprovalService
             $this->workflowTransitionDispatcher->dispatch($freshRequest);
             $this->notificationService->notifyCreator(
                 $freshRequest,
-                'Đơn đã bị từ chối',
-                sprintf('Đơn %s của bạn đã bị từ chối.', $freshRequest->request_code),
+                __('messages.notification_request_rejected_title'),
+                __('messages.notification_request_rejected_body', ['code' => $freshRequest->request_code]),
                 Notification::TYPE_REQUEST_REJECTED,
                 'rejected'
             );
@@ -132,8 +132,8 @@ class ApprovalService
             $this->workflowTransitionDispatcher->dispatch($freshRequest);
             $this->notificationService->notifyCreator(
                 $freshRequest,
-                'Đơn đã được trả về',
-                sprintf('Đơn %s của bạn đã được trả về để chỉnh sửa.', $freshRequest->request_code),
+                __('messages.notification_request_returned_title'),
+                __('messages.notification_request_returned_body', ['code' => $freshRequest->request_code]),
                 Notification::TYPE_REQUEST_RETURNED,
                 'returned'
             );

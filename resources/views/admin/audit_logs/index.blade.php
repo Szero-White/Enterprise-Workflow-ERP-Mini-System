@@ -4,12 +4,12 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.audit_logs'))
 
 @section('content')
-<x-erp.page-header :title="__('menu.audit_logs')" :eyebrow="__('menu.admin')" description="Theo dõi thao tác quan trọng, thay đổi dữ liệu và khả năng truy vết hệ thống." />
+<x-erp.page-header :title="__('menu.audit_logs')" :eyebrow="__('menu.admin')" :description="__('ui.audit_logs_description')" />
 
 <div class="content-card p-3 mb-3">
     <form method="GET" class="row g-2">
         <div class="col-md-3"><input name="action" class="form-control" placeholder="{{ __('ui.action') }}" value="{{ request('action') }}"></div>
-        <div class="col-md-2"><input name="actor_id" class="form-control" placeholder="ID người thao tác" value="{{ request('actor_id') }}"></div>
+        <div class="col-md-2"><input name="actor_id" class="form-control" placeholder="{{ __('ui.actor_id_placeholder') }}" value="{{ request('actor_id') }}"></div>
         <div class="col-md-2"><input type="date" name="from_date" class="form-control" value="{{ request('from_date') }}"></div>
         <div class="col-md-2"><input type="date" name="to_date" class="form-control" value="{{ request('to_date') }}"></div>
         <div class="col-md-3 d-flex gap-2"><button class="btn btn-outline-primary">{{ __('ui.filter') }}</button><a href="{{ route('admin.audit-logs.index') }}" class="btn btn-light border">{{ __('ui.reset') }}</a></div>
@@ -21,12 +21,12 @@
         <thead class="table-light">
         <tr>
             <th width="70">{{ __('ui.no') }}</th>
-            <th>Thời gian</th>
-            <th>Người thao tác</th>
+            <th>{{ __('ui.time') }}</th>
+            <th>{{ __('ui.actor') }}</th>
             <th>{{ __('ui.action') }}</th>
             <th>Model</th>
             <th>IP</th>
-            <th>Giá trị mới</th>
+            <th>{{ __('ui.new_value') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -46,7 +46,7 @@
         @empty
             <tr>
                 <td colspan="7" class="text-center py-5">
-                    <div class="text-muted">Chưa có nhật ký hệ thống.</div>
+                    <div class="text-muted">{{ __('ui.no_audit_logs') }}</div>
                 </td>
             </tr>
         @endforelse

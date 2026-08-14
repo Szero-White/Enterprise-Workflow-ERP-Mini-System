@@ -42,7 +42,7 @@
                     <td>
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('inventory.item-categories.edit', $category) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('items.category.edit') }}"><i class="bi bi-pencil"></i></a>
-                            <form method="POST" action="{{ route('inventory.item-categories.destroy', $category) }}" onsubmit="return confirm(@js(__('items.category.confirm_delete')))">
+                            <form method="POST" action="{{ route('inventory.item-categories.destroy', $category) }}" data-confirm="{{ __('items.category.confirm_delete') }}">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('items.category.delete') }}"><i class="bi bi-trash3"></i></button>
                             </form>

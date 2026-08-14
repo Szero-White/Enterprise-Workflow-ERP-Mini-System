@@ -1,8 +1,8 @@
 @include('partials.form_page', [
-    'pageTitle' => 'Tạo quy trình duyệt',
+    'pageTitle' => __('ui.create_workflow_template'),
     'pageEyebrow' => __('menu.admin').' / '.__('menu.workflow_templates'),
-    'heading' => 'Tạo quy trình duyệt',
-    'subtitle' => 'Gắn biểu mẫu với một luồng phê duyệt mới.',
+    'heading' => __('ui.create_workflow_template'),
+    'subtitle' => __('ui.create_workflow_template_description'),
     'formAction' => route('admin.workflow-templates.store'),
     'formPartial' => 'admin.workflow_templates._form',
 ])

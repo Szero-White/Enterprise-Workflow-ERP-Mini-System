@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('page_title', 'Trường biểu mẫu')
+@section('page_title', __('ui.form_fields_title'))
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.form_templates'))
 
 @section('content')
 <x-erp.page-header
     :title="$formTemplate->name"
     :eyebrow="__('menu.form_templates')"
-    description="Quản lý cấu trúc dữ liệu động, thứ tự hiển thị và quy tắc bắt buộc của biểu mẫu."
+    :description="__('ui.form_fields_description')"
 >
     <x-slot:actions>
-        <a href="{{ route('admin.form-templates.fields.create', $formTemplate) }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Thêm trường</a>
+        <a href="{{ route('admin.form-templates.fields.create', $formTemplate) }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>{{ __('ui.create_form_field') }}</a>
     </x-slot:actions>
 </x-erp.page-header>
 
@@ -30,7 +30,7 @@
                     <td>
                         <div class="erp-row-actions">
                             <a href="{{ route('admin.form-templates.fields.edit', [$formTemplate, $field]) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('ui.edit') }}"><i class="bi bi-pencil"></i></a>
-                            <form action="{{ route('admin.form-templates.fields.destroy', [$formTemplate, $field]) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_field') }}')">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('ui.delete') }}"><i class="bi bi-trash"></i></button></form>
+                            <form action="{{ route('admin.form-templates.fields.destroy', [$formTemplate, $field]) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_field') }}">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('ui.delete') }}"><i class="bi bi-trash"></i></button></form>
                         </div>
                     </td>
                 </tr>

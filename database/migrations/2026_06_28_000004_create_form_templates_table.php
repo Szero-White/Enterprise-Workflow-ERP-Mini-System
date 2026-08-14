@@ -11,12 +11,17 @@ return new class extends Migration
         Schema::create('form_templates', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('code')->unique();
+            $table->string('code');
+            $table->unsignedInteger('version')->default(1);
             $table->text('description')->nullable();
             $table->string('submission_type', 40)->default('dynamic')->index();
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(false);
+            $table->timestamp('locked_at')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
+
+            $table->unique(['code', 'version']);
+            $table->index(['code', 'is_active']);
         });
     }
 

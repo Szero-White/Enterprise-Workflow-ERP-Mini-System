@@ -39,11 +39,11 @@
                     <table class="table erp-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Vật tư</th>
+                                <th>{{ __('procurement.purchase_request.item') }}</th>
                                 <th>{{ __('procurement.purchase_order.ordered_quantity') }}</th>
                                 <th>{{ __('procurement.purchase_order.received_quantity') }}</th>
                                 <th>{{ __('procurement.purchase_order.unit_cost') }}</th>
-                                <th class="text-end">Thành tiền</th>
+                                <th class="text-end">{{ __('procurement.purchase_order.line_total') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,18 +66,18 @@
         </div>
 
         <div class="col-lg-4">
-            <x-erp.panel title="Thông tin PO">
+            <x-erp.panel :title="__('procurement.purchase_order.details')">
                 <dl class="row mb-0">
-                    <dt class="col-5">Trạng thái</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_order.status_label') }}</dt>
                     <dd class="col-7"><span class="badge text-bg-light border">{{ $purchaseOrder->status->label() }}</span></dd>
 
-                    <dt class="col-5">Kho nhận</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_order.warehouse') }}</dt>
                     <dd class="col-7">{{ $purchaseOrder->warehouse->name }}</dd>
 
-                    <dt class="col-5">Ngày dự kiến</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_order.expected_date') }}</dt>
                     <dd class="col-7">{{ $purchaseOrder->expected_date?->format('d/m/Y') ?? '-' }}</dd>
 
-                    <dt class="col-5">Tổng tiền</dt>
+                    <dt class="col-5">{{ __('procurement.purchase_order.subtotal') }}</dt>
                     <dd class="col-7">{{ number_format((float) $purchaseOrder->subtotal, 0, ',', '.') }} ₫</dd>
                 </dl>
             </x-erp.panel>

@@ -17,7 +17,7 @@
                     <tr>
                         <th>{{ __('procurement.goods_receipt.number') }}</th>
                         <th>PO</th>
-                        <th>Nhà cung cấp</th>
+                        <th>{{ __('procurement.purchase_order.supplier') }}</th>
                         <th>Kho</th>
                         <th>{{ __('procurement.goods_receipt.received_at') }}</th>
                         <th class="text-end">{{ __('ui.action') }}</th>

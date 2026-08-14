@@ -1,8 +1,8 @@
 @include('partials.form_page', [
-    'pageTitle' => 'Tạo vai trò',
+    'pageTitle' => __('ui.create_role'),
     'pageEyebrow' => __('menu.admin').' / '.__('menu.roles'),
-    'heading' => 'Tạo vai trò',
-    'subtitle' => 'Thêm vai trò mới cho phân quyền và phân công quy trình.',
+    'heading' => __('ui.create_role'),
+    'subtitle' => __('ui.create_role_description'),
     'formAction' => route('admin.roles.store'),
     'formPartial' => 'admin.roles._form',
 ])

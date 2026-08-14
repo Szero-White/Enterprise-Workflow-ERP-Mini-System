@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('page_title', __('menu.approval_history'))
-@section('page_eyebrow', 'Lịch sử duyệt')
+@section('page_eyebrow', __('ui.approval_history_eyebrow'))
 
 @section('content')
-<x-erp.page-header :title="__('menu.approval_history')" eyebrow="Phê duyệt" description="Tra cứu những yêu cầu bạn đã duyệt, từ chối hoặc trả về trước đó." />
+<x-erp.page-header :title="__('menu.approval_history')" :eyebrow="__('ui.approval')" :description="__('ui.approval_history_description')" />
 
 <div class="content-card p-3 mb-3">
     <form method="GET" class="row g-2">
@@ -15,9 +15,9 @@
         <div class="col-md-2">
             <select name="action" class="form-select">
                 <option value="">{{ __('ui.all_actions') }}</option>
-                <option value="approve" {{ request('action') == 'approve' ? 'selected' : '' }}>Duyệt</option>
-                <option value="reject" {{ request('action') == 'reject' ? 'selected' : '' }}>Từ chối</option>
-                <option value="return" {{ request('action') == 'return' ? 'selected' : '' }}>Trả về</option>
+                <option value="approve" {{ request('action') == 'approve' ? 'selected' : '' }}>{{ __('ui.approve') }}</option>
+                <option value="reject" {{ request('action') == 'reject' ? 'selected' : '' }}>{{ __('ui.reject') }}</option>
+                <option value="return" {{ request('action') == 'return' ? 'selected' : '' }}>{{ __('ui.return') }}</option>
             </select>
         </div>
         <div class="col-md-1 d-flex gap-2"><button class="btn btn-outline-primary">{{ __('ui.filter') }}</button><a href="{{ route('manager.approvals.history') }}" class="btn btn-light border">{{ __('ui.reset') }}</a></div>
@@ -52,11 +52,11 @@
                     @endphp
                     @if($userHistory)
                         @if($userHistory->action == 'approve')
-                            <span class="badge bg-success">Duyệt</span>
+                            <span class="badge bg-success">{{ __('ui.approve') }}</span>
                         @elseif($userHistory->action == 'reject')
-                            <span class="badge bg-danger">Từ chối</span>
+                            <span class="badge bg-danger">{{ __('ui.reject') }}</span>
                         @elseif($userHistory->action == 'return')
-                            <span class="badge bg-warning">Trả về</span>
+                            <span class="badge bg-warning">{{ __('ui.return') }}</span>
                         @endif
                     @else
                         <span class="text-muted">-</span>
@@ -72,7 +72,7 @@
                         <span class="text-muted">-</span>
                     @endif
                 </td>
-                <td><a href="{{ route('manager.approvals.show', $item) }}" class="btn btn-sm btn-primary">Xem chi tiết</a></td>
+                <td><a href="{{ route('manager.approvals.show', $item) }}" class="btn btn-sm btn-primary">{{ __('ui.view_detail') }}</a></td>
             </tr>
         @empty
             <tr>

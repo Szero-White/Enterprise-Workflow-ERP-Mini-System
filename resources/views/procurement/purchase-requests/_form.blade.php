@@ -59,7 +59,7 @@
                 <tr data-pr-line>
                     <td>
                         <select class="form-select" name="items[{{ $index }}][item_id]" required>
-                            <option value="">-- Chọn vật tư --</option>
+                            <option value="">{{ __('procurement.purchase_request.select_item') }}</option>
                             @foreach($items as $item)
                                 <option value="{{ $item->id }}" @selected((string) $line['item_id'] === (string) $item->id)>
                                     {{ $item->sku }} · {{ $item->name }}
@@ -112,7 +112,7 @@
     <tr data-pr-line>
         <td>
             <select class="form-select" name="__NAME__[item_id]" required>
-                <option value="">-- Chọn vật tư --</option>
+                <option value="">{{ __('procurement.purchase_request.select_item') }}</option>
                 @foreach($items as $item)
                     <option value="{{ $item->id }}">{{ $item->sku }} · {{ $item->name }}</option>
                 @endforeach
@@ -128,7 +128,3 @@
         </td>
     </tr>
 </template>
-
-@push('scripts')
-    <script src="{{ asset('js/purchase-request-form.js') }}" defer></script>
-@endpush

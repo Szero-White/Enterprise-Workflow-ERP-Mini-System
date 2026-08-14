@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('page_title', __('menu.pending_approvals'))
-@section('page_eyebrow', 'Xử lý các đơn đang chờ')
+@section('page_eyebrow', __('ui.approval_pending_eyebrow'))
 
 @section('content')
-<x-erp.page-header :title="__('menu.pending_approvals')" eyebrow="Phê duyệt" description="Các yêu cầu đang ở đúng bước bạn có trách nhiệm xem xét và xử lý." />
+<x-erp.page-header :title="__('menu.pending_approvals')" :eyebrow="__('ui.approval')" :description="__('ui.approval_pending_description')" />
 
 <div class="content-card p-3 mb-3">
     <form method="GET" class="row g-2">
@@ -40,7 +40,7 @@
                 <td>@include('partials.status_badge', ['status' => $item->status])</td>
                 <td>{{ $item->currentStep?->step_name ?? '-' }}</td>
                 <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
-                <td><a href="{{ route('manager.approvals.show', $item) }}" class="btn btn-sm btn-primary">Xem duyệt</a></td>
+                <td><a href="{{ route('manager.approvals.show', $item) }}" class="btn btn-sm btn-primary">{{ __('ui.review') }}</a></td>
             </tr>
         @empty
             <tr>

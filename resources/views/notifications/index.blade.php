@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('page_title', __('menu.notifications'))
-@section('page_eyebrow', 'Tài khoản')
+@section('page_eyebrow', __('ui.account'))
 
 @section('content')
-<x-erp.page-header :title="__('menu.notifications')" eyebrow="Tài khoản" description="Theo dõi cập nhật yêu cầu và các nhiệm vụ phê duyệt được giao cho bạn.">
+<x-erp.page-header :title="__('menu.notifications')" :eyebrow="__('ui.account')" :description="__('ui.notifications_description')">
     <x-slot:actions>
         <form method="POST" action="{{ route('notifications.read-all') }}">
             @csrf

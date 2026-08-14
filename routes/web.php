@@ -16,8 +16,9 @@ use App\Http\Controllers\Asset\AssetReturnController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Employee\RequestSubmissionController;
-use App\Http\Controllers\Inventory\InventoryController;
+use App\Http\Controllers\Employee\WorkflowRequestController;
+use App\Http\Controllers\Inventory\InventoryStockController;
+use App\Http\Controllers\Inventory\StockReceiptController;
 use App\Http\Controllers\Inventory\ItemCategoryController;
 use App\Http\Controllers\Inventory\ItemController;
 use App\Http\Controllers\Inventory\WarehouseController;
@@ -55,9 +56,9 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::resource('item-categories', ItemCategoryController::class)->except(['show']);
             Route::resource('items', ItemController::class)->except(['show']);
             Route::resource('warehouses', WarehouseController::class)->except(['show']);
-            Route::get('stocks', [InventoryController::class, 'index'])->name('stocks.index');
-            Route::get('receipts/create', [InventoryController::class, 'createReceipt'])->name('receipts.create');
-            Route::post('receipts', [InventoryController::class, 'storeReceipt'])->name('receipts.store');
+            Route::get('stocks', [InventoryStockController::class, 'index'])->name('stocks.index');
+            Route::get('receipts/create', [StockReceiptController::class, 'create'])->name('receipts.create');
+            Route::post('receipts', [StockReceiptController::class, 'store'])->name('receipts.store');
         });
     });
 
@@ -115,6 +116,9 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('users', UserController::class)->except(['show']);
         Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 
+        Route::post('form-templates/{formTemplate}/activate', [FormTemplateController::class, 'activate'])->name('form-templates.activate');
+        Route::post('form-templates/{formTemplate}/deactivate', [FormTemplateController::class, 'deactivate'])->name('form-templates.deactivate');
+        Route::post('form-templates/{formTemplate}/clone-version', [FormTemplateController::class, 'cloneVersion'])->name('form-templates.clone-version');
         Route::resource('form-templates', FormTemplateController::class)
             ->parameters(['form-templates' => 'formTemplate']);
         Route::resource('form-templates.fields', FormFieldController::class)
@@ -122,6 +126,9 @@ Route::middleware(['auth', 'active'])->group(function () {
             ->except(['show'])
             ->scoped();
 
+        Route::post('workflow-templates/{workflowTemplate}/activate', [WorkflowTemplateController::class, 'activate'])->name('workflow-templates.activate');
+        Route::post('workflow-templates/{workflowTemplate}/deactivate', [WorkflowTemplateController::class, 'deactivate'])->name('workflow-templates.deactivate');
+        Route::post('workflow-templates/{workflowTemplate}/clone-version', [WorkflowTemplateController::class, 'cloneVersion'])->name('workflow-templates.clone-version');
         Route::resource('workflow-templates', WorkflowTemplateController::class)
             ->parameters(['workflow-templates' => 'workflowTemplate']);
         Route::resource('workflow-templates.steps', WorkflowStepController::class)
@@ -131,13 +138,13 @@ Route::middleware(['auth', 'active'])->group(function () {
     });
 
     Route::prefix('employee')->name('employee.')->middleware('role:employee,admin')->group(function () {
-        Route::get('/requests', [RequestSubmissionController::class, 'index'])->name('requests.index');
-        Route::get('/requests/create', [RequestSubmissionController::class, 'selectTemplate'])->name('requests.select-template');
-        Route::get('/requests/create/{formTemplate}', [RequestSubmissionController::class, 'create'])->name('requests.create');
-        Route::post('/requests/{formTemplate}', [RequestSubmissionController::class, 'store'])->name('requests.store');
-        Route::get('/requests/{workflowRequest}', [RequestSubmissionController::class, 'show'])->name('requests.show');
-        Route::get('/requests/{workflowRequest}/edit', [RequestSubmissionController::class, 'edit'])->name('requests.edit');
-        Route::put('/requests/{workflowRequest}', [RequestSubmissionController::class, 'update'])->name('requests.update');
+        Route::get('/requests', [WorkflowRequestController::class, 'index'])->name('requests.index');
+        Route::get('/requests/create', [WorkflowRequestController::class, 'selectTemplate'])->name('requests.select-template');
+        Route::get('/requests/create/{formTemplate}', [WorkflowRequestController::class, 'create'])->name('requests.create');
+        Route::post('/requests/{formTemplate}', [WorkflowRequestController::class, 'store'])->name('requests.store');
+        Route::get('/requests/{workflowRequest}', [WorkflowRequestController::class, 'show'])->name('requests.show');
+        Route::get('/requests/{workflowRequest}/edit', [WorkflowRequestController::class, 'edit'])->name('requests.edit');
+        Route::put('/requests/{workflowRequest}', [WorkflowRequestController::class, 'update'])->name('requests.update');
     });
 
     Route::prefix('manager')->name('manager.')->middleware('role:manager,hr,procurement,finance,director,admin')->group(function () {

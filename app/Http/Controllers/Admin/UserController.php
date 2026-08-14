@@ -59,6 +59,13 @@ class UserController extends Controller
         $data = $request->validated();
         $data['is_active'] = $request->boolean('is_active');
 
+        $newRole = Role::findOrFail($data['role_id']);
+        $removesAdminAccess = $user->hasRole('admin') && (! $data['is_active'] || $newRole->key !== 'admin');
+
+        if ($removesAdminAccess && User::query()->where('is_active', true)->whereHas('role', fn ($query) => $query->where('key', 'admin'))->count() <= 1) {
+            return back()->withInput()->with('error', __('messages.last_active_admin_protected'));
+        }
+
         if (! $data['is_active'] && $user->workflowStepsAsApprover()->exists()) {
             return back()->withInput()->with('error', __('messages.user_deactivate_approver_forbidden'));
         }
@@ -79,6 +86,11 @@ class UserController extends Controller
     {
         if ($user->is(auth()->user())) {
             return back()->with('error', __('messages.user_self_delete_forbidden'));
+        }
+
+        if ($user->hasRole('admin') && $user->is_active
+            && User::query()->where('is_active', true)->whereHas('role', fn ($query) => $query->where('key', 'admin'))->count() <= 1) {
+            return back()->with('error', __('messages.last_active_admin_protected'));
         }
 
         if ($user->hasOperationalHistory()) {

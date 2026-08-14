@@ -14,13 +14,24 @@ class FormTemplateRequest extends FormRequest
 
     public function rules(): array
     {
-        $id = $this->route('form_template')?->id ?? $this->route('formTemplate')?->id;
+        $formTemplate = $this->route('formTemplate') ?? $this->route('form_template');
+
+        $codeRules = ['required', 'string', 'max:50', 'regex:/^[A-Z][A-Z0-9_]*$/'];
+        $codeRules[] = $formTemplate
+            ? Rule::in([$formTemplate->code])
+            : Rule::unique('form_templates', 'code');
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['required', 'string', 'max:50', Rule::unique('form_templates', 'code')->ignore($id)],
-            'description' => ['nullable', 'string'],
-            'is_active' => ['nullable', 'boolean'],
+            'code' => $codeRules,
+            'description' => ['nullable', 'string', 'max:2000'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'code.in' => __('messages.form_template_code_immutable'),
         ];
     }
 }

@@ -15,6 +15,7 @@
         @if(isset($user))
             <div class="erp-form-hint">{{ __('ui.leave_password_blank') }}</div>
         @endif
+        <div class="erp-form-hint">{{ __('ui.password_policy_hint') }}</div>
         @include('partials.form_error', ['field' => 'password'])
     </div>
     <div class="col-md-6">

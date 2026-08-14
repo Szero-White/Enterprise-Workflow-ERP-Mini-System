@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('page_title', __('menu.my_requests'))
-@section('page_eyebrow', 'Theo dõi các đơn đã tạo')
+@section('page_eyebrow', __('ui.my_requests_tracking'))
 
 @section('content')
-<x-erp.page-header :title="__('menu.my_requests')" eyebrow="Yêu cầu nội bộ" description="Theo dõi trạng thái, lịch sử duyệt và tiếp tục xử lý các đơn bị trả về.">
+<x-erp.page-header :title="__('menu.my_requests')" :eyebrow="__('ui.my_requests_eyebrow')" :description="__('ui.my_requests_description')">
     <x-slot:actions>
-        <a href="{{ route('employee.requests.select-template') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Tạo đơn</a>
+        <a href="{{ route('employee.requests.select-template') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>{{ __('ui.create_request') }}</a>
     </x-slot:actions>
 </x-erp.page-header>
 
@@ -17,7 +17,7 @@
         </div>
         <div class="col-md-2">
             <select name="status" class="form-select">
-                <option value="">Tất cả trạng thái</option>
+                <option value="">{{ __('ui.all_statuses') }}</option>
                 @foreach(\App\Models\WorkflowRequest::statuses() as $key => $label)
                     <option value="{{ $key }}" @selected(request('status') === $key)>{{ $label }}</option>
                 @endforeach
@@ -70,7 +70,7 @@
         @empty
             <tr>
                 <td colspan="7" class="text-center py-5">
-                    <div class="text-muted">Chưa có đơn nào.</div>
+                    <div class="text-muted">{{ __('ui.no_requests') }}</div>
                 </td>
             </tr>
         @endforelse

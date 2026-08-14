@@ -1,8 +1,8 @@
 @include('partials.form_page', [
-    'pageTitle' => 'Sửa người dùng',
+    'pageTitle' => __('ui.edit_user'),
     'pageEyebrow' => __('menu.admin').' / '.__('menu.users'),
-    'heading' => 'Sửa người dùng',
-    'subtitle' => 'Cập nhật hồ sơ, vai trò truy cập và trạng thái hoạt động.',
+    'heading' => __('ui.edit_user'),
+    'subtitle' => __('ui.edit_user_description'),
     'formAction' => route('admin.users.update', $user),
     'formMethod' => 'PUT',
     'formPartial' => 'admin.users._form',

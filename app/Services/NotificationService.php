@@ -41,8 +41,8 @@ class NotificationService
             ->each(function (User $user) use ($workflowRequest, $type): void {
                 $this->createForUser(
                     $user,
-                    'Có đơn đang chờ duyệt',
-                    sprintf('Đơn %s đang chờ bạn xử lý.', $workflowRequest->request_code),
+                    __('messages.notification_pending_approval_title'),
+                    __('messages.notification_pending_approval_body', ['code' => $workflowRequest->request_code]),
                     $type,
                     $this->requestPayload($workflowRequest, 'pending_approval')
                 );

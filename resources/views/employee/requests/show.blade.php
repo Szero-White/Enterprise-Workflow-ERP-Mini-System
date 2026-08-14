@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('page_title', 'Chi tiết đơn')
+@section('page_title', __('ui.request_detail'))
 @section('page_eyebrow', __('menu.employee').' / '.__('menu.my_requests'))
 
 @section('content')
-<x-erp.page-header :title="$workflowRequest->request_code" eyebrow="Yêu cầu của tôi" description="Xem dữ liệu đã gửi, tệp đính kèm và tiến độ phê duyệt.">
+<x-erp.page-header :title="$workflowRequest->request_code" :eyebrow="__('ui.my_requests_eyebrow')" :description="__('ui.request_detail_description')">
     <x-slot:actions>
         @include('partials.status_badge', ['status' => $workflowRequest->status])
     </x-slot:actions>

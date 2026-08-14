@@ -71,7 +71,7 @@
                                     <form
                                         method="POST"
                                         action="{{ route('procurement.suppliers.destroy', $supplier) }}"
-                                        onsubmit="return confirm('Xóa nhà cung cấp này?')"
+                                        data-confirm="{{ __('procurement.supplier.confirm_delete') }}"
                                     >
                                         @csrf
                                         @method('DELETE')

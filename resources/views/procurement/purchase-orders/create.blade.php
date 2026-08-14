@@ -18,7 +18,7 @@
                     <div class="col-md-6">
                         <label class="form-label">{{ __('procurement.purchase_order.supplier') }}</label>
                         <select name="supplier_id" class="form-select" required>
-                            <option value="">-- Chọn nhà cung cấp --</option>
+                            <option value="">{{ __('procurement.purchase_order.select_supplier') }}</option>
                             @foreach($suppliers as $supplier)
                                 <option value="{{ $supplier->id }}" @selected(old('supplier_id') == $supplier->id)>
                                     {{ $supplier->code }} · {{ $supplier->name }}
@@ -29,7 +29,7 @@
                     <div class="col-md-6">
                         <label class="form-label">{{ __('procurement.purchase_order.warehouse') }}</label>
                         <select name="warehouse_id" class="form-select" required>
-                            <option value="">-- Chọn kho nhận --</option>
+                            <option value="">{{ __('procurement.purchase_order.select_warehouse') }}</option>
                             @foreach($warehouses as $warehouse)
                                 <option value="{{ $warehouse->id }}" @selected(old('warehouse_id') == $warehouse->id)>
                                     {{ $warehouse->code }} · {{ $warehouse->name }}
@@ -52,9 +52,9 @@
                     <table class="table erp-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Vật tư</th>
-                                <th>SL yêu cầu</th>
-                                <th>Đơn giá dự kiến</th>
+                                <th>{{ __('procurement.purchase_request.item') }}</th>
+                                <th>{{ __('procurement.purchase_order.requested_quantity') }}</th>
+                                <th>{{ __('procurement.purchase_order.estimated_unit_cost') }}</th>
                                 <th>{{ __('procurement.purchase_order.unit_cost') }}</th>
                             </tr>
                         </thead>
@@ -95,7 +95,7 @@
                 <div class="erp-form-actions-card">
                     <div class="erp-form-actions-card__title">{{ __('procurement.purchase_order.create_title') }}</div>
                     <div class="erp-form-actions-card__hint">
-                        PO được tạo ở trạng thái nháp. Kiểm tra nhà cung cấp, kho nhận và đơn giá trước khi phát hành.
+                        {{ __('procurement.purchase_order.draft_hint') }}
                     </div>
                     <button class="btn btn-primary w-100">{{ __('procurement.purchase_order.create') }}</button>
                     <a class="btn btn-light border w-100 mt-2" href="{{ route('procurement.purchase-requests.show', $purchaseRequest) }}">

@@ -4,9 +4,9 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.departments'))
 
 @section('content')
-<x-erp.page-header :title="__('menu.departments')" :eyebrow="__('menu.admin')" description="Quản lý cơ cấu phòng ban để tổ chức người dùng và tuyến duyệt rõ ràng.">
+<x-erp.page-header :title="__('menu.departments')" :eyebrow="__('menu.admin')" :description="__('ui.departments_description')">
     <x-slot:actions>
-        <a href="{{ route('admin.departments.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Tạo phòng ban</a>
+        <a href="{{ route('admin.departments.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>{{ __('ui.create_department') }}</a>
     </x-slot:actions>
 </x-erp.page-header>
 
@@ -31,7 +31,7 @@
                 <td>
                     <div class="d-flex gap-2 flex-wrap">
                         <a href="{{ route('admin.departments.edit', $department) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
-                        <form action="{{ route('admin.departments.destroy', $department) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_department') }}')">
+                        <form action="{{ route('admin.departments.destroy', $department) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_department') }}">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-sm btn-outline-danger">{{ __('ui.delete') }}</button>

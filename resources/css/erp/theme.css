@@ -4,8 +4,8 @@
 :root[data-theme="dark"] .erp-workspace-card { background: rgba(255, 255, 255, .025); }
 :root[data-theme="dark"] .erp-nav-link:hover { background: rgba(255, 255, 255, .035); }
 :root[data-theme="dark"] .erp-nav-link.is-active { background: var(--erp-primary-soft); }
-:root[data-theme="dark"] .erp-avatar { color: #c9c6ff; background: #252443; border-color: #3a385a; }
-:root[data-theme="dark"] .erp-item-thumb { color: #c9c6ff; background: #252443; border-color: #343255; }
+:root[data-theme="dark"] .erp-avatar { color: var(--erp-primary-hover); background: var(--erp-primary-soft); border-color: var(--erp-primary-border); }
+:root[data-theme="dark"] .erp-item-thumb { color: var(--erp-primary-hover); background: var(--erp-primary-soft); border-color: var(--erp-primary-border); }
 :root[data-theme="dark"] .erp-stock-item__icon,
 :root[data-theme="dark"] .erp-stock-item__qty { color: #f2c270; background: #3b2b16; }
 :root[data-theme="dark"] .erp-inline-note { color: #9dc7e6; border-color: #29445a; background: #162936; }

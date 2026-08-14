@@ -30,7 +30,7 @@
                     <td>
                         <div class="erp-row-actions">
                             <a href="{{ route('admin.workflow-templates.steps.edit', [$workflowTemplate, $step]) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('ui.edit') }}"><i class="bi bi-pencil"></i></a>
-                            <form action="{{ route('admin.workflow-templates.steps.destroy', [$workflowTemplate, $step]) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_step') }}')">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('ui.delete') }}"><i class="bi bi-trash"></i></button></form>
+                            <form action="{{ route('admin.workflow-templates.steps.destroy', [$workflowTemplate, $step]) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_step') }}">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('ui.delete') }}"><i class="bi bi-trash"></i></button></form>
                         </div>
                     </td>
                 </tr>

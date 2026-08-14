@@ -6,8 +6,8 @@
 @section('content')
 <div class="content-card p-4 p-lg-4 erp-form-card">
     <div class="mb-4">
-        <h2 class="erp-section-title">Tạo đơn: {{ $formTemplate->name }}</h2>
-        <p class="erp-section-subtitle mb-0">Điền biểu mẫu bên dưới và gửi vào quy trình phê duyệt.</p>
+        <h2 class="erp-section-title">{{ __('ui.create_request_for', ['name' => $formTemplate->name]) }}</h2>
+        <p class="erp-section-subtitle mb-0">{{ __('ui.create_request_description') }}</p>
     </div>
 
     <form method="POST" action="{{ route('employee.requests.store', $formTemplate) }}" enctype="multipart/form-data">

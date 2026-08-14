@@ -78,7 +78,7 @@
                     <td>
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('inventory.items.edit', $item) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('items.item.edit') }}"><i class="bi bi-pencil"></i></a>
-                            <form method="POST" action="{{ route('inventory.items.destroy', $item) }}" onsubmit="return confirm(@js(__('items.item.confirm_delete')))">
+                            <form method="POST" action="{{ route('inventory.items.destroy', $item) }}" data-confirm="{{ __('items.item.confirm_delete') }}">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('items.item.delete') }}"><i class="bi bi-trash3"></i></button>
                             </form>

@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\WorkflowStep;
 use App\Models\WorkflowTemplate;
 use App\Services\AuditLogService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -22,6 +23,7 @@ class WorkflowStepController extends Controller
     public function index(WorkflowTemplate $workflowTemplate): View
     {
         $steps = $workflowTemplate->steps()->with(['approverRole', 'approverDepartment', 'approverUser'])->paginate(20);
+
         return view('admin.workflow_steps.index', compact('workflowTemplate', 'steps'));
     }
 
@@ -32,6 +34,10 @@ class WorkflowStepController extends Controller
 
     public function store(WorkflowStepRequest $request, WorkflowTemplate $workflowTemplate): RedirectResponse
     {
+        if ($response = $this->guardConfiguration($workflowTemplate)) {
+            return $response;
+        }
+
         $data = $request->validated();
         $data['workflow_template_id'] = $workflowTemplate->id;
 
@@ -48,6 +54,10 @@ class WorkflowStepController extends Controller
 
     public function update(WorkflowStepRequest $request, WorkflowTemplate $workflowTemplate, WorkflowStep $step): RedirectResponse
     {
+        if ($response = $this->guardConfiguration($workflowTemplate)) {
+            return $response;
+        }
+
         $old = $step->toArray();
         $step->update($request->validated());
         $this->auditLogService->log('workflow_step.updated', $step, $old, $step->fresh()->toArray());
@@ -57,10 +67,32 @@ class WorkflowStepController extends Controller
 
     public function destroy(WorkflowTemplate $workflowTemplate, WorkflowStep $step): RedirectResponse
     {
-        $old = $step->toArray();
-        $this->auditLogService->log('workflow_step.deleted', $step, $old, null);
-        $step->delete();
+        if ($response = $this->guardConfiguration($workflowTemplate)) {
+            return $response;
+        }
+
+        try {
+            $old = $step->toArray();
+            $step->delete();
+            $this->auditLogService->log('workflow_step.deleted', $step, $old, null);
+        } catch (QueryException) {
+            return back()->with('error', __('messages.workflow_step_delete_in_use'));
+        }
+
         return back()->with('success', __('messages.workflow_step_deleted'));
+    }
+
+    private function guardConfiguration(WorkflowTemplate $workflowTemplate): ?RedirectResponse
+    {
+        if ($workflowTemplate->isLocked()) {
+            return back()->with('error', __('messages.workflow_template_locked'));
+        }
+
+        if ($workflowTemplate->is_active) {
+            return back()->with('error', __('messages.workflow_template_deactivate_before_edit'));
+        }
+
+        return null;
     }
 
     private function viewData(WorkflowTemplate $workflowTemplate, ?WorkflowStep $step = null): array

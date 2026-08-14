@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class WorkflowTemplateRequest extends FormRequest
 {
@@ -13,10 +14,22 @@ class WorkflowTemplateRequest extends FormRequest
 
     public function rules(): array
     {
+        $workflowTemplate = $this->route('workflowTemplate') ?? $this->route('workflow_template');
+
+        $formTemplateRule = $workflowTemplate
+            ? Rule::in([$workflowTemplate->form_template_id])
+            : Rule::exists('form_templates', 'id');
+
         return [
-            'form_template_id' => ['required', 'exists:form_templates,id'],
+            'form_template_id' => ['required', $formTemplateRule],
             'name' => ['required', 'string', 'max:255'],
-            'is_active' => ['nullable', 'boolean'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'form_template_id.in' => __('messages.workflow_form_template_immutable'),
         ];
     }
 }

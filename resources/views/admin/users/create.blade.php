@@ -1,8 +1,8 @@
 @include('partials.form_page', [
-    'pageTitle' => 'Tạo người dùng',
+    'pageTitle' => __('ui.create_user'),
     'pageEyebrow' => __('menu.admin').' / '.__('menu.users'),
-    'heading' => 'Tạo người dùng',
-    'subtitle' => 'Tạo tài khoản mới với vai trò và phòng ban phù hợp.',
+    'heading' => __('ui.create_user'),
+    'subtitle' => __('ui.create_user_description'),
     'formAction' => route('admin.users.store'),
     'formPartial' => 'admin.users._form',
 ])

@@ -60,15 +60,17 @@
                     <h2 class="erp-login-form__title">{{ __('auth.login_title') }}</h2>
                     <p class="erp-login-form__subtitle">{{ __('auth.login_subtitle') }}</p>
 
-                    <div class="erp-demo-credential">
-                        <div class="d-flex align-items-center justify-content-between gap-3">
-                            <div class="min-w-0">
-                                <div class="erp-demo-credential__label">{{ __('auth.demo_account') }}</div>
-                                <div class="erp-demo-credential__value text-truncate">admin@example.com · password</div>
+                    @if(app()->environment('local', 'testing'))
+                        <div class="erp-demo-credential">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="erp-demo-credential__label">{{ __('auth.demo_account') }}</div>
+                                    <div class="erp-demo-credential__value text-truncate">admin@example.com · password</div>
+                                </div>
+                                <i class="bi bi-shield-lock text-muted" aria-hidden="true"></i>
                             </div>
-                            <i class="bi bi-copy text-muted" aria-hidden="true"></i>
                         </div>
-                    </div>
+                    @endif
 
                     <form method="POST" action="{{ route('login.post') }}">
                         @csrf
@@ -79,7 +81,7 @@
                                 type="email"
                                 name="email"
                                 class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email', 'admin@example.com') }}"
+                                value="{{ old('email', app()->environment('local', 'testing') ? 'admin@example.com' : '') }}"
                                 autocomplete="email"
                                 required
                                 autofocus
@@ -94,7 +96,6 @@
                                 type="password"
                                 name="password"
                                 class="form-control @error('password') is-invalid @enderror"
-                                value="password"
                                 autocomplete="current-password"
                                 required
                             >

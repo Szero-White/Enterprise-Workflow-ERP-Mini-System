@@ -37,7 +37,7 @@
     --bs-btn-hover-border-color: var(--erp-primary-hover);
     --bs-btn-active-bg: var(--erp-primary-hover);
     --bs-btn-active-border-color: var(--erp-primary-hover);
-    box-shadow: 0 8px 18px rgba(102, 94, 232, .12);
+    box-shadow: 0 8px 18px rgba(var(--erp-primary-rgb), .14);
 }
 .btn-outline-primary {
     --bs-btn-color: var(--erp-primary);
@@ -103,7 +103,7 @@
 .erp-record-code { color: var(--erp-text); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: .72rem; font-weight: 600; }
 .erp-money { color: var(--erp-text); font-variant-numeric: tabular-nums; font-weight: 620; white-space: nowrap; }
 .erp-item-cell { display: flex; align-items: center; gap: 10px; min-width: 210px; }
-.erp-item-thumb { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 10px; color: #5d55d9; background: #f2f1ff; border: 1px solid #e8e6ff; }
+.erp-item-thumb { width: 36px; height: 36px; flex: 0 0 36px; display: grid; place-items: center; border-radius: 10px; color: var(--erp-primary); background: var(--erp-primary-soft); border: 1px solid var(--erp-primary-border); }
 .erp-row-actions { display: inline-flex; align-items: center; justify-content: flex-end; gap: 5px; }
 .erp-action-btn { width: 33px; height: 33px; min-height: 33px; padding: 0; display: inline-grid; place-items: center; border-radius: 9px; }
 .erp-pagination { padding: 11px 15px; border-top: 1px solid var(--erp-border); }
@@ -178,7 +178,7 @@ textarea.form-control { min-height: 96px; resize: vertical; }
 .erp-display-title { font-size: clamp(1.42rem, 1.8vw, 1.78rem); font-weight: 600; letter-spacing: -.032em; }
 .erp-display-description { margin-top: 8px; color: #657389; font-size: .83rem; line-height: 1.62; }
 .btn { min-height: 40px; border-radius: 9px; font-size: .78rem; font-weight: 600; }
-.btn-primary { box-shadow: 0 6px 14px rgba(79,70,229,.14); }
+.btn-primary { box-shadow: 0 6px 14px rgba(var(--erp-primary-rgb), .14); }
 .content-card, .erp-panel, .erp-stat-card, .erp-table-card, .erp-form-section, .erp-form-actions-card { border-color: #dfe5ed; background: #fff; box-shadow: 0 1px 2px rgba(16,24,40,.025), 0 7px 20px rgba(16,24,40,.035); }
 .erp-panel__header { min-height: 66px; padding: 17px 19px; background: #fff; }
 .erp-panel__body { padding: 19px; }
@@ -193,14 +193,14 @@ textarea.form-control { min-height: 96px; resize: vertical; }
 .form-label { color: #465468; font-size: .73rem; font-weight: 600; }
 .form-control, .form-select { min-height: 44px; border-color: #d6dee8; border-radius: 9px; background: #fff; font-size: .8rem; }
 .form-control::placeholder { color: #9aa5b4; }
-.form-control:focus, .form-select:focus { border-color: #766ff0; box-shadow: 0 0 0 .2rem rgba(79,70,229,.08); }
+.form-control:focus, .form-select:focus { border-color: var(--erp-primary); box-shadow: 0 0 0 .2rem rgba(var(--erp-primary-rgb), .12); }
 .erp-form-section { padding: 22px; }
 .erp-form-section__header { margin-bottom: 20px; }
 .erp-soft-panel { border-color: #e2e8f0; background: #f8fafc; }
-.erp-empty-state__icon { color: #4f46e5; background: #eef0ff; }
+.erp-empty-state__icon { color: var(--erp-primary); background: var(--erp-primary-soft); }
 .dropdown-menu { border-color: #dce3ec; box-shadow: 0 16px 40px rgba(16,24,40,.12); }
 .erp-attachment-link { justify-content: flex-start; min-height: 42px; color: var(--erp-text-soft); }
-.erp-order-chip { width: 28px; height: 28px; display: inline-grid; place-items: center; border: 1px solid #dfe5ed; border-radius: 8px; color: #4f46e5; background: #f8f9ff; font-size: .7rem; font-weight: 600; }
+.erp-order-chip { width: 28px; height: 28px; display: inline-grid; place-items: center; border: 1px solid #dfe5ed; border-radius: 8px; color: var(--erp-primary); background: var(--erp-primary-soft); font-size: .7rem; font-weight: 600; }
 .erp-app-body .content-card h5, .erp-app-body .content-card h6 { font-weight: 600; }
 .erp-app-body .table-light { --bs-table-bg: #f7f9fc; --bs-table-color: var(--erp-text); }
 .erp-app-body .rounded-4 { border-radius: 12px !important; }

@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
-class RequestSubmissionController extends Controller
+class WorkflowRequestController extends Controller
 {
     public function __construct(private DynamicRequestService $dynamicRequestService)
     {
@@ -48,8 +48,9 @@ class RequestSubmissionController extends Controller
 
     public function selectTemplate(): View
     {
-        $templates = FormTemplate::where('is_active', true)
+        $templates = FormTemplate::query()
             ->dynamicSubmission()
+            ->readyForSubmission()
             ->withCount('fields')
             ->orderBy('name')
             ->get();
@@ -59,10 +60,11 @@ class RequestSubmissionController extends Controller
 
     public function create(FormTemplate $formTemplate): View
     {
-        abort_unless($formTemplate->submission_type === 'dynamic', 404);
+        abort_unless($formTemplate->submission_type === 'dynamic' && $formTemplate->is_active, 404);
+        abort_unless($formTemplate->activeWorkflow()->whereHas('steps')->exists(), 404);
         $formTemplate->load('fields');
 
-        return view('employee.requests.form', compact('formTemplate'));
+        return view('employee.requests.create', compact('formTemplate'));
     }
 
     public function store(WorkflowRequestSubmissionRequest $request, FormTemplate $formTemplate): RedirectResponse

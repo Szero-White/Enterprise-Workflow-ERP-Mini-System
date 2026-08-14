@@ -9,24 +9,48 @@ use App\Models\Notification;
 use App\Models\RequestValue;
 use App\Models\User;
 use App\Models\WorkflowRequest;
+use App\Models\WorkflowTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class DynamicRequestService
 {
     public function __construct(
         private AuditLogService $auditLogService,
         private NotificationService $notificationService
-    )
-    {
+    ) {
     }
 
     public function create(User $user, FormTemplate $formTemplate, Request $httpRequest): WorkflowRequest
     {
         return DB::transaction(function () use ($user, $formTemplate, $httpRequest) {
-            $workflowTemplate = $formTemplate->activeWorkflow()->with('steps')->firstOrFail();
-            $firstStep = $workflowTemplate->steps()->orderBy('step_order')->firstOrFail();
+            $formTemplate = FormTemplate::query()
+                ->with('fields')
+                ->lockForUpdate()
+                ->findOrFail($formTemplate->id);
+
+            if (! $formTemplate->is_active) {
+                throw ValidationException::withMessages([
+                    'form_template' => __('messages.form_template_not_available'),
+                ]);
+            }
+
+            $workflowTemplate = WorkflowTemplate::query()
+                ->where('form_template_id', $formTemplate->id)
+                ->where('is_active', true)
+                ->with('steps')
+                ->lockForUpdate()
+                ->first();
+
+            $firstStep = $workflowTemplate?->steps->sortBy('step_order')->first();
+            if (! $workflowTemplate || ! $firstStep) {
+                throw ValidationException::withMessages([
+                    'form_template' => __('messages.form_template_not_ready'),
+                ]);
+            }
 
             $workflowRequest = WorkflowRequest::create([
                 'request_code' => $this->generateRequestCode($formTemplate->code),
@@ -38,6 +62,7 @@ class DynamicRequestService
                 'submitted_at' => now(),
             ]);
 
+            $this->lockConfiguration($formTemplate, $workflowTemplate);
             $this->saveValuesAndFiles($workflowRequest, $formTemplate, $httpRequest, $user);
 
             ApprovalHistory::create([
@@ -45,7 +70,7 @@ class DynamicRequestService
                 'workflow_step_id' => $firstStep->id,
                 'actor_id' => $user->id,
                 'action' => 'submit',
-                'comment' => 'Nhân viên đã gửi đơn.',
+                'comment' => __('messages.request_history_submitted'),
                 'acted_at' => now(),
             ]);
 
@@ -81,7 +106,7 @@ class DynamicRequestService
                 'workflow_step_id' => $workflowRequest->current_step_id,
                 'actor_id' => $user->id,
                 'action' => 'resubmit',
-                'comment' => 'Nhân viên đã gửi lại đơn bị trả về.',
+                'comment' => __('messages.request_history_resubmitted'),
                 'acted_at' => now(),
             ]);
 
@@ -92,17 +117,40 @@ class DynamicRequestService
         });
     }
 
-    private function saveValuesAndFiles(WorkflowRequest $workflowRequest, FormTemplate $formTemplate, Request $httpRequest, User $user, bool $replace = false): void
+    private function lockConfiguration(FormTemplate $formTemplate, WorkflowTemplate $workflowTemplate): void
     {
-        if ($replace) {
-            $workflowRequest->values()->delete();
+        $now = now();
+
+        if ($formTemplate->locked_at === null) {
+            $formTemplate->forceFill(['locked_at' => $now])->save();
         }
 
+        if ($workflowTemplate->locked_at === null) {
+            $workflowTemplate->forceFill(['locked_at' => $now])->save();
+        }
+    }
+
+    private function saveValuesAndFiles(
+        WorkflowRequest $workflowRequest,
+        FormTemplate $formTemplate,
+        Request $httpRequest,
+        User $user,
+        bool $replace = false
+    ): void {
         foreach ($formTemplate->fields as $field) {
-            $value = null;
+            $value = $httpRequest->input($field->field_key);
 
             if ($field->field_type === 'file') {
+                $existingValue = $workflowRequest->values()
+                    ->where('form_field_id', $field->id)
+                    ->value('value');
+                $value = $existingValue;
+
                 if ($httpRequest->hasFile($field->field_key)) {
+                    if ($replace) {
+                        $this->deleteAttachmentsForField($workflowRequest, $field->id);
+                    }
+
                     $file = $httpRequest->file($field->field_key);
                     $path = $file->store('request_attachments', 'local');
                     $value = $path;
@@ -117,14 +165,24 @@ class DynamicRequestService
                         'uploaded_by' => $user->id,
                     ]);
                 }
-            } else {
-                $value = $httpRequest->input($field->field_key);
             }
 
             RequestValue::updateOrCreate(
                 ['request_id' => $workflowRequest->id, 'form_field_id' => $field->id],
                 ['field_key' => $field->field_key, 'value' => $value]
             );
+        }
+    }
+
+    private function deleteAttachmentsForField(WorkflowRequest $workflowRequest, int $formFieldId): void
+    {
+        $attachments = $workflowRequest->attachments()
+            ->where('form_field_id', $formFieldId)
+            ->get();
+
+        foreach ($attachments as $attachment) {
+            Storage::disk('local')->delete($attachment->path);
+            $attachment->delete();
         }
     }
 

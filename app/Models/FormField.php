@@ -30,4 +30,9 @@ class FormField extends Model
     {
         return $this->belongsTo(FormTemplate::class);
     }
+
+    public function requestValues()
+    {
+        return $this->hasMany(RequestValue::class);
+    }
 }

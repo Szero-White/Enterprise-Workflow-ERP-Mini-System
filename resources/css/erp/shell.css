@@ -45,8 +45,8 @@
     place-items: center;
     border-radius: 12px;
     color: #fff;
-    background: linear-gradient(145deg, #8d86ff 0%, #665ee8 58%, #5ba8e6 130%);
-    box-shadow: 0 10px 24px rgba(102, 94, 232, .20);
+    background: linear-gradient(145deg, var(--erp-primary) 0%, var(--erp-primary-hover) 58%, var(--erp-accent) 130%);
+    box-shadow: 0 10px 24px rgba(var(--erp-primary-rgb), .20);
     font-size: .95rem;
 }
 .erp-brand__copy { min-width: 0; display: block; }
@@ -257,10 +257,10 @@
 .erp-quick-menu__item small { display: block; margin-top: 1px; color: var(--erp-muted); font-size: .64rem; }
 
 
-/* Recruitment-ready visual refinement */
+/* Enterprise visual refinement */
 .erp-sidebar { background: var(--erp-sidebar); box-shadow: 1px 0 0 rgba(16,24,40,.015); }
 .erp-sidebar__header { min-height: 76px; padding: 17px 17px 13px; }
-.erp-brand__mark { border-radius: 11px; background: linear-gradient(145deg, #635bff, #4f46e5 62%, #3b82f6 135%); box-shadow: 0 9px 22px rgba(79,70,229,.20); }
+.erp-brand__mark { border-radius: 11px; background: linear-gradient(145deg, var(--erp-primary), var(--erp-primary-hover) 62%, var(--erp-accent) 135%); box-shadow: 0 9px 22px rgba(var(--erp-primary-rgb), .20); }
 .erp-brand__name { font-size: .89rem; font-weight: 600; }
 .erp-brand__meta { color: #78869a; font-size: .66rem; }
 .erp-workspace-card { margin: 5px 13px 10px; padding: 11px 12px; border-color: #e2e8f0; background: #f8faff; box-shadow: inset 0 1px 0 rgba(255,255,255,.9); }
@@ -271,7 +271,7 @@
 .erp-nav-group__label { padding: 0 10px 8px; color: #8a96a8; font-size: .62rem; font-weight: 600; letter-spacing: .07em; }
 .erp-nav-link { min-height: 42px; padding: 8px 10px; border-radius: 9px; font-size: .79rem; font-weight: 500; }
 .erp-nav-link:hover { background: #f6f8fb; }
-.erp-nav-link.is-active { color: #4338ca; background: #eef0ff; box-shadow: inset 3px 0 0 #5b52ec; }
+.erp-nav-link.is-active { color: var(--erp-primary-hover); background: var(--erp-primary-soft); box-shadow: inset 3px 0 0 var(--erp-primary); }
 .erp-nav-link__icon { width: 28px; height: 28px; }
 .erp-sidebar__footer { background: #fcfdff; }
 .erp-topbar { min-height: var(--erp-topbar-height); padding: 11px 32px; border-bottom-color: #e2e7ee; background: #fff; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: 0 1px 0 rgba(16,24,40,.02); }

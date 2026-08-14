@@ -19,7 +19,7 @@ class WorkflowDemoSeeder extends Seeder
             ->get()
             ->keyBy('key');
 
-        $leaveTemplate = FormTemplate::updateOrCreate(['code' => 'LEAVE'], [
+        $leaveTemplate = FormTemplate::updateOrCreate(['code' => 'LEAVE', 'version' => 1], [
             'name' => 'Đơn xin nghỉ phép',
             'description' => 'Biểu mẫu đăng ký nghỉ phép của nhân viên.',
             'submission_type' => 'dynamic',
@@ -41,8 +41,8 @@ class WorkflowDemoSeeder extends Seeder
         }
 
         $leaveWorkflow = WorkflowTemplate::updateOrCreate(
-            ['form_template_id' => $leaveTemplate->id, 'name' => 'Quy trình duyệt nghỉ phép'],
-            ['is_active' => true, 'created_by' => $admin->id]
+            ['form_template_id' => $leaveTemplate->id, 'version' => 1],
+            ['name' => 'Quy trình duyệt nghỉ phép', 'is_active' => true, 'created_by' => $admin->id]
         );
 
         foreach ([
@@ -53,7 +53,7 @@ class WorkflowDemoSeeder extends Seeder
             $this->upsertRoleStep($leaveWorkflow, $order, $name, $roles[$roleKey]->id);
         }
 
-        $purchaseTemplate = FormTemplate::updateOrCreate(['code' => 'PURCHASE_REQUEST'], [
+        $purchaseTemplate = FormTemplate::updateOrCreate(['code' => 'PURCHASE_REQUEST', 'version' => 1], [
             'name' => 'Yêu cầu mua hàng',
             'description' => 'Yêu cầu mua vật tư nội bộ có danh sách vật tư cấu trúc và quy trình phê duyệt riêng.',
             'submission_type' => 'procurement',
@@ -73,8 +73,8 @@ class WorkflowDemoSeeder extends Seeder
         }
 
         $purchaseWorkflow = WorkflowTemplate::updateOrCreate(
-            ['form_template_id' => $purchaseTemplate->id, 'name' => 'Quy trình duyệt yêu cầu mua hàng'],
-            ['is_active' => true, 'created_by' => $admin->id]
+            ['form_template_id' => $purchaseTemplate->id, 'version' => 1],
+            ['name' => 'Quy trình duyệt yêu cầu mua hàng', 'is_active' => true, 'created_by' => $admin->id]
         );
 
         foreach ([

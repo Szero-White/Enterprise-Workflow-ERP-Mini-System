@@ -7,18 +7,23 @@ use App\Http\Requests\FormFieldRequest;
 use App\Models\FormField;
 use App\Models\FormTemplate;
 use App\Services\AuditLogService;
+use App\Services\Workflow\WorkflowConfigurationService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class FormFieldController extends Controller
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
+    public function __construct(
+        private AuditLogService $auditLogService,
+        private WorkflowConfigurationService $configurationService,
+    ) {
     }
 
     public function index(FormTemplate $formTemplate): View
     {
         $fields = $formTemplate->fields()->paginate(20);
+
         return view('admin.form_fields.index', compact('formTemplate', 'fields'));
     }
 
@@ -29,6 +34,10 @@ class FormFieldController extends Controller
 
     public function store(FormFieldRequest $request, FormTemplate $formTemplate): RedirectResponse
     {
+        if ($response = $this->guardConfiguration($formTemplate)) {
+            return $response;
+        }
+
         $data = $this->prepareData($request->validated(), $request);
         $data['form_template_id'] = $formTemplate->id;
 
@@ -45,6 +54,10 @@ class FormFieldController extends Controller
 
     public function update(FormFieldRequest $request, FormTemplate $formTemplate, FormField $field): RedirectResponse
     {
+        if ($response = $this->guardConfiguration($formTemplate)) {
+            return $response;
+        }
+
         $old = $field->toArray();
         $field->update($this->prepareData($request->validated(), $request));
         $this->auditLogService->log('form_field.updated', $field, $old, $field->fresh()->toArray());
@@ -54,10 +67,36 @@ class FormFieldController extends Controller
 
     public function destroy(FormTemplate $formTemplate, FormField $field): RedirectResponse
     {
-        $old = $field->toArray();
-        $this->auditLogService->log('form_field.deleted', $field, $old, null);
-        $field->delete();
+        if ($response = $this->guardConfiguration($formTemplate)) {
+            return $response;
+        }
+
+        if ($field->requestValues()->exists()) {
+            return back()->with('error', __('messages.form_field_delete_in_use'));
+        }
+
+        try {
+            $old = $field->toArray();
+            $field->delete();
+            $this->auditLogService->log('form_field.deleted', $field, $old, null);
+        } catch (QueryException) {
+            return back()->with('error', __('messages.form_field_delete_in_use'));
+        }
+
         return back()->with('success', __('messages.form_field_deleted'));
+    }
+
+    private function guardConfiguration(FormTemplate $formTemplate): ?RedirectResponse
+    {
+        if ($formTemplate->isLocked()) {
+            return back()->with('error', __('messages.form_template_locked'));
+        }
+
+        if ($formTemplate->is_active) {
+            return back()->with('error', __('messages.form_template_deactivate_before_edit'));
+        }
+
+        return null;
     }
 
     private function prepareData(array $data, FormFieldRequest $request): array

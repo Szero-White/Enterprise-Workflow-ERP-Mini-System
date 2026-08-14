@@ -39,10 +39,10 @@
                     <table class="table erp-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Vật tư</th>
-                                <th>SL đặt</th>
-                                <th>Đã nhận</th>
-                                <th>Còn lại</th>
+                                <th>{{ __('procurement.goods_receipt.item') }}</th>
+                                <th>{{ __('procurement.goods_receipt.ordered_quantity') }}</th>
+                                <th>{{ __('procurement.goods_receipt.received_quantity') }}</th>
+                                <th>{{ __('procurement.goods_receipt.remaining_quantity') }}</th>
                                 <th>{{ __('procurement.goods_receipt.quantity') }}</th>
                             </tr>
                         </thead>
@@ -84,7 +84,7 @@
                 <div class="erp-form-actions-card">
                     <div class="erp-form-actions-card__title">{{ __('procurement.goods_receipt.create_title') }}</div>
                     <div class="erp-form-actions-card__hint">
-                        Chỉ ghi nhận số lượng thực tế đã nhận. Tồn kho và movement ledger được cập nhật trong cùng transaction.
+                        {{ __('procurement.goods_receipt.transaction_hint') }}
                     </div>
                     <button class="btn btn-primary w-100">{{ __('procurement.goods_receipt.post') }}</button>
                     <a class="btn btn-light border w-100 mt-2" href="{{ route('procurement.purchase-orders.show', $purchaseOrder) }}">

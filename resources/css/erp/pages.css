@@ -119,8 +119,8 @@
     place-items: center;
     padding: 28px;
     background:
-        radial-gradient(circle at 7% 10%, rgba(102, 94, 232, .11), transparent 27%),
-        radial-gradient(circle at 92% 88%, rgba(88, 169, 225, .10), transparent 26%),
+        radial-gradient(circle at 7% 10%, rgba(var(--erp-primary-rgb), .10), transparent 27%),
+        radial-gradient(circle at 92% 88%, rgba(var(--erp-accent-rgb), .10), transparent 26%),
         #f6f7fa;
 }
 .erp-auth-card { width: min(1110px, 100%); }
@@ -141,9 +141,9 @@
     padding: 38px;
     color: #222a3a;
     background:
-        radial-gradient(circle at 88% 16%, rgba(117, 110, 239, .16), transparent 27%),
-        radial-gradient(circle at 12% 92%, rgba(76, 168, 221, .13), transparent 28%),
-        linear-gradient(145deg, #f8f7ff 0%, #f2f5ff 52%, #eef8fc 118%);
+        radial-gradient(circle at 88% 16%, rgba(var(--erp-accent-rgb), .13), transparent 27%),
+        radial-gradient(circle at 12% 92%, rgba(var(--erp-accent-rgb), .13), transparent 28%),
+        linear-gradient(145deg, var(--erp-primary-soft) 0%, #f7fafb 52%, var(--erp-accent-soft) 118%);
 }
 .erp-login-brand-panel::after {
     content: "";
@@ -152,21 +152,21 @@
     height: 320px;
     right: -170px;
     top: -150px;
-    border: 1px solid rgba(102, 94, 232, .10);
+    border: 1px solid rgba(var(--erp-primary-rgb), .12);
     border-radius: 50%;
-    box-shadow: 0 0 0 48px rgba(102, 94, 232, .025), 0 0 0 94px rgba(102, 94, 232, .015);
+    box-shadow: 0 0 0 48px rgba(var(--erp-primary-rgb), .035), 0 0 0 94px rgba(var(--erp-primary-rgb), .02);
 }
 .erp-login-brand-panel__content { position: relative; z-index: 1; }
 .erp-login-logo { display: inline-flex; align-items: center; gap: 10px; }
-.erp-login-logo__mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; color: #fff; background: linear-gradient(145deg, #8c85ff, #665ee8); box-shadow: 0 12px 26px rgba(102, 94, 232, .18); }
+.erp-login-logo__mark { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; color: #fff; background: linear-gradient(145deg, var(--erp-primary), var(--erp-accent)); box-shadow: 0 12px 26px rgba(var(--erp-primary-rgb), .18); }
 .erp-login-logo__name { color: #252c3b; font-size: .86rem; font-weight: 650; }
 .erp-login-logo__meta { color: #8a94a5; font-size: .65rem; }
-.erp-login-kicker { margin-top: 62px; color: #665ee8; font-size: .66rem; font-weight: 600; letter-spacing: .035em; }
+.erp-login-kicker { margin-top: 62px; color: var(--erp-primary); font-size: .66rem; font-weight: 600; letter-spacing: .035em; }
 .erp-login-title { max-width: 610px; margin: 9px 0 0; font-size: clamp(2rem, 3.5vw, 3.15rem); line-height: 1.13; font-weight: 650; letter-spacing: -.045em; }
 .erp-login-description { max-width: 570px; margin: 14px 0 0; color: #697487; font-size: .84rem; line-height: 1.78; }
 .erp-login-capabilities { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
-.erp-login-capability { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid rgba(102, 94, 232, .10); border-radius: 999px; color: #596477; background: rgba(255, 255, 255, .62); font-size: .68rem; }
-.erp-login-capability i { color: #665ee8; }
+.erp-login-capability { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid rgba(var(--erp-primary-rgb), .12); border-radius: 999px; color: #596477; background: rgba(255, 255, 255, .62); font-size: .68rem; }
+.erp-login-capability i { color: var(--erp-primary); }
 .erp-login-preview {
     position: relative;
     z-index: 1;
@@ -188,7 +188,7 @@
 .erp-login-preview__chart-title,
 .erp-login-preview__activity-title { color: #8b95a5; font-size: .61rem; }
 .erp-login-preview__bars { height: 62px; display: flex; align-items: flex-end; gap: 6px; margin-top: 8px; }
-.erp-login-preview__bars span { flex: 1; min-width: 8px; border-radius: 5px 5px 2px 2px; background: linear-gradient(180deg, #8f88f8, #6d65e6); opacity: .9; }
+.erp-login-preview__bars span { flex: 1; min-width: 8px; border-radius: 5px 5px 2px 2px; background: linear-gradient(180deg, var(--erp-accent), var(--erp-primary)); opacity: .9; }
 .erp-login-preview__bars span:nth-child(1) { height: 38%; }
 .erp-login-preview__bars span:nth-child(2) { height: 58%; }
 .erp-login-preview__bars span:nth-child(3) { height: 46%; }
@@ -197,7 +197,7 @@
 .erp-login-preview__bars span:nth-child(6) { height: 88%; }
 .erp-login-preview__activity-lines { display: grid; gap: 9px; margin-top: 11px; }
 .erp-login-preview__activity-line { display: grid; grid-template-columns: 8px 1fr; gap: 7px; align-items: center; }
-.erp-login-preview__activity-line::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #8f88f8; }
+.erp-login-preview__activity-line::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--erp-accent); }
 .erp-login-preview__activity-line span { height: 6px; border-radius: 999px; background: #e1e5ec; }
 .erp-login-preview__activity-line:nth-child(2)::before { background: #52b88e; }
 .erp-login-preview__activity-line:nth-child(2) span { width: 72%; }
@@ -214,23 +214,23 @@
 .erp-demo-credential__value { margin-top: 3px; color: #525d70; font-size: .72rem; font-weight: 520; }
 .erp-login-form .form-label { color: #596477; }
 .erp-login-form .form-control { min-height: 45px; color: #1d2432; background: #fff; border-color: #e4e7ed; }
-.erp-login-form .form-control:focus { border-color: #aaa5f8; box-shadow: 0 0 0 .2rem rgba(102, 94, 232, .08); }
+.erp-login-form .form-control:focus { border-color: var(--erp-primary-border); box-shadow: 0 0 0 .2rem rgba(var(--erp-primary-rgb), .12); }
 .erp-login-form .form-check-label { color: #7f8999; font-size: .7rem; }
-.erp-login-form .btn-primary { min-height: 46px; box-shadow: 0 10px 22px rgba(102, 94, 232, .14); }
+.erp-login-form .btn-primary { min-height: 46px; box-shadow: 0 10px 22px rgba(var(--erp-primary-rgb), .16); }
 .erp-login-footer { margin-top: 17px; padding-top: 15px; border-top: 1px solid #f0f1f4; color: #a0a7b3; font-size: .64rem; }
 
 
 
 /* Brighter dashboard and authentication surfaces */
-.erp-dashboard-welcome { padding: 22px 24px; border: 1px solid #dfe5ed; border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #fbfcff 65%, #f4f7ff 100%); box-shadow: 0 1px 2px rgba(16,24,40,.025), 0 9px 26px rgba(16,24,40,.035); }
+.erp-dashboard-welcome { padding: 22px 24px; border: 1px solid #dfe5ed; border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #fbfcfd 65%, var(--erp-primary-soft) 100%); box-shadow: 0 1px 2px rgba(16,24,40,.025), 0 9px 26px rgba(16,24,40,.035); }
 .erp-dashboard-welcome__title { color: #172033; font-weight: 600; }
 .erp-dashboard-welcome__text { color: #647389; }
 .erp-metric-card { border-color: #dfe5ed; background: #fff; box-shadow: 0 1px 2px rgba(16,24,40,.025), 0 7px 20px rgba(16,24,40,.035); }
 .erp-metric-card__value { color: #172033; font-weight: 600; letter-spacing: -.035em; }
 .erp-metric-card__label { color: #68768a; font-weight: 500; }
-.erp-auth-wrapper { background: radial-gradient(circle at 10% 8%, rgba(79,70,229,.07), transparent 30%), radial-gradient(circle at 90% 92%, rgba(14,165,233,.055), transparent 30%), #f3f6fb; }
+.erp-auth-wrapper { background: radial-gradient(circle at 10% 8%, rgba(var(--erp-primary-rgb), .08), transparent 30%), radial-gradient(circle at 90% 92%, rgba(var(--erp-accent-rgb), .055), transparent 30%), var(--erp-bg); }
 .erp-login-shell { border: 1px solid #dce3ec; background: #fff; box-shadow: 0 26px 70px rgba(30,41,59,.12); }
-.erp-login-brand-panel { background: radial-gradient(circle at 18% 10%, rgba(79,70,229,.09), transparent 35%), radial-gradient(circle at 83% 75%, rgba(59,130,246,.08), transparent 31%), linear-gradient(145deg, #f9faff 0%, #f4f7ff 58%, #f1f8ff 120%); }
+.erp-login-brand-panel { background: radial-gradient(circle at 18% 10%, rgba(var(--erp-primary-rgb), .09), transparent 35%), radial-gradient(circle at 83% 75%, rgba(var(--erp-accent-rgb), .08), transparent 31%), linear-gradient(145deg, #f8fafb 0%, var(--erp-primary-soft) 58%, var(--erp-accent-soft) 120%); }
 .erp-login-logo__name { color: #172033; font-weight: 600; }
 .erp-login-title { color: #172033; font-weight: 600; letter-spacing: -.045em; }
 .erp-login-description { color: #5f6e83; }

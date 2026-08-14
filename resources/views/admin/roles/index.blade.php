@@ -48,7 +48,7 @@
                                 <i class="bi bi-pencil"></i>
                             </a>
                             @unless($role->isSystemRole())
-                                <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_role') }}')">
+                                <form action="{{ route('admin.roles.destroy', $role) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_role') }}">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('ui.delete') }}"><i class="bi bi-trash"></i></button>

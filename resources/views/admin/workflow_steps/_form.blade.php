@@ -58,7 +58,3 @@
 </div>
 
 @include('partials.form_actions', ['cancelUrl' => route('admin.workflow-templates.show', $workflowTemplate)])
-
-@push('scripts')
-<script src="{{ asset('js/workflow-step-form.js') }}"></script>
-@endpush

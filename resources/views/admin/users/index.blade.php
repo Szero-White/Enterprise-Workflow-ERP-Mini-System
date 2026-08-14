@@ -4,9 +4,9 @@
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.users'))
 
 @section('content')
-<x-erp.page-header :title="__('menu.users')" :eyebrow="__('menu.admin')" description="Quản lý tài khoản nhân viên, phòng ban và quyền truy cập theo vai trò.">
+<x-erp.page-header :title="__('menu.users')" :eyebrow="__('menu.admin')" :description="__('ui.users_description')">
     <x-slot:actions>
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>Tạo người dùng</a>
+        <a href="{{ route('admin.users.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>{{ __('ui.create_user') }}</a>
     </x-slot:actions>
 </x-erp.page-header>
 
@@ -35,7 +35,7 @@
                 <td>
                     <div class="d-flex gap-2 flex-wrap">
                         <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
-                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('{{ __('ui.confirm_delete_user') }}')">
+                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_user') }}">
                             @csrf
                             @method('DELETE')
                             <button class="btn btn-sm btn-outline-danger">{{ __('ui.delete') }}</button>

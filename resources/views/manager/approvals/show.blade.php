@@ -2,7 +2,7 @@
 
 @php
     $isPending = $workflowRequest->status === \App\Models\WorkflowRequest::STATUS_PENDING;
-    $pageTitle = $isPending ? 'Duyệt đơn' : 'Chi tiết đơn';
+    $pageTitle = $isPending ? __('ui.approve_request_title') : __('ui.request_detail');
     $pageEyebrow = __('menu.approval').' / '.($isPending ? __('menu.pending_approvals') : __('menu.approval_history'));
 @endphp
 
@@ -12,13 +12,13 @@
 @section('content')
 <x-erp.page-header
     :title="$pageTitle.': '.$workflowRequest->request_code"
-    eyebrow="Phê duyệt"
-    :description="$isPending ? 'Kiểm tra dữ liệu đã gửi và chọn thao tác phê duyệt tiếp theo.' : 'Xem chi tiết đơn và lịch sử duyệt.'"
+    :eyebrow="__('ui.approval')"
+    :description="$isPending ? __('ui.approval_request_description') : __('ui.approval_detail_description')"
 >
     <x-slot:actions>
         <div class="d-flex gap-2 align-items-center">
-            <a href="{{ $isPending ? route('manager.approvals.index') : route('manager.approvals.history') }}" class="btn btn-light border"><i class="bi bi-arrow-left"></i>Quay lại</a>
-            <span class="erp-status-pill {{ $isPending ? 'text-primary bg-primary-subtle' : 'text-secondary bg-light border' }}">{{ $workflowRequest->currentStep?->step_name ?? 'Không có bước' }}</span>
+            <a href="{{ $isPending ? route('manager.approvals.index') : route('manager.approvals.history') }}" class="btn btn-light border"><i class="bi bi-arrow-left"></i>{{ __('ui.back') }}</a>
+            <span class="erp-status-pill {{ $isPending ? 'text-primary bg-primary-subtle' : 'text-secondary bg-light border' }}">{{ $workflowRequest->currentStep?->step_name ?? __('ui.no_current_step') }}</span>
         </div>
     </x-slot:actions>
 </x-erp.page-header>
@@ -73,7 +73,7 @@
                 <div class="mb-3">
                     <label class="form-label" for="comment">{{ __('ui.comment') }}</label>
                     <textarea id="comment" name="comment" class="form-control @error('comment') is-invalid @enderror" rows="4">{{ old('comment') }}</textarea>
-                    <div class="form-text">Bắt buộc nhập khi từ chối hoặc trả đơn về cho người tạo.</div>
+                    <div class="form-text">{{ __('ui.approval_comment_hint') }}</div>
                     @include('partials.form_error', ['field' => 'comment'])
                 </div>
                 <div class="d-flex flex-wrap gap-2">

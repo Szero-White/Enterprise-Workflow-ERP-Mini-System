@@ -12,7 +12,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
-class RecruitmentReadinessTest extends TestCase
+class OperationsSecurityTest extends TestCase
 {
     use RefreshDatabase;
 

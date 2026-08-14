@@ -19,7 +19,7 @@
                         <th>{{ __('procurement.purchase_order.supplier') }}</th>
                         <th>{{ __('procurement.purchase_order.warehouse') }}</th>
                         <th>{{ __('procurement.purchase_order.subtotal') }}</th>
-                        <th>Trạng thái</th>
+                        <th>{{ __('ui.status') }}</th>
                         <th class="text-end">{{ __('ui.action') }}</th>
                     </tr>
                 </thead>

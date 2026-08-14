@@ -12,15 +12,15 @@
 
     <div class="row g-3">
         <div class="col-lg-8">
-            <x-erp.panel title="Vật tư đã nhận">
+            <x-erp.panel :title="__('procurement.goods_receipt.items_received')">
                 <div class="table-responsive">
                     <table class="table erp-table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th>Vật tư</th>
-                                <th>Số lượng</th>
-                                <th>Đơn giá</th>
-                                <th>Tài sản</th>
+                                <th>{{ __('procurement.goods_receipt.item') }}</th>
+                                <th>{{ __('procurement.goods_receipt.quantity') }}</th>
+                                <th>{{ __('procurement.goods_receipt.unit_cost') }}</th>
+                                <th>{{ __('procurement.goods_receipt.assets') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,18 +55,18 @@
         </div>
 
         <div class="col-lg-4">
-            <x-erp.panel title="Thông tin chứng từ">
+            <x-erp.panel :title="__('procurement.goods_receipt.document_info')">
                 <dl class="row mb-0">
                     <dt class="col-5">Kho</dt>
                     <dd class="col-7">{{ $goodsReceipt->warehouse->name }}</dd>
 
-                    <dt class="col-5">Người nhận</dt>
+                    <dt class="col-5">{{ __('procurement.goods_receipt.receiver') }}</dt>
                     <dd class="col-7">{{ $goodsReceipt->receiver->name }}</dd>
 
-                    <dt class="col-5">Thời điểm</dt>
+                    <dt class="col-5">{{ __('procurement.goods_receipt.received_at') }}</dt>
                     <dd class="col-7">{{ $goodsReceipt->received_at->format('d/m/Y H:i') }}</dd>
 
-                    <dt class="col-5">Chứng từ NCC</dt>
+                    <dt class="col-5">{{ __('procurement.goods_receipt.supplier_reference') }}</dt>
                     <dd class="col-7">{{ $goodsReceipt->supplier_reference ?: '-' }}</dd>
                 </dl>
             </x-erp.panel>

@@ -38,7 +38,7 @@
                     <td class="text-end">
                         <div class="erp-row-actions">
                             <a href="{{ route('inventory.warehouses.edit', $warehouse) }}" class="btn btn-sm btn-light border erp-action-btn" title="{{ __('inventory.warehouse.edit') }}"><i class="bi bi-pencil"></i></a>
-                            <form method="POST" action="{{ route('inventory.warehouses.destroy', $warehouse) }}" onsubmit="return confirm(@js(__('inventory.warehouse.confirm_delete')))">
+                            <form method="POST" action="{{ route('inventory.warehouses.destroy', $warehouse) }}" data-confirm="{{ __('inventory.warehouse.confirm_delete') }}">
                                 @csrf @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger erp-action-btn" title="{{ __('inventory.warehouse.delete') }}"><i class="bi bi-trash3"></i></button>
                             </form>

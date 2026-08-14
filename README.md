@@ -44,12 +44,15 @@ The project intentionally focuses on one coherent enterprise story rather than a
 - Policy + role based authorization with least-privilege request visibility.
 - Protected system roles: core role keys cannot be renamed or deleted accidentally.
 - Workflow steps use exactly one approver strategy: **role, department or specific user**.
+- Form and workflow configuration is versioned: published configuration becomes immutable after first use, while new changes are prepared by cloning an editable draft version.
+- Only ready forms are exposed for employee submission: an active form must have fields, one active workflow and at least one approval step.
 - Private workflow attachments are streamed through an authorized download endpoint instead of public storage URLs.
 - Database transactions and `lockForUpdate()` protect concurrent approval, receiving, stock and asset lifecycle writes.
 - Append-only inventory movement ledger for traceability.
 - Purchase-order and item snapshots preserve historical document meaning.
 - Queue-based realtime notification integration uses `afterCommit()`.
-- Role-aware dashboard and shared Blade/CSS design system.
+- Role-aware dashboard and shared Blade design system with a tokenized **Muted Blue + Soft Teal** visual theme.
+- ERP CSS and JavaScript are compiled by Vite; feature scripts live under `resources/js/modules` instead of inline Blade scripts.
 - GitHub Actions runs Composer install, frontend build and the Laravel test suite on push / pull request.
 
 ## Main modules
@@ -64,8 +67,10 @@ The project intentionally focuses on one coherent enterprise story rather than a
 
 ### Configurable Workflow Engine
 
-- Dynamic form templates and fields.
-- Workflow templates with ordered approval steps.
+- Versioned dynamic form templates and fields.
+- Versioned workflow templates with ordered approval steps.
+- Draft → Activate → Lock-on-first-use lifecycle keeps historical requests bound to the configuration that created them.
+- Activating a workflow automatically deactivates sibling workflow versions for the same form, so only one workflow is active at a time.
 - One explicit approver strategy per step: user, role or department.
 - Approve, reject and return-for-edit actions.
 - Approval history, notifications and audit logs.
@@ -132,6 +137,22 @@ app/Policies/
 app/Support/Navigation/
 ```
 
+## UI design system
+
+The interface uses a calm enterprise palette rather than a saturated brand color:
+
+```text
+Primary         #4F7FA8  Muted Blue
+Primary soft    #EEF5F9
+Accent          #5F9D9A  Soft Teal
+Background      #F5F7F9
+Surface         #FFFFFF
+Text            #24313D
+Border          #DFE6EB
+```
+
+Brand colors are centralized in `resources/css/erp/tokens.css`; components consume semantic tokens instead of repeating purple/brand hex values. Success, warning and danger colors remain separate from the brand palette so status meaning is not confused with primary actions.
+
 ## API v1
 
 A small integration API is exposed under `/api/v1` with pagination, filtering, API Resources, HTTP Basic authentication and rate limiting. Basic auth keeps the portfolio dependency-light; a production public API would normally use Sanctum/OAuth behind HTTPS.
@@ -156,7 +177,7 @@ OpenAPI contract: [`docs/openapi.yaml`](docs/openapi.yaml).
 
 ## Demo accounts
 
-After `php artisan migrate:fresh --seed`, all demo accounts use password `password`:
+After `php artisan migrate:fresh --seed`, all demo accounts use password `password`. The login screen exposes demo credentials only in local/testing environments; do not publish these credentials with unrestricted admin access on a public production deployment.
 
 ```text
 admin@example.com
@@ -195,7 +216,7 @@ npm run build
 php artisan serve
 ```
 
-The default configuration uses SQLite for a quick demo.
+The default configuration uses SQLite for a quick demo. `npm run build` compiles the actual ERP design system and feature JavaScript through Vite.
 
 ## Docker development
 
@@ -219,7 +240,7 @@ php artisan migrate:fresh --seed
 php artisan test
 ```
 
-CI runs the same Laravel test suite and a frontend production build on GitHub Actions.
+CI runs the same Laravel test suite and a frontend production build on GitHub Actions. Because the application shell loads the ERP assets through `@vite`, a successful frontend build now validates the assets actually used by the product UI.
 
 ## Portfolio demo scenario
 

@@ -7,7 +7,7 @@
     <div class="col-md-6">
         <label for="department_code" class="form-label erp-required">{{ __('ui.entity_code') }}</label>
         <input id="department_code" name="code" class="form-control @error('code') is-invalid @enderror" value="{{ old('code', $department->code ?? '') }}" required>
-        <div class="erp-form-hint">Ví dụ: <code>HR</code>, <code>ENG</code>, <code>FIN</code>.</div>
+        <div class="erp-form-hint">{{ __('ui.department_code_hint') }}</div>
         @include('partials.form_error', ['field' => 'code'])
     </div>
     <div class="col-12">
