@@ -23,7 +23,7 @@ class Item extends Model
     protected function casts(): array
     {
         return [
-            'cost_price' => 'decimal:2',
+            'cost_price' => 'integer',
             'reorder_level' => 'decimal:3',
             'is_asset_trackable' => 'boolean',
             'is_active' => 'boolean',

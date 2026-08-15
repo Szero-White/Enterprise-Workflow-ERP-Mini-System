@@ -41,7 +41,7 @@
                 <div class="col-md-6">
                     <label class="form-label">{{ __('inventory.receipt.unit_cost') }}</label>
                     <div class="input-group">
-                        <input type="number" step="0.01" min="0" name="unit_cost" class="form-control @error('unit_cost') is-invalid @enderror" value="{{ old('unit_cost') }}">
+                        <input type="number" step="1" min="0" name="unit_cost" class="form-control @error('unit_cost') is-invalid @enderror" value="{{ old('unit_cost') }}">
                         <span class="input-group-text">₫</span>
                     </div>
                     <div class="erp-form-hint">{{ __('inventory.receipt.unit_cost_hint') }}</div>

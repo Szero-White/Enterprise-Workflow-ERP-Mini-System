@@ -24,7 +24,16 @@ class DynamicFieldValidationService
                     $fieldRules[] = 'date';
                     break;
                 case 'file':
-                    array_push($fieldRules, 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120');
+                    if (config('demo.enabled') && ! config('demo.uploads_enabled')) {
+                        $fieldRules = ['nullable', 'prohibited'];
+                        break;
+                    }
+
+                    $maxKb = config('demo.enabled')
+                        ? (int) config('demo.upload_max_kb', 512)
+                        : (int) config('demo.normal_upload_max_kb', 5120);
+
+                    array_push($fieldRules, 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:'.max(1, $maxKb));
                     break;
                 case 'select':
                     $this->addSelectRules($fieldRules, $field->options ?? []);

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Money\VndMoney;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -22,8 +23,13 @@ class PurchaseRequestItem extends Model
     {
         return [
             'requested_quantity' => 'decimal:3',
-            'estimated_unit_cost' => 'decimal:2',
+            'estimated_unit_cost' => 'integer',
         ];
+    }
+
+    public function getEstimatedLineTotalAttribute(): int
+    {
+        return VndMoney::multiplyByQuantity($this->estimated_unit_cost, (string) $this->requested_quantity);
     }
 
     public function purchaseRequest(): BelongsTo

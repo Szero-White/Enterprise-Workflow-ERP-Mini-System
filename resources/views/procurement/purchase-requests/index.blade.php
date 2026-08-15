@@ -57,7 +57,7 @@
                                 <div class="erp-record-secondary">{{ $purchaseRequest->created_at->format('d/m/Y H:i') }}</div>
                             </td>
                             <td>{{ $purchaseRequest->workflowRequest->creator?->name ?? '-' }}</td>
-                            <td>{{ number_format((float) $purchaseRequest->estimated_total, 0, ',', '.') }} ₫</td>
+                            <td>{{ number_format((int) $purchaseRequest->estimated_total, 0, ',', '.') }} ₫</td>
                             <td>@include('partials.status_badge', ['status' => $purchaseRequest->workflowRequest->status])</td>
                             <td><span class="badge text-bg-light border">{{ $purchaseRequest->status->label() }}</span></td>
                             <td class="text-end">

@@ -222,12 +222,12 @@
 
 
 /* Brighter dashboard and authentication surfaces */
-.erp-dashboard-welcome { padding: 22px 24px; border: 1px solid #dfe5ed; border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #fbfcfd 65%, var(--erp-primary-soft) 100%); box-shadow: 0 1px 2px rgba(16,24,40,.025), 0 9px 26px rgba(16,24,40,.035); }
-.erp-dashboard-welcome__title { color: #172033; font-weight: 600; }
-.erp-dashboard-welcome__text { color: #647389; }
-.erp-metric-card { border-color: #dfe5ed; background: #fff; box-shadow: 0 1px 2px rgba(16,24,40,.025), 0 7px 20px rgba(16,24,40,.035); }
-.erp-metric-card__value { color: #172033; font-weight: 600; letter-spacing: -.035em; }
-.erp-metric-card__label { color: #68768a; font-weight: 500; }
+.erp-dashboard-welcome { padding: 22px 24px; border: 1px solid var(--erp-border); border-radius: 16px; background: linear-gradient(135deg, var(--erp-surface) 0%, var(--erp-surface-muted) 66%, var(--erp-primary-soft) 100%); box-shadow: var(--erp-shadow-sm); }
+.erp-dashboard-welcome__title { color: var(--erp-text); font-weight: 600; }
+.erp-dashboard-welcome__text { color: var(--erp-muted); }
+.erp-metric-card { border-color: var(--erp-border); background: var(--erp-surface); box-shadow: var(--erp-shadow-sm); }
+.erp-metric-card__value { color: var(--erp-text); font-weight: 600; letter-spacing: -.035em; }
+.erp-metric-card__label { color: var(--erp-text-soft); font-weight: 500; }
 .erp-auth-wrapper { background: radial-gradient(circle at 10% 8%, rgba(var(--erp-primary-rgb), .08), transparent 30%), radial-gradient(circle at 90% 92%, rgba(var(--erp-accent-rgb), .055), transparent 30%), var(--erp-bg); }
 .erp-login-shell { border: 1px solid #dce3ec; background: #fff; box-shadow: 0 26px 70px rgba(30,41,59,.12); }
 .erp-login-brand-panel { background: radial-gradient(circle at 18% 10%, rgba(var(--erp-primary-rgb), .09), transparent 35%), radial-gradient(circle at 83% 75%, rgba(var(--erp-accent-rgb), .08), transparent 31%), linear-gradient(145deg, #f8fafb 0%, var(--erp-primary-soft) 58%, var(--erp-accent-soft) 120%); }
@@ -242,3 +242,57 @@
 .erp-login-form__subtitle { color: #718096; }
 .erp-demo-credential { border-color: #dfe5ed; background: #f8fafc; }
 .erp-login-form .form-control { border-color: #d4dde8; }
+
+/* Recruiter-facing public demo entry point */
+.erp-login-form { width: min(410px, 100%); }
+.erp-demo-access {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #d7e3ec;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #f8fbfd 0%, var(--erp-primary-soft) 100%);
+}
+.erp-demo-access__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.erp-demo-access__badge,
+.erp-demo-access__ready { display: inline-flex; align-items: center; gap: 6px; font-size: .66rem; font-weight: 600; }
+.erp-demo-access__badge { color: var(--erp-primary-active); }
+.erp-demo-access__ready { color: #4f7f6c; }
+.erp-demo-access__hint { margin: 9px 0 0; color: #627287; font-size: .72rem; line-height: 1.55; }
+.erp-demo-access__flow { margin-top: 11px; padding: 9px 10px; border: 1px solid rgba(var(--erp-primary-rgb), .12); border-radius: 10px; background: rgba(255,255,255,.8); }
+.erp-demo-access__flow span { display: block; color: #8290a0; font-size: .58rem; font-weight: 600; letter-spacing: .025em; text-transform: uppercase; }
+.erp-demo-access__flow strong { display: block; margin-top: 3px; color: #334155; font-size: .68rem; font-weight: 550; line-height: 1.5; }
+.erp-demo-access__credentials { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.erp-demo-access__credentials > div { min-width: 0; padding: 9px 10px; border: 1px solid #dce5ed; border-radius: 10px; background: #fff; }
+.erp-demo-access__credentials span { display: block; color: #8794a3; font-size: .58rem; }
+.erp-demo-access__credentials strong,
+.erp-demo-access__credentials code { display: block; margin-top: 2px; color: #2f4050; font-size: .69rem; font-weight: 600; }
+.erp-demo-access__credentials small { display: block; overflow: hidden; margin-top: 2px; color: #7c8998; font-size: .61rem; text-overflow: ellipsis; white-space: nowrap; }
+.erp-demo-access__credentials code { padding: 0; background: transparent; }
+.erp-demo-roles { margin-top: 10px; }
+.erp-demo-roles summary { width: fit-content; color: var(--erp-primary-active); cursor: pointer; font-size: .67rem; font-weight: 600; list-style: none; }
+.erp-demo-roles summary::-webkit-details-marker { display: none; }
+.erp-demo-roles summary::after { content: " +"; }
+.erp-demo-roles[open] summary::after { content: " −"; }
+.erp-demo-roles__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
+.erp-demo-role { min-width: 0; padding: 8px 9px; border: 1px solid #dce4ec; border-radius: 9px; color: #445568; text-align: left; background: #fff; transition: border-color .15s ease, background .15s ease, box-shadow .15s ease; }
+.erp-demo-role:hover,
+.erp-demo-role:focus-visible { border-color: var(--erp-primary-border); background: #f8fbfd; outline: 0; box-shadow: 0 0 0 .16rem rgba(var(--erp-primary-rgb), .10); }
+.erp-demo-role.is-active { border-color: var(--erp-primary); background: var(--erp-primary-soft); }
+.erp-demo-role span { display: block; overflow: hidden; font-size: .64rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.erp-demo-role small { display: block; overflow: hidden; margin-top: 2px; color: #8794a3; font-size: .56rem; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Login remains a bright, deterministic public entry point even if a previous session used dark mode. */
+:root[data-theme="dark"] .erp-auth-wrapper { background: #f5f7f9; }
+:root[data-theme="dark"] .erp-login-shell,
+:root[data-theme="dark"] .erp-login-form-panel { background: #fff; }
+:root[data-theme="dark"] .erp-login-brand-panel {
+    color: #172033;
+    background: radial-gradient(circle at 18% 10%, rgba(79,127,168,.09), transparent 35%), radial-gradient(circle at 83% 75%, rgba(95,157,154,.08), transparent 31%), linear-gradient(145deg, #f8fafb 0%, #eef5f9 58%, #eef8f7 120%);
+}
+:root[data-theme="dark"] .erp-login-form .form-control {
+    color: #24313d;
+    background: #fff;
+    border-color: #d4dde8;
+    color-scheme: light;
+}
+:root[data-theme="dark"] .erp-login-form .form-control::placeholder { color: #9aa5b4; }

@@ -9,8 +9,13 @@
 
     <script>
         (() => {
-            const savedTheme = localStorage.getItem('erp-theme');
-            document.documentElement.dataset.theme = savedTheme || 'light';
+            @auth
+                const savedTheme = localStorage.getItem('erp-theme');
+                document.documentElement.dataset.theme = savedTheme || 'light';
+            @else
+                // Keep the public entry point visually deterministic for first-time visitors.
+                document.documentElement.dataset.theme = 'light';
+            @endauth
         })();
     </script>
 
@@ -32,6 +37,12 @@
             <main class="erp-content" id="main-content">
                 <div class="erp-content__inner">
                     @include('partials.alerts')
+                    @if(config('demo.enabled'))
+                        <div class="alert alert-info d-flex align-items-start gap-2 py-2 mb-3" role="status">
+                            <i class="bi bi-shield-check mt-1"></i>
+                            <div class="small">{{ __('ui.public_demo_banner') }}</div>
+                        </div>
+                    @endif
                     @include('partials.breadcrumb')
                     @yield('content')
                 </div>

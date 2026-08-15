@@ -18,9 +18,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Employee\WorkflowRequestController;
 use App\Http\Controllers\Inventory\InventoryStockController;
-use App\Http\Controllers\Inventory\StockReceiptController;
 use App\Http\Controllers\Inventory\ItemCategoryController;
 use App\Http\Controllers\Inventory\ItemController;
+use App\Http\Controllers\Inventory\StockReceiptController;
 use App\Http\Controllers\Inventory\WarehouseController;
 use App\Http\Controllers\Manager\ApprovalController;
 use App\Http\Controllers\NotificationController;
@@ -39,7 +39,7 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-Route::middleware(['auth', 'active'])->group(function () {
+Route::middleware(['auth', 'active', 'demo.safe'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/attachments/{attachment}/download', [AttachmentController::class, 'download'])->name('attachments.download');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -61,7 +61,6 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('receipts', [StockReceiptController::class, 'store'])->name('receipts.store');
         });
     });
-
 
     Route::prefix('procurement')->name('procurement.')->group(function () {
         Route::middleware('role:employee,admin')->group(function () {
@@ -91,7 +90,6 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('goods-receipts/{goodsReceipt}', [GoodsReceiptController::class, 'show'])->name('goods-receipts.show');
         });
     });
-
 
     Route::prefix('assets')->name('assets.')->group(function () {
         Route::middleware('role:asset_manager,procurement,admin')->group(function () {

@@ -55,8 +55,8 @@
                                     </td>
                                     <td>{{ $line->ordered_quantity }} {{ $line->unit }}</td>
                                     <td>{{ $line->received_quantity }} {{ $line->unit }}</td>
-                                    <td>{{ number_format((float) $line->unit_cost, 0, ',', '.') }} ₫</td>
-                                    <td class="text-end">{{ number_format((float) $line->line_total, 0, ',', '.') }} ₫</td>
+                                    <td>{{ number_format((int) $line->unit_cost, 0, ',', '.') }} ₫</td>
+                                    <td class="text-end">{{ number_format((int) $line->line_total, 0, ',', '.') }} ₫</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -78,7 +78,7 @@
                     <dd class="col-7">{{ $purchaseOrder->expected_date?->format('d/m/Y') ?? '-' }}</dd>
 
                     <dt class="col-5">{{ __('procurement.purchase_order.subtotal') }}</dt>
-                    <dd class="col-7">{{ number_format((float) $purchaseOrder->subtotal, 0, ',', '.') }} ₫</dd>
+                    <dd class="col-7">{{ number_format((int) $purchaseOrder->subtotal, 0, ',', '.') }} ₫</dd>
                 </dl>
             </x-erp.panel>
         </div>

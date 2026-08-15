@@ -28,7 +28,7 @@ class PurchaseOrder extends Model
             'status' => PurchaseOrderStatus::class,
             'ordered_at' => 'datetime',
             'expected_date' => 'date',
-            'subtotal' => 'decimal:2',
+            'subtotal' => 'integer',
         ];
     }
 

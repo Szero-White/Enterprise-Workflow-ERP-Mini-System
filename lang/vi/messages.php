@@ -6,6 +6,8 @@ return [
     'login_failed' => 'Email hoặc mật khẩu không đúng.',
     'account_disabled' => 'Tài khoản đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên.',
     'no_data' => 'Không có dữ liệu.',
+    'demo_read_only_action' => 'Public demo đang khóa thao tác thay đổi cấu hình/master data. Các luồng nghiệp vụ chính vẫn có thể trải nghiệm.',
+    'demo_write_rate_limited' => 'Bạn đang thao tác quá nhanh trên public demo. Vui lòng thử lại sau ít phút.',
 
     'department_created' => 'Tạo phòng ban thành công.',
     'department_updated' => 'Cập nhật phòng ban thành công.',

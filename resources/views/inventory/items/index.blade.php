@@ -68,7 +68,7 @@
                         </div>
                     </td>
                     <td>{{ $item->category?->name ?? __('items.item.uncategorized') }}</td>
-                    <td class="erp-money">{{ number_format((float) $item->cost_price, 0, ',', '.') }} ₫</td>
+                    <td class="erp-money">{{ number_format((int) $item->cost_price, 0, ',', '.') }} ₫</td>
                     <td>{{ rtrim(rtrim(number_format((float) $item->reorder_level, 3, '.', ''), '0'), '.') }}</td>
                     <td>
                         <span class="badge rounded-pill {{ $item->is_active ? 'text-bg-success' : 'text-bg-secondary' }}">

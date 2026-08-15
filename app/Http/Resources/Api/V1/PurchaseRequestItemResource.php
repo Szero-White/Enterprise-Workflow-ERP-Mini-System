@@ -16,7 +16,7 @@ class PurchaseRequestItemResource extends JsonResource
             'name' => $this->item_name,
             'unit' => $this->unit,
             'quantity' => (float) $this->requested_quantity,
-            'estimated_unit_cost' => (float) $this->estimated_unit_cost,
+            'estimated_unit_cost' => (int) $this->estimated_unit_cost,
             'note' => $this->note,
         ];
     }

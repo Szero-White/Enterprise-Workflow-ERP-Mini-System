@@ -2,6 +2,8 @@
 
 return [
     'dashboard' => 'Tổng quan',
+    'public_demo_banner' => 'Public demo: cấu hình quản trị, master data và nhập kho thủ công đang ở chế độ chỉ đọc; Purchase Request → Approval → PO → Goods Receipt → Asset vẫn hoạt động để trải nghiệm.',
+    'demo_upload_disabled' => 'Tải tệp bị tắt trên public demo để tránh lạm dụng dung lượng. Bản local/production riêng vẫn hỗ trợ tệp private qua Policy.',
     'system_overview' => 'Tổng quan hệ thống',
     'system_eyebrow' => 'Hệ thống quản trị nội bộ',
 

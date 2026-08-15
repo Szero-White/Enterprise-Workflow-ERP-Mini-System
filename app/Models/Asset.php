@@ -28,7 +28,7 @@ class Asset extends Model
     {
         return [
             'acquired_at' => 'date',
-            'acquisition_cost' => 'decimal:2',
+            'acquisition_cost' => 'integer',
             'status' => AssetStatus::class,
             'condition' => AssetCondition::class,
         ];

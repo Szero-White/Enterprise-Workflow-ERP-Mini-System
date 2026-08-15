@@ -61,7 +61,7 @@
                     <dd class="col-sm-8">{{ $asset->acquired_at->format('d/m/Y') }}</dd>
 
                     <dt class="col-sm-4">{{ __('assets.acquisition_cost') }}</dt>
-                    <dd class="col-sm-8">{{ number_format((float) $asset->acquisition_cost, 0, ',', '.') }} ₫</dd>
+                    <dd class="col-sm-8">{{ number_format((int) $asset->acquisition_cost, 0, ',', '.') }} ₫</dd>
 
                     <dt class="col-sm-4">{{ __('assets.source_receipt') }}</dt>
                     <dd class="col-sm-8">

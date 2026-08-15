@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\Money\VndMoney;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GoodsReceiptStoreRequest extends FormRequest
@@ -19,7 +20,7 @@ class GoodsReceiptStoreRequest extends FormRequest
             'note' => ['nullable', 'string', 'max:3000'],
             'lines' => ['required', 'array', 'min:1'],
             'lines.*.purchase_order_item_id' => ['required', 'integer', 'distinct', 'exists:purchase_order_items,id'],
-            'lines.*.quantity' => ['nullable', 'numeric', 'min:0'],
+            'lines.*.quantity' => ['nullable', 'decimal:0,3', 'min:0', 'max:'.VndMoney::MAX_QUANTITY],
         ];
     }
 }

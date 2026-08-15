@@ -71,7 +71,7 @@
                                         >
                                     </td>
                                     <td>{{ $line->requested_quantity }} {{ $line->unit }}</td>
-                                    <td>{{ number_format((float) $line->estimated_unit_cost, 0, ',', '.') }} ₫</td>
+                                    <td>{{ number_format((int) $line->estimated_unit_cost, 0, ',', '.') }} ₫</td>
                                     <td>
                                         <input
                                             class="form-control"

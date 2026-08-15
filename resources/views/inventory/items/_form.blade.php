@@ -33,7 +33,7 @@
         <div class="col-md-3">
             <label class="form-label erp-required">{{ __('items.item.cost_price') }}</label>
             <div class="input-group">
-                <input type="number" step="0.01" min="0" name="cost_price" class="form-control @error('cost_price') is-invalid @enderror" value="{{ old('cost_price', $item->cost_price ?? 0) }}" required>
+                <input type="number" step="1" min="0" name="cost_price" class="form-control @error('cost_price') is-invalid @enderror" value="{{ old('cost_price', $item->cost_price ?? 0) }}" required>
                 <span class="input-group-text">₫</span>
             </div>
             <div class="erp-form-hint">{{ __('items.item.cost_price_hint') }}</div>

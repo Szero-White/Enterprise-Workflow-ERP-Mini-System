@@ -14,7 +14,7 @@ class PurchaseRequestResource extends JsonResource
             'request_code' => $this->workflowRequest?->request_code,
             'purpose' => $this->purpose,
             'required_date' => $this->required_date?->toDateString(),
-            'estimated_total' => (float) $this->estimated_total,
+            'estimated_total' => (int) $this->estimated_total,
             'currency' => $this->currency,
             'status' => $this->status->value,
             'workflow_status' => $this->workflowRequest?->status,

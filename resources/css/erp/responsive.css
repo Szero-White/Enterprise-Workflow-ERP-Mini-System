@@ -61,6 +61,8 @@
     .erp-dashboard-metrics { grid-template-columns: 1fr; }
     .erp-login-preview__grid { grid-template-columns: 1fr; }
     .erp-login-title { font-size: 2rem; }
+    .erp-demo-access__header { align-items: flex-start; flex-direction: column; gap: 5px; }
+    .erp-demo-access__credentials, .erp-demo-roles__grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 991.98px) { .erp-content { padding: 24px 18px 44px; } }

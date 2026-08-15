@@ -22,7 +22,9 @@ trait BuildsProcurementFixture
     protected array $procurementUsers = [];
 
     protected Item $procurementItem;
+
     protected Warehouse $procurementWarehouse;
+
     protected Supplier $procurementSupplier;
 
     protected function seedProcurementFixture(): void
@@ -119,7 +121,7 @@ trait BuildsProcurementFixture
 
     protected function submitPurchaseRequest(
         float $quantity = 1,
-        float $estimatedUnitCost = 1_000
+        int $estimatedUnitCost = 1_000
     ): PurchaseRequest {
         $this->actingAs($this->procurementUsers['employee'])
             ->post(route('procurement.purchase-requests.store'), [
@@ -150,7 +152,7 @@ trait BuildsProcurementFixture
 
     protected function createAndIssuePurchaseOrder(
         PurchaseRequest $purchaseRequest,
-        float $unitCost
+        int $unitCost
     ): PurchaseOrder {
         $this->actingAs($this->procurementUsers['procurement'])
             ->post(route('procurement.purchase-orders.store', $purchaseRequest), [

@@ -5,7 +5,7 @@ use App\Http\Controllers\Api\V1\ItemController;
 use App\Http\Controllers\Api\V1\PurchaseRequestController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth.basic', 'active', 'throttle:60,1'])
+Route::middleware(['auth.basic', 'active', 'demo.safe', 'throttle:60,1'])
     ->prefix('v1')
     ->name('api.v1.')
     ->group(function (): void {

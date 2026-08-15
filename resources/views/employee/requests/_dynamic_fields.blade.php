@@ -12,8 +12,14 @@
                 @endforeach
             </select>
         @elseif($field->field_type === 'file')
-            <input type="file" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" @required($field->is_required)>
-            <div class="form-text">{{ __('ui.allowed_file_hint') }}</div>
+            @if(config('demo.enabled') && ! config('demo.uploads_enabled'))
+                <div class="alert alert-light border mb-0 py-2 small text-muted">
+                    <i class="bi bi-shield-lock me-1"></i>{{ __('ui.demo_upload_disabled') }}
+                </div>
+            @else
+                <input type="file" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" @required($field->is_required)>
+                <div class="form-text">{{ __('ui.allowed_file_hint') }}</div>
+            @endif
         @else
             <input type="{{ $field->field_type }}" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" value="{{ $value }}" @required($field->is_required)>
         @endif

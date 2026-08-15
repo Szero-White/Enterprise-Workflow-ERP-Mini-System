@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\PurchaseRequest;
+use App\Support\Money\VndMoney;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,8 +32,8 @@ class PurchaseRequestStoreRequest extends FormRequest
                 'distinct',
                 Rule::exists('items', 'id')->where(fn ($query) => $query->where('is_active', true)),
             ],
-            'items.*.quantity' => ['required', 'numeric', 'gt:0'],
-            'items.*.estimated_unit_cost' => ['required', 'numeric', 'min:0'],
+            'items.*.quantity' => ['required', 'decimal:0,3', 'gt:0', 'max:'.VndMoney::MAX_QUANTITY],
+            'items.*.estimated_unit_cost' => ['required', 'integer', 'min:0', 'max:'.VndMoney::MAX_AMOUNT],
             'items.*.note' => ['nullable', 'string', 'max:1000'],
         ];
     }

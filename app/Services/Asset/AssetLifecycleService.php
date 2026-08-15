@@ -21,8 +21,7 @@ class AssetLifecycleService
     public function __construct(
         private InventoryStockService $inventoryStockService,
         private AuditLogService $auditLogService
-    ) {
-    }
+    ) {}
 
     public function assign(User $actor, Asset $asset, array $data): AssetAssignment
     {
@@ -70,7 +69,7 @@ class AssetLifecycleService
                 warehouse: $warehouse,
                 item: $lockedAsset->item,
                 quantity: 1,
-                unitCost: (float) $lockedAsset->acquisition_cost,
+                unitCost: (int) $lockedAsset->acquisition_cost,
                 note: __('assets.messages.inventory_assignment_note', [
                     'asset' => $lockedAsset->asset_code,
                     'employee' => $assignee->name,
@@ -152,7 +151,7 @@ class AssetLifecycleService
                 warehouse: $warehouse,
                 item: $lockedAssignment->asset->item,
                 quantity: 1,
-                unitCost: (float) $lockedAssignment->asset->acquisition_cost,
+                unitCost: (int) $lockedAssignment->asset->acquisition_cost,
                 note: __('assets.messages.inventory_return_note', [
                     'asset' => $asset->asset_code,
                 ]),
@@ -188,7 +187,7 @@ class AssetLifecycleService
 
     public function releaseFromMaintenance(User $actor, Asset $asset): Asset
     {
-        return DB::transaction(function () use ($actor, $asset) {
+        return DB::transaction(function () use ($asset) {
             $lockedAsset = Asset::query()->lockForUpdate()->findOrFail($asset->id);
 
             if ($lockedAsset->status !== AssetStatus::Maintenance || ! $lockedAsset->warehouse_id) {

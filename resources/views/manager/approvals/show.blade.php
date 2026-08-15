@@ -46,7 +46,7 @@
                     <div class="table-responsive">
                         <table class="table erp-table align-middle mb-0">
                             <thead><tr><th>{{ __('procurement.purchase_request.item') }}</th><th>{{ __('procurement.purchase_request.quantity') }}</th><th>{{ __('procurement.purchase_request.estimated_unit_cost') }}</th></tr></thead>
-                            <tbody>@foreach($workflowRequest->purchaseRequest->items as $line)<tr><td>{{ $line->item_sku }} · {{ $line->item_name }}</td><td>{{ $line->requested_quantity }} {{ $line->unit }}</td><td>{{ number_format((float)$line->estimated_unit_cost,0,',','.') }} ₫</td></tr>@endforeach</tbody>
+                            <tbody>@foreach($workflowRequest->purchaseRequest->items as $line)<tr><td>{{ $line->item_sku }} · {{ $line->item_name }}</td><td>{{ $line->requested_quantity }} {{ $line->unit }}</td><td>{{ number_format((int)$line->estimated_unit_cost,0,',','.') }} ₫</td></tr>@endforeach</tbody>
                         </table>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                 <div class="d-flex flex-wrap gap-2">
                     <button formaction="{{ route('manager.approvals.approve', $workflowRequest) }}" class="btn btn-success">{{ __('ui.approve') }}</button>
                     <button formaction="{{ route('manager.approvals.return', $workflowRequest) }}" class="btn btn-warning">{{ __('ui.return') }}</button>
-                    <button formaction="{{ route('manager.approvals.reject', $workflowRequest) }}" class="btn btn-danger" onclick="return confirm('{{ __('ui.confirm_reject_request') }}')">{{ __('ui.reject') }}</button>
+                    <button formaction="{{ route('manager.approvals.reject', $workflowRequest) }}" class="btn btn-danger" data-confirm="{{ __('ui.confirm_reject_request') }}">{{ __('ui.reject') }}</button>
                 </div>
             </form>
         </div>

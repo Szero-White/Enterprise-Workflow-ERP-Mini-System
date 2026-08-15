@@ -120,6 +120,7 @@ return [
         'transaction_hint' => 'Chỉ ghi nhận số lượng thực tế đã nhận. Tồn kho và movement ledger được cập nhật trong cùng transaction.',
     ],
     'messages' => [
+        'money_total_too_large' => 'Tổng giá trị chứng từ vượt quá giới hạn tiền tệ được hệ thống hỗ trợ.',
         'supplier_created' => 'Đã tạo nhà cung cấp.',
         'supplier_updated' => 'Đã cập nhật nhà cung cấp.',
         'supplier_deleted' => 'Đã xóa nhà cung cấp.',

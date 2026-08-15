@@ -10,10 +10,12 @@ use App\Models\User;
 use App\Models\WorkflowRequest;
 use App\Services\AuditLogService;
 use App\Services\DynamicRequestService;
+use App\Support\Money\VndMoney;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 
 class PurchaseRequestService
 {
@@ -22,8 +24,7 @@ class PurchaseRequestService
     public function __construct(
         private DynamicRequestService $dynamicRequestService,
         private AuditLogService $auditLogService
-    ) {
-    }
+    ) {}
 
     public function create(User $user, array $data, Request $httpRequest): PurchaseRequest
     {
@@ -155,17 +156,25 @@ class PurchaseRequestService
         return $items;
     }
 
-    private function estimatedTotal(array $items): float
+    private function estimatedTotal(array $items): int
     {
-        return array_reduce(
-            $items,
-            fn (float $sum, array $line): float => $sum
-                + ((float) $line['quantity'] * (float) $line['estimated_unit_cost']),
-            0.0
-        );
+        try {
+            return array_reduce(
+                $items,
+                fn (int $sum, array $line): int => VndMoney::add(
+                    $sum,
+                    VndMoney::multiplyByQuantity((string) $line['estimated_unit_cost'], (string) $line['quantity'])
+                ),
+                0
+            );
+        } catch (InvalidArgumentException) {
+            throw ValidationException::withMessages([
+                'items' => __('procurement.messages.money_total_too_large'),
+            ]);
+        }
     }
 
-    private function mergeWorkflowValues(Request $request, array $data, float $estimatedTotal): void
+    private function mergeWorkflowValues(Request $request, array $data, int $estimatedTotal): void
     {
         $request->merge([
             'purpose' => $data['purpose'],

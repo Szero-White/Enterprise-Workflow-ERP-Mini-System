@@ -120,6 +120,6 @@ components:
             required: [item_id, quantity, estimated_unit_cost]
             properties:
               item_id: { type: integer }
-              quantity: { type: number, exclusiveMinimum: 0 }
-              estimated_unit_cost: { type: number, minimum: 0 }
+              quantity: { type: number, exclusiveMinimum: 0, maximum: 1000000, multipleOf: 0.001 }
+              estimated_unit_cost: { type: integer, minimum: 0, maximum: 9999999999999 }
               note: { type: [string, 'null'], maxLength: 1000 }

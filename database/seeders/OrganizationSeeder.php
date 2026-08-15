@@ -12,6 +12,12 @@ class OrganizationSeeder extends Seeder
 {
     public function run(): void
     {
+        $demoPassword = (string) config('demo.password', 'password');
+
+        if (config('demo.enabled') && (strlen($demoPassword) < 10 || $demoPassword === 'password')) {
+            throw new \RuntimeException('DEMO_PASSWORD must be at least 10 characters and must not use the default password when DEMO_MODE=true.');
+        }
+
         $roles = collect([
             ['name' => 'Quản trị viên', 'key' => 'admin'],
             ['name' => 'Quản lý', 'key' => 'manager'],
@@ -50,7 +56,7 @@ class OrganizationSeeder extends Seeder
         ] as [$email, $name, $departmentCode, $roleKey]) {
             User::updateOrCreate(['email' => $email], [
                 'name' => $name,
-                'password' => Hash::make('password'),
+                'password' => Hash::make($demoPassword),
                 'department_id' => $departments[$departmentCode]->id,
                 'role_id' => $roles[$roleKey]->id,
                 'is_active' => true,

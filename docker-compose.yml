@@ -1,4 +1,13 @@
 services:
+  init:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - vendor_data:/var/www/html/vendor
+      - public_build:/var/www/html/public/build
+    command: sh -c "rm -rf vendor/* public/build/* && cp -a /opt/vendor/. vendor/ && cp -a /opt/public-build/. public/build/"
+
   app:
     build:
       context: .
@@ -12,9 +21,12 @@ services:
     volumes:
       - ./:/var/www/html
       - vendor_data:/var/www/html/vendor
+      - public_build:/var/www/html/public/build
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
+      init:
+        condition: service_completed_successfully
       mysql:
         condition: service_healthy
     command: php artisan serve --host=0.0.0.0 --port=8000 --no-reload
@@ -33,6 +45,8 @@ services:
       - ./:/var/www/html
       - vendor_data:/var/www/html/vendor
     depends_on:
+      init:
+        condition: service_completed_successfully
       mysql:
         condition: service_healthy
     command: php artisan queue:work --sleep=2 --tries=3 --timeout=60
@@ -45,7 +59,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-change-me}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change-root-password}
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -57,3 +71,4 @@ services:
 volumes:
   mysql_data:
   vendor_data:
+  public_build:

@@ -14,7 +14,7 @@ class ItemResource extends JsonResource
             'sku' => $this->sku,
             'name' => $this->name,
             'unit' => $this->unit,
-            'cost_price' => (float) $this->cost_price,
+            'cost_price' => (int) $this->cost_price,
             'reorder_level' => (float) $this->reorder_level,
             'is_active' => (bool) $this->is_active,
             'category' => $this->whenLoaded('category', fn () => $this->category ? [

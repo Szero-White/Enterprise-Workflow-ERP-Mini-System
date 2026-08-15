@@ -24,7 +24,7 @@ class PurchaseRequest extends Model
     {
         return [
             'required_date' => 'date',
-            'estimated_total' => 'decimal:2',
+            'estimated_total' => 'integer',
             'status' => PurchaseRequestStatus::class,
         ];
     }

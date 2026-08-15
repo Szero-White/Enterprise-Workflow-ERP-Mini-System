@@ -31,7 +31,7 @@
                                         <div class="erp-record-secondary">{{ $line->item->sku }}</div>
                                     </td>
                                     <td>{{ $line->quantity }} {{ $line->item->unit }}</td>
-                                    <td>{{ number_format((float) $line->unit_cost, 0, ',', '.') }} ₫</td>
+                                    <td>{{ number_format((int) $line->unit_cost, 0, ',', '.') }} ₫</td>
                                     <td>
                                         @if($line->assets->isNotEmpty())
                                             <div class="d-flex flex-wrap gap-1">

@@ -29,7 +29,7 @@
                             <td><span class="erp-record-code">{{ $purchaseOrder->po_number }}</span></td>
                             <td>{{ $purchaseOrder->supplier->name }}</td>
                             <td>{{ $purchaseOrder->warehouse->name }}</td>
-                            <td>{{ number_format((float) $purchaseOrder->subtotal, 0, ',', '.') }} ₫</td>
+                            <td>{{ number_format((int) $purchaseOrder->subtotal, 0, ',', '.') }} ₫</td>
                             <td><span class="badge text-bg-light border">{{ $purchaseOrder->status->label() }}</span></td>
                             <td class="text-end">
                                 <a class="btn btn-sm btn-light border" href="{{ route('procurement.purchase-orders.show', $purchaseOrder) }}">

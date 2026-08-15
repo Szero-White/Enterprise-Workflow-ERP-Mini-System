@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\Money\VndMoney;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,8 +23,8 @@ class ItemRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:4000'],
             'unit' => ['required', 'string', 'max:30'],
-            'cost_price' => ['required', 'numeric', 'min:0'],
-            'reorder_level' => ['required', 'numeric', 'min:0'],
+            'cost_price' => ['required', 'integer', 'min:0', 'max:'.VndMoney::MAX_AMOUNT],
+            'reorder_level' => ['required', 'decimal:0,3', 'min:0', 'max:'.VndMoney::MAX_QUANTITY],
             'is_asset_trackable' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
         ];

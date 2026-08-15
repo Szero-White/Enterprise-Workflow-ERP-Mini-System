@@ -58,9 +58,9 @@
                                         <div class="erp-record-secondary">{{ $line->item_sku }}</div>
                                     </td>
                                     <td>{{ $line->requested_quantity }} {{ $line->unit }}</td>
-                                    <td>{{ number_format((float) $line->estimated_unit_cost, 0, ',', '.') }} ₫</td>
+                                    <td>{{ number_format((int) $line->estimated_unit_cost, 0, ',', '.') }} ₫</td>
                                     <td class="text-end">
-                                        {{ number_format((float) $line->requested_quantity * (float) $line->estimated_unit_cost, 0, ',', '.') }} ₫
+                                        {{ number_format($line->estimated_line_total, 0, ',', '.') }} ₫
                                     </td>
                                 </tr>
                             @endforeach
@@ -80,7 +80,7 @@
                     <dd class="col-7">{{ $purchaseRequest->required_date?->format('d/m/Y') ?? '-' }}</dd>
 
                     <dt class="col-5">{{ __('procurement.purchase_request.estimated_total') }}</dt>
-                    <dd class="col-7">{{ number_format((float) $purchaseRequest->estimated_total, 0, ',', '.') }} ₫</dd>
+                    <dd class="col-7">{{ number_format((int) $purchaseRequest->estimated_total, 0, ',', '.') }} ₫</dd>
 
                     <dt class="col-5">{{ __('procurement.purchase_request.workflow_status') }}</dt>
                     <dd class="col-7">@include('partials.status_badge', ['status' => $purchaseRequest->workflowRequest->status])</dd>

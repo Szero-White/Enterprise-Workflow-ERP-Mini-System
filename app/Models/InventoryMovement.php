@@ -28,7 +28,7 @@ class InventoryMovement extends Model
             'type' => InventoryMovementType::class,
             'quantity' => 'decimal:3',
             'balance_after' => 'decimal:3',
-            'unit_cost' => 'decimal:2',
+            'unit_cost' => 'integer',
         ];
     }
 

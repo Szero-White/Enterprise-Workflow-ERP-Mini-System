@@ -3,6 +3,11 @@
 @section('page_title', __('auth.login_title'))
 
 @section('content')
+@php
+    $demoAccounts = collect(config('demo.accounts', []));
+    $defaultDemoEmail = (string) config('demo.default_email', 'employee@example.com');
+    $defaultDemoAccount = $demoAccounts->firstWhere('email', $defaultDemoEmail) ?? $demoAccounts->first();
+@endphp
 <div class="erp-login-shell">
     <div class="row g-0 align-items-stretch">
         <div class="col-xl-7">
@@ -22,8 +27,8 @@
 
                     <div class="erp-login-capabilities" aria-label="{{ __('auth.capabilities') }}">
                         <span class="erp-login-capability"><i class="bi bi-ui-checks-grid"></i>{{ __('auth.feature_requests') }}</span>
-                        <span class="erp-login-capability"><i class="bi bi-boxes"></i>{{ __('auth.feature_inventory') }}</span>
-                        <span class="erp-login-capability"><i class="bi bi-bezier2"></i>{{ __('auth.feature_workflow') }}</span>
+                        <span class="erp-login-capability"><i class="bi bi-cart-check"></i>{{ __('auth.feature_inventory') }}</span>
+                        <span class="erp-login-capability"><i class="bi bi-laptop"></i>{{ __('auth.feature_workflow') }}</span>
                     </div>
                 </div>
 
@@ -60,7 +65,52 @@
                     <h2 class="erp-login-form__title">{{ __('auth.login_title') }}</h2>
                     <p class="erp-login-form__subtitle">{{ __('auth.login_subtitle') }}</p>
 
-                    @if(app()->environment('local', 'testing'))
+                    @if(config('demo.enabled'))
+                        <div class="erp-demo-access" data-demo-login>
+                            <div class="erp-demo-access__header">
+                                <span class="erp-demo-access__badge"><i class="bi bi-play-circle"></i>{{ __('auth.public_demo_title') }}</span>
+                                <span class="erp-demo-access__ready"><i class="bi bi-check-circle-fill"></i>{{ __('auth.demo_ready') }}</span>
+                            </div>
+
+                            <p class="erp-demo-access__hint">{{ __('auth.public_demo_hint') }}</p>
+
+                            <div class="erp-demo-access__flow">
+                                <span>{{ __('auth.demo_flow_label') }}</span>
+                                <strong>{{ __('auth.demo_flow') }}</strong>
+                            </div>
+
+                            <div class="erp-demo-access__credentials">
+                                <div>
+                                    <span>{{ __('auth.demo_selected_role') }}</span>
+                                    <strong data-demo-selected-role>{{ $defaultDemoAccount['role'] ?? __('auth.demo_account') }}</strong>
+                                    <small>{{ $defaultDemoAccount['email'] ?? $defaultDemoEmail }}</small>
+                                </div>
+                                <div>
+                                    <span>{{ __('auth.demo_password') }}</span>
+                                    <code>{{ config('demo.password') }}</code>
+                                </div>
+                            </div>
+
+                            <details class="erp-demo-roles">
+                                <summary>{{ __('auth.demo_switch_role') }}</summary>
+                                <div class="erp-demo-roles__grid">
+                                    @foreach($demoAccounts as $account)
+                                        <button
+                                            type="button"
+                                            class="erp-demo-role {{ $account['email'] === ($defaultDemoAccount['email'] ?? null) ? 'is-active' : '' }}"
+                                            data-demo-account
+                                            data-demo-email="{{ $account['email'] }}"
+                                            data-demo-role="{{ $account['role'] }}"
+                                            data-demo-password="{{ config('demo.password') }}"
+                                        >
+                                            <span>{{ $account['role'] }}</span>
+                                            <small>{{ $account['email'] }}</small>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </details>
+                        </div>
+                    @elseif(app()->environment('local', 'testing'))
                         <div class="erp-demo-credential">
                             <div class="d-flex align-items-center justify-content-between gap-3">
                                 <div class="min-w-0">
@@ -81,7 +131,7 @@
                                 type="email"
                                 name="email"
                                 class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email', app()->environment('local', 'testing') ? 'admin@example.com' : '') }}"
+                                value="{{ old('email', config('demo.enabled') ? $defaultDemoEmail : (app()->environment('local', 'testing') ? 'admin@example.com' : '')) }}"
                                 autocomplete="email"
                                 required
                                 autofocus
@@ -96,6 +146,7 @@
                                 type="password"
                                 name="password"
                                 class="form-control @error('password') is-invalid @enderror"
+                                value="{{ config('demo.enabled') ? config('demo.password') : '' }}"
                                 autocomplete="current-password"
                                 required
                             >

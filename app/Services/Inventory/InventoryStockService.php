@@ -15,16 +15,14 @@ use Illuminate\Validation\ValidationException;
 
 class InventoryStockService
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     public function receive(
         User $actor,
         Warehouse $warehouse,
         Item $item,
         float $quantity,
-        ?float $unitCost = null,
+        ?int $unitCost = null,
         ?string $note = null,
         ?Model $reference = null,
         InventoryMovementType $movementType = InventoryMovementType::Receipt
@@ -80,13 +78,12 @@ class InventoryStockService
         });
     }
 
-
     public function issue(
         User $actor,
         Warehouse $warehouse,
         Item $item,
         float $quantity,
-        ?float $unitCost = null,
+        ?int $unitCost = null,
         ?string $note = null,
         ?Model $reference = null,
         InventoryMovementType $movementType = InventoryMovementType::AdjustmentOut
@@ -185,7 +182,7 @@ class InventoryStockService
         InventoryMovementType $type,
         float $quantity,
         float $balanceAfter,
-        ?float $unitCost = null,
+        ?int $unitCost = null,
         ?Model $reference = null,
         ?string $note = null,
     ): void {

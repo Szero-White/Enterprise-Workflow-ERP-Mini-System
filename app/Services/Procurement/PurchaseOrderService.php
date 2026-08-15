@@ -11,14 +11,14 @@ use App\Models\User;
 use App\Models\Warehouse;
 use App\Models\WorkflowRequest;
 use App\Services\AuditLogService;
+use App\Support\Money\VndMoney;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use InvalidArgumentException;
 
 class PurchaseOrderService
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     public function createDraft(
         User $actor,
@@ -72,24 +72,30 @@ class PurchaseOrderService
                 'po_number' => sprintf('PO-%s-%06d', now()->format('Ym'), $order->id),
             ]);
 
-            $subtotal = 0.0;
+            $subtotal = 0;
 
-            foreach ($purchaseRequest->items as $requestItem) {
-                $unitCost = (float) $costs->get($requestItem->id)['unit_cost'];
-                $quantity = (float) $requestItem->requested_quantity;
-                $lineTotal = $quantity * $unitCost;
-                $subtotal += $lineTotal;
+            try {
+                foreach ($purchaseRequest->items as $requestItem) {
+                    $unitCost = VndMoney::toInteger((string) $costs->get($requestItem->id)['unit_cost']);
+                    $quantity = (string) $requestItem->requested_quantity;
+                    $lineTotal = VndMoney::multiplyByQuantity($unitCost, $quantity);
+                    $subtotal = VndMoney::add($subtotal, $lineTotal);
 
-                $order->items()->create([
-                    'purchase_request_item_id' => $requestItem->id,
-                    'item_id' => $requestItem->item_id,
-                    'item_sku' => $requestItem->item_sku,
-                    'item_name' => $requestItem->item_name,
-                    'unit' => $requestItem->unit,
-                    'ordered_quantity' => $quantity,
-                    'received_quantity' => 0,
-                    'unit_cost' => $unitCost,
-                    'line_total' => $lineTotal,
+                    $order->items()->create([
+                        'purchase_request_item_id' => $requestItem->id,
+                        'item_id' => $requestItem->item_id,
+                        'item_sku' => $requestItem->item_sku,
+                        'item_name' => $requestItem->item_name,
+                        'unit' => $requestItem->unit,
+                        'ordered_quantity' => $quantity,
+                        'received_quantity' => 0,
+                        'unit_cost' => $unitCost,
+                        'line_total' => $lineTotal,
+                    ]);
+                }
+            } catch (InvalidArgumentException) {
+                throw ValidationException::withMessages([
+                    'lines' => __('procurement.messages.money_total_too_large'),
                 ]);
             }
 

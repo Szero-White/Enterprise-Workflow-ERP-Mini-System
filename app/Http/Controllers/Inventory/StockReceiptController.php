@@ -12,9 +12,7 @@ use Illuminate\View\View;
 
 class StockReceiptController extends Controller
 {
-    public function __construct(private InventoryStockService $inventoryStockService)
-    {
-    }
+    public function __construct(private InventoryStockService $inventoryStockService) {}
 
     public function create(): View
     {
@@ -35,7 +33,7 @@ class StockReceiptController extends Controller
             $warehouse,
             $item,
             (float) $data['quantity'],
-            isset($data['unit_cost']) ? (float) $data['unit_cost'] : null,
+            isset($data['unit_cost']) ? (int) $data['unit_cost'] : null,
             $data['note'] ?? null,
         );
 

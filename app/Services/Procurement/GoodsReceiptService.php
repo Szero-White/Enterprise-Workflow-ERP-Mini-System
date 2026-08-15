@@ -21,8 +21,7 @@ class GoodsReceiptService
         private InventoryStockService $inventoryStockService,
         private AssetRegistrationService $assetRegistrationService,
         private AuditLogService $auditLogService
-    ) {
-    }
+    ) {}
 
     public function receive(User $actor, PurchaseOrder $purchaseOrder, array $data): GoodsReceipt
     {
@@ -109,7 +108,7 @@ class GoodsReceiptService
                     warehouse: $order->warehouse,
                     item: $orderItem->item,
                     quantity: $quantity,
-                    unitCost: (float) $orderItem->unit_cost,
+                    unitCost: (int) $orderItem->unit_cost,
                     note: __('procurement.messages.inventory_receipt_note', [
                         'receipt' => $receipt->receipt_number,
                         'po' => $order->po_number,
