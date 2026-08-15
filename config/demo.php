@@ -6,9 +6,9 @@ return [
     | Public portfolio demo mode
     |--------------------------------------------------------------------------
     |
-    | DEMO_MODE is intended for an Internet-facing recruiter demo. It keeps the
-    | operational workflow usable while protecting configuration/master data
-    | from anonymous demo users who know the published credentials.
+    | DEMO_MODE is intended for an Internet-facing recruiter sandbox. Business
+    | and administrative features remain usable according to each account's
+    | normal authorization while abuse controls protect the public instance.
     |
     */
 
@@ -24,21 +24,6 @@ return [
     'max_writes_per_minute' => (int) env('DEMO_MAX_WRITES_PER_MINUTE', 15),
     'max_writes_per_hour' => (int) env('DEMO_MAX_WRITES_PER_HOUR', 60),
 
-    // Read operations remain available so recruiters can inspect configuration.
-    // Mutating requests and create/edit form pages matching these patterns are
-    // blocked while DEMO_MODE=true. Operational PR/approval/PO/GR/asset flows
-    // deliberately remain writable.
-    'read_only_routes' => [
-        'admin.*',
-        'inventory.item-categories.*',
-        'inventory.items.*',
-        'inventory.warehouses.*',
-        'inventory.receipts.*',
-        'procurement.suppliers.*',
-        'assets.edit',
-        'assets.update',
-    ],
-
     'accounts' => [
         ['email' => 'employee@example.com', 'role' => 'Nhân viên'],
         ['email' => 'manager@example.com', 'role' => 'Quản lý'],
@@ -47,6 +32,6 @@ return [
         ['email' => 'director@example.com', 'role' => 'Giám đốc'],
         ['email' => 'asset@example.com', 'role' => 'Quản lý tài sản'],
         ['email' => 'hr@example.com', 'role' => 'Nhân sự'],
-        ['email' => 'admin@example.com', 'role' => 'Quản trị viên · chỉ đọc cấu hình'],
+        ['email' => 'admin@example.com', 'role' => 'Quản trị hệ thống'],
     ],
 ];

@@ -36,25 +36,26 @@ class PublicDemoSafetyTest extends TestCase
             ->assertHeader('Strict-Transport-Security', 'max-age=3600');
     }
 
-    public function test_public_demo_blocks_admin_configuration_mutations_and_form_pages(): void
+    public function test_public_demo_allows_admin_configuration_mutations_with_normal_authorization(): void
     {
         config(['demo.enabled' => true]);
         $admin = $this->createUserWithRole('admin');
 
         $this->actingAs($admin)
             ->get(route('admin.roles.create'))
-            ->assertRedirect(route('dashboard'))
-            ->assertSessionHas('error');
+            ->assertOk();
 
         $this->actingAs($admin)
             ->post(route('admin.roles.store'), [
-                'name' => 'Unsafe Demo Role',
-                'key' => 'unsafe_demo_role',
+                'name' => 'Demo Sandbox Role',
+                'key' => 'demo_sandbox_role',
             ])
-            ->assertRedirect(route('dashboard'))
-            ->assertSessionHas('error');
+            ->assertRedirect();
 
-        $this->assertDatabaseMissing('roles', ['key' => 'unsafe_demo_role']);
+        $this->assertDatabaseHas('roles', [
+            'name' => 'Demo Sandbox Role',
+            'key' => 'demo_sandbox_role',
+        ]);
     }
 
     public function test_public_demo_disables_dynamic_file_uploads(): void

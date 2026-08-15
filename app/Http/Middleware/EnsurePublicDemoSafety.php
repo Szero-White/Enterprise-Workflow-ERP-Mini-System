@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsurePublicDemoSafety
@@ -16,37 +15,11 @@ class EnsurePublicDemoSafety
             return $next($request);
         }
 
-        $routeName = (string) optional($request->route())->getName();
-
-        if ($this->isReadOnlyRoute($routeName)
-            && (! $request->isMethodSafe() || Str::endsWith($routeName, ['.create', '.edit']))) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => __('messages.demo_read_only_action')], 403);
-            }
-
-            return redirect()->route('dashboard')->with('error', __('messages.demo_read_only_action'));
-        }
-
         if (! $request->isMethodSafe()) {
             $this->guardWriteRate($request);
         }
 
         return $next($request);
-    }
-
-    private function isReadOnlyRoute(string $routeName): bool
-    {
-        if ($routeName === '') {
-            return false;
-        }
-
-        foreach (config('demo.read_only_routes', []) as $pattern) {
-            if (Str::is($pattern, $routeName)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private function guardWriteRate(Request $request): void
