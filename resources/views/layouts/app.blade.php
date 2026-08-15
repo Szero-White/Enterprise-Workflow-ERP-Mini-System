@@ -32,6 +32,7 @@
 @auth
     <div class="erp-shell">
         @include('partials.sidebar')
+        @include('partials.sidebar-scroll-restore')
         <div class="erp-main">
             @include('partials.navbar')
             <main class="erp-content" id="main-content">
