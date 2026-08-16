@@ -30,7 +30,7 @@
         isset($purchaseRequest)
             ? $purchaseRequest->items->map(fn ($line) => [
                 'item_id' => $line->item_id,
-                'quantity' => $line->requested_quantity,
+                'quantity' => \App\Support\QuantityFormatter::format($line->requested_quantity),
                 'estimated_unit_cost' => $line->estimated_unit_cost,
                 'note' => $line->note,
             ])->toArray()

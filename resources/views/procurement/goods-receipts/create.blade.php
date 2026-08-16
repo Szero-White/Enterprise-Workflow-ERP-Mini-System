@@ -58,9 +58,9 @@
                                             value="{{ $line->id }}"
                                         >
                                     </td>
-                                    <td>{{ $line->ordered_quantity }} {{ $line->unit }}</td>
-                                    <td>{{ $line->received_quantity }} {{ $line->unit }}</td>
-                                    <td>{{ $line->outstanding_quantity }} {{ $line->unit }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::format($line->ordered_quantity) }} {{ $line->unit }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::format($line->received_quantity) }} {{ $line->unit }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::format($line->outstanding_quantity) }} {{ $line->unit }}</td>
                                     <td>
                                         <input
                                             class="form-control"
@@ -68,7 +68,7 @@
                                             type="number"
                                             step="0.001"
                                             min="0"
-                                            max="{{ $line->outstanding_quantity }}"
+                                            max="{{ \App\Support\QuantityFormatter::format($line->outstanding_quantity) }}"
                                             value="{{ old('lines.'.$index.'.quantity', 0) }}"
                                         >
                                     </td>
