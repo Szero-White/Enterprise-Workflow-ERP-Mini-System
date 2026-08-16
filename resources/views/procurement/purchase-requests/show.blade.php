@@ -57,7 +57,7 @@
                                         <div class="erp-record-primary">{{ $line->item_name }}</div>
                                         <div class="erp-record-secondary">{{ $line->item_sku }}</div>
                                     </td>
-                                    <td>{{ $line->requested_quantity }} {{ $line->unit }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::format($line->requested_quantity) }} {{ $line->unit }}</td>
                                     <td>{{ number_format((int) $line->estimated_unit_cost, 0, ',', '.') }} ₫</td>
                                     <td class="text-end">
                                         {{ number_format($line->estimated_line_total, 0, ',', '.') }} ₫

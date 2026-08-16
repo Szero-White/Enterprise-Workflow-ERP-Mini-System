@@ -37,7 +37,7 @@
                     <div class="table-responsive">
                         <table class="table erp-table align-middle mb-0">
                             <thead><tr><th>{{ __('procurement.purchase_request.item') }}</th><th>{{ __('procurement.purchase_request.quantity') }}</th><th>{{ __('procurement.purchase_request.estimated_unit_cost') }}</th></tr></thead>
-                            <tbody>@foreach($workflowRequest->purchaseRequest->items as $line)<tr><td>{{ $line->item_sku }} · {{ $line->item_name }}</td><td>{{ $line->requested_quantity }} {{ $line->unit }}</td><td>{{ number_format((int)$line->estimated_unit_cost,0,',','.') }} ₫</td></tr>@endforeach</tbody>
+                            <tbody>@foreach($workflowRequest->purchaseRequest->items as $line)<tr><td>{{ $line->item_sku }} · {{ $line->item_name }}</td><td>{{ \App\Support\QuantityFormatter::format($line->requested_quantity) }} {{ $line->unit }}</td><td>{{ number_format((int)$line->estimated_unit_cost,0,',','.') }} ₫</td></tr>@endforeach</tbody>
                         </table>
                     </div>
                 </div>

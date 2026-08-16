@@ -70,7 +70,7 @@
                                             value="{{ $line->id }}"
                                         >
                                     </td>
-                                    <td>{{ $line->requested_quantity }} {{ $line->unit }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::format($line->requested_quantity) }} {{ $line->unit }}</td>
                                     <td>{{ number_format((int) $line->estimated_unit_cost, 0, ',', '.') }} ₫</td>
                                     <td>
                                         <input

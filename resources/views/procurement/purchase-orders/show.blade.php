@@ -53,8 +53,8 @@
                                         <div class="erp-record-primary">{{ $line->item_name }}</div>
                                         <div class="erp-record-secondary">{{ $line->item_sku }}</div>
                                     </td>
-                                    <td>{{ $line->ordered_quantity }} {{ $line->unit }}</td>
-                                    <td>{{ $line->received_quantity }} {{ $line->unit }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::format($line->ordered_quantity) }} {{ $line->unit }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::format($line->received_quantity) }} {{ $line->unit }}</td>
                                     <td>{{ number_format((int) $line->unit_cost, 0, ',', '.') }} ₫</td>
                                     <td class="text-end">{{ number_format((int) $line->line_total, 0, ',', '.') }} ₫</td>
                                 </tr>

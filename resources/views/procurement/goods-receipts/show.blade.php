@@ -30,7 +30,7 @@
                                         <div class="erp-record-primary">{{ $line->item->name }}</div>
                                         <div class="erp-record-secondary">{{ $line->item->sku }}</div>
                                     </td>
-                                    <td>{{ $line->quantity }} {{ $line->item->unit }}</td>
+                                    <td>{{ \App\Support\QuantityFormatter::format($line->quantity) }} {{ $line->item->unit }}</td>
                                     <td>{{ number_format((int) $line->unit_cost, 0, ',', '.') }} ₫</td>
                                     <td>
                                         @if($line->assets->isNotEmpty())
