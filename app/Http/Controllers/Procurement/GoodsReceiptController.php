@@ -13,9 +13,7 @@ use Illuminate\View\View;
 
 class GoodsReceiptController extends Controller
 {
-    public function __construct(private GoodsReceiptService $goodsReceiptService)
-    {
-    }
+    public function __construct(private GoodsReceiptService $goodsReceiptService) {}
 
     public function index(): View
     {

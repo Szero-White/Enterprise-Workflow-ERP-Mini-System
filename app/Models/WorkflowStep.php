@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class WorkflowStep extends Model
 {
     public const APPROVER_ROLE = 'role';
+
     public const APPROVER_DEPARTMENT = 'department';
+
     public const APPROVER_USER = 'user';
 
     protected $fillable = [

@@ -11,9 +11,7 @@ use Illuminate\View\View;
 
 class RoleController extends Controller
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     public function index(): View
     {

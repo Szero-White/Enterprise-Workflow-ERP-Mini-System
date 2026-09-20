@@ -18,8 +18,7 @@ class WorkflowTemplateController extends Controller
     public function __construct(
         private AuditLogService $auditLogService,
         private WorkflowConfigurationService $configurationService,
-    ) {
-    }
+    ) {}
 
     public function index(): View
     {

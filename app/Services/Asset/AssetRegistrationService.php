@@ -12,9 +12,7 @@ use Illuminate\Validation\ValidationException;
 
 class AssetRegistrationService
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     /** @return Collection<int, Asset> */
     public function registerFromReceiptItem(GoodsReceiptItem $receiptItem): Collection

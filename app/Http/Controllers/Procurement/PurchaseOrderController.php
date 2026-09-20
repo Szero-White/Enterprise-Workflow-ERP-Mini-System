@@ -16,9 +16,7 @@ use Illuminate\View\View;
 
 class PurchaseOrderController extends Controller
 {
-    public function __construct(private PurchaseOrderService $purchaseOrderService)
-    {
-    }
+    public function __construct(private PurchaseOrderService $purchaseOrderService) {}
 
     public function index(Request $request): View
     {

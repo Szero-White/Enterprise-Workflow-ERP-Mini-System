@@ -13,9 +13,7 @@ use Illuminate\View\View;
 
 class ItemController extends Controller
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     public function index(Request $request): View
     {

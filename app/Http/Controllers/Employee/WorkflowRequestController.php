@@ -14,9 +14,7 @@ use Illuminate\View\View;
 
 class WorkflowRequestController extends Controller
 {
-    public function __construct(private DynamicRequestService $dynamicRequestService)
-    {
-    }
+    public function __construct(private DynamicRequestService $dynamicRequestService) {}
 
     public function index(Request $request): View
     {

@@ -14,9 +14,7 @@ use Illuminate\View\View;
 
 class AssetReturnController extends Controller
 {
-    public function __construct(private AssetLifecycleService $assetLifecycleService)
-    {
-    }
+    public function __construct(private AssetLifecycleService $assetLifecycleService) {}
 
     public function create(AssetAssignment $assignment): View
     {

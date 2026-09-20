@@ -8,9 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Notification extends Model
 {
     public const TYPE_REQUEST_SUBMITTED = 'request_submitted';
+
     public const TYPE_REQUEST_APPROVED = 'request_approved';
+
     public const TYPE_REQUEST_REJECTED = 'request_rejected';
+
     public const TYPE_REQUEST_RETURNED = 'request_returned';
+
     public const TYPE_REQUEST_COMPLETED = 'request_completed';
 
     protected $fillable = [

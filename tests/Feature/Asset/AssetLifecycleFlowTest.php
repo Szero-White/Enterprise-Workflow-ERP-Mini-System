@@ -14,8 +14,8 @@ use Tests\TestCase;
 
 class AssetLifecycleFlowTest extends TestCase
 {
-    use RefreshDatabase;
     use BuildsProcurementFixture;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

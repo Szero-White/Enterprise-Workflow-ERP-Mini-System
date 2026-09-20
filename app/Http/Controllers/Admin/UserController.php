@@ -14,13 +14,12 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     public function index(): View
     {
         $users = User::with(['department', 'role'])->latest()->paginate(10);
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -100,6 +99,7 @@ class UserController extends Controller
         $old = $user->toArray();
         $this->auditLogService->log('user.deleted', $user, $old, null);
         $user->delete();
+
         return back()->with('success', __('messages.user_deleted'));
     }
 }

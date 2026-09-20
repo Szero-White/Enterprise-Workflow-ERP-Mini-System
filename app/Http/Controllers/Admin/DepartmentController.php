@@ -11,13 +11,12 @@ use Illuminate\View\View;
 
 class DepartmentController extends Controller
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     public function index(): View
     {
         $departments = Department::latest()->paginate(10);
+
         return view('admin.departments.index', compact('departments'));
     }
 
@@ -30,6 +29,7 @@ class DepartmentController extends Controller
     {
         $department = Department::create($request->validated());
         $this->auditLogService->log('department.created', $department, null, $department->toArray());
+
         return redirect()->route('admin.departments.index')->with('success', __('messages.department_created'));
     }
 
@@ -43,6 +43,7 @@ class DepartmentController extends Controller
         $old = $department->toArray();
         $department->update($request->validated());
         $this->auditLogService->log('department.updated', $department, $old, $department->fresh()->toArray());
+
         return redirect()->route('admin.departments.index')->with('success', __('messages.department_updated'));
     }
 
@@ -55,6 +56,7 @@ class DepartmentController extends Controller
         $old = $department->toArray();
         $this->auditLogService->log('department.deleted', $department, $old, null);
         $department->delete();
+
         return back()->with('success', __('messages.department_deleted'));
     }
 }

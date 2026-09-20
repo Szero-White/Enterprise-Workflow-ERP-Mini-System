@@ -16,9 +16,7 @@ use Illuminate\View\View;
 
 class WorkflowStepController extends Controller
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     public function index(WorkflowTemplate $workflowTemplate): View
     {

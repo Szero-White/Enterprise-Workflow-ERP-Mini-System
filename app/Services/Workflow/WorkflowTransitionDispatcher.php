@@ -7,9 +7,7 @@ use App\Models\WorkflowRequest;
 
 class WorkflowTransitionDispatcher
 {
-    public function __construct(private iterable $handlers)
-    {
-    }
+    public function __construct(private iterable $handlers) {}
 
     public function dispatch(WorkflowRequest $workflowRequest): void
     {

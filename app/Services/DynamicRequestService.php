@@ -21,8 +21,7 @@ class DynamicRequestService
     public function __construct(
         private AuditLogService $auditLogService,
         private NotificationService $notificationService
-    ) {
-    }
+    ) {}
 
     public function create(User $user, FormTemplate $formTemplate, Request $httpRequest): WorkflowRequest
     {

@@ -15,8 +15,7 @@ class ApprovalService
         private AuditLogService $auditLogService,
         private NotificationService $notificationService,
         private WorkflowTransitionDispatcher $workflowTransitionDispatcher
-    ) {
-    }
+    ) {}
 
     public function approve(User $actor, WorkflowRequest $workflowRequest, ?string $comment = null): WorkflowRequest
     {

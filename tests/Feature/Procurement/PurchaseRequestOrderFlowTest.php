@@ -11,8 +11,8 @@ use Tests\TestCase;
 
 class PurchaseRequestOrderFlowTest extends TestCase
 {
-    use RefreshDatabase;
     use BuildsProcurementFixture;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

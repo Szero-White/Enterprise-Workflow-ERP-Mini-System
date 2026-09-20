@@ -10,8 +10,8 @@ use Tests\TestCase;
 
 class InventoryStockServiceTest extends TestCase
 {
-    use RefreshDatabase;
     use BuildsProcurementFixture;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

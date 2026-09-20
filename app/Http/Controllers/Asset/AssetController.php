@@ -18,8 +18,7 @@ class AssetController extends Controller
     public function __construct(
         private AuditLogService $auditLogService,
         private AssetLifecycleService $assetLifecycleService
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {

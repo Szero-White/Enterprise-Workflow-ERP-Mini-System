@@ -13,9 +13,7 @@ use Illuminate\View\View;
 
 class ApprovalController extends Controller
 {
-    public function __construct(private ApprovalService $approvalService)
-    {
-    }
+    public function __construct(private ApprovalService $approvalService) {}
 
     public function index(Request $request): View
     {
@@ -108,7 +106,7 @@ class ApprovalController extends Controller
         if ($request->filled('action')) {
             $query->whereHas('histories', function ($q) use ($user, $request) {
                 $q->where('actor_id', $user->id)
-                  ->where('action', $request->action);
+                    ->where('action', $request->action);
             });
         }
 

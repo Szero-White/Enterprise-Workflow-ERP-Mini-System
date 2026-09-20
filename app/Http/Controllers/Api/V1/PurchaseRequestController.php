@@ -14,9 +14,7 @@ use Illuminate\Support\Facades\Gate;
 
 class PurchaseRequestController extends Controller
 {
-    public function __construct(private PurchaseRequestService $purchaseRequestService)
-    {
-    }
+    public function __construct(private PurchaseRequestService $purchaseRequestService) {}
 
     public function index(Request $request): AnonymousResourceCollection
     {

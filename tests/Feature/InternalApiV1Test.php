@@ -17,7 +17,9 @@ class InternalApiV1Test extends TestCase
     use RefreshDatabase;
 
     private User $admin;
+
     private Item $item;
+
     private Warehouse $warehouse;
 
     protected function setUp(): void

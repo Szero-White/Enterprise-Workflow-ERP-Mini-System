@@ -12,9 +12,7 @@ use Illuminate\View\View;
 
 class SupplierController extends Controller
 {
-    public function __construct(private AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(private AuditLogService $auditLogService) {}
 
     public function index(Request $request): View
     {
