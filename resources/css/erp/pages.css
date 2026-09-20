@@ -481,3 +481,126 @@
     }
 }
 /* END: compact notification typography */
+
+/* Audit log workspace */
+.erp-audit-filter-card .form-label {
+    margin-bottom: .42rem;
+    color: var(--erp-text-soft);
+    font-size: .72rem;
+    font-weight: 600;
+}
+.erp-audit-filter-card__hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--erp-border);
+    color: var(--erp-muted);
+    font-size: .68rem;
+    line-height: 1.5;
+}
+.erp-audit-filter-card__hint i { margin-top: 2px; color: var(--erp-primary); }
+.erp-audit-card { overflow: hidden; }
+.erp-audit-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+}
+.erp-audit-table {
+    width: 100%;
+    min-width: 1080px;
+    margin-bottom: 0;
+    table-layout: fixed;
+}
+.erp-audit-table th,
+.erp-audit-table td {
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+.erp-audit-table thead th { white-space: nowrap; }
+.erp-audit-col-no { width: 58px; }
+.erp-audit-col-time { width: 118px; }
+.erp-audit-col-actor { width: 190px; }
+.erp-audit-col-action { width: 220px; }
+.erp-audit-col-target { width: 145px; }
+.erp-audit-col-ip { width: 115px; }
+.erp-audit-col-change { width: 234px; }
+.erp-audit-primary {
+    color: var(--erp-text);
+    font-size: .78rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+.erp-audit-secondary {
+    margin-top: 3px;
+    color: var(--erp-muted);
+    font-size: .66rem;
+    line-height: 1.4;
+}
+.erp-audit-code {
+    display: inline-block;
+    max-width: 100%;
+    margin-top: 4px;
+    padding: 0;
+    overflow: hidden;
+    color: var(--erp-primary-active);
+    background: transparent;
+    font-size: .63rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.erp-audit-ip {
+    color: var(--erp-text-soft);
+    font-family: var(--bs-font-monospace);
+    font-size: .69rem;
+}
+.erp-audit-change-details { max-width: 100%; }
+.erp-audit-change-details summary {
+    width: fit-content;
+    color: var(--erp-primary-active);
+    cursor: pointer;
+    font-size: .69rem;
+    font-weight: 600;
+}
+.erp-audit-change-details[open] summary { margin-bottom: 8px; }
+.erp-audit-change-panel {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+}
+.erp-audit-change-panel section {
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid var(--erp-border);
+    border-radius: 8px;
+    background: var(--erp-surface-muted);
+}
+.erp-audit-change-panel__label {
+    margin-bottom: 6px;
+    color: var(--erp-text-soft);
+    font-size: .61rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .035em;
+}
+.erp-audit-change-panel pre {
+    max-height: 220px;
+    margin: 0;
+    overflow: auto;
+    color: var(--erp-text-soft);
+    font-size: .61rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.erp-audit-pagination {
+    padding: 12px 16px;
+    border-top: 1px solid var(--erp-border);
+}
+.erp-audit-pagination nav { margin: 0; }
+
+@media (max-width: 767.98px) {
+    .erp-audit-filter-card .btn { min-height: 40px; }
+    .erp-audit-table { min-width: 980px; }
+}
