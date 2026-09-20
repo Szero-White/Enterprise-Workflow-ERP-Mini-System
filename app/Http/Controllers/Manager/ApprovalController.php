@@ -22,7 +22,7 @@ class ApprovalController extends Controller
         $query = WorkflowRequest::with(['formTemplate', 'creator', 'currentStep.approverRole', 'currentStep.approverDepartment'])
             ->where('status', WorkflowRequest::STATUS_PENDING)
             ->whereHas('currentStep', fn ($step) => $step->approverFor($user))
-            ->latest();
+            ->latest('id');
 
         if ($request->filled('keyword')) {
             $query->where('request_code', 'like', '%'.$request->keyword.'%');
@@ -94,12 +94,12 @@ class ApprovalController extends Controller
         $user = $request->user();
 
         $query = WorkflowRequest::with(['formTemplate', 'creator', 'currentStep.approverRole', 'currentStep.approverDepartment', 'histories' => function ($q) use ($user) {
-            $q->where('actor_id', $user->id)->latest();
+            $q->where('actor_id', $user->id)->latest('id');
         }])
             ->whereHas('histories', function ($q) use ($user) {
                 $q->where('actor_id', $user->id);
             })
-            ->latest();
+            ->latest('id');
 
         if ($request->filled('keyword')) {
             $query->where('request_code', 'like', '%'.$request->keyword.'%');

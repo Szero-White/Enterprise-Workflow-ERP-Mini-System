@@ -24,7 +24,7 @@ class WorkflowTemplateController extends Controller
     {
         $workflows = WorkflowTemplate::with(['formTemplate'])
             ->withCount(['steps', 'requests'])
-            ->latest()
+            ->latest('id')
             ->paginate(10);
 
         return view('admin.workflow_templates.index', compact('workflows'));

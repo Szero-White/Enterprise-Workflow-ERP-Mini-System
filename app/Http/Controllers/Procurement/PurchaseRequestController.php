@@ -22,7 +22,7 @@ class PurchaseRequestController extends Controller
 
         $query = PurchaseRequest::query()
             ->with(['workflowRequest.creator', 'items'])
-            ->latest();
+            ->latest('id');
 
         $query->visibleTo($request->user());
 

@@ -22,7 +22,7 @@ class PurchaseOrderController extends Controller
     {
         $query = PurchaseOrder::query()
             ->with(['supplier', 'warehouse', 'purchaseRequest.workflowRequest'])
-            ->latest();
+            ->latest('id');
 
         if ($request->filled('status')) {
             $query->where('status', (string) $request->input('status'));

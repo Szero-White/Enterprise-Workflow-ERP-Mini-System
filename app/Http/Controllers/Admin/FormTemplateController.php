@@ -20,7 +20,7 @@ class FormTemplateController extends Controller
 
     public function index(): View
     {
-        $templates = FormTemplate::withCount(['fields', 'requests'])->latest()->paginate(10);
+        $templates = FormTemplate::withCount(['fields', 'requests'])->latest('id')->paginate(10);
 
         return view('admin.form_templates.index', compact('templates'));
     }

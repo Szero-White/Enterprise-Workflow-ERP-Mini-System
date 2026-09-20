@@ -4,6 +4,16 @@
 @section('content')
 <x-erp.page-header :title="__('inventory.stock.index_title')" :eyebrow="__('inventory.eyebrow')" :description="__('inventory.stock.index_description')">
     <x-slot:actions>
+        <div class="d-flex align-items-center gap-2 flex-wrap" aria-label="{{ __('inventory.stock.health_summary') }}">
+            <span class="erp-status-badge text-bg-success">
+                <i class="bi bi-check-circle"></i>
+                {{ __('inventory.stock.healthy') }}: {{ number_format($stockSummary['healthy']) }}
+            </span>
+            <span class="erp-status-badge text-bg-warning">
+                <i class="bi bi-exclamation-triangle"></i>
+                {{ __('inventory.stock.low') }}: {{ number_format($stockSummary['low']) }}
+            </span>
+        </div>
         <a href="{{ route('inventory.receipts.create') }}" class="btn btn-primary"><i class="bi bi-box-arrow-in-down"></i>{{ __('inventory.stock.receive') }}</a>
     </x-slot:actions>
 </x-erp.page-header>

@@ -21,7 +21,7 @@ class WorkflowRequestController extends Controller
         $query = WorkflowRequest::with(['formTemplate', 'currentStep'])
             ->where('created_by', $request->user()->id)
             ->whereHas('formTemplate', fn ($builder) => $builder->dynamicSubmission())
-            ->latest();
+            ->latest('id');
 
         if ($request->filled('keyword')) {
             $query->where('request_code', 'like', '%'.$request->keyword.'%');

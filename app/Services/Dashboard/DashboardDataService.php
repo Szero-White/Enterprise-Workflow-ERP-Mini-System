@@ -102,7 +102,7 @@ class DashboardDataService
     public function recentInventoryMovements(int $limit = 6): Collection
     {
         return InventoryMovement::with(['item', 'warehouse', 'creator'])
-            ->latest()
+            ->latest('id')
             ->limit($limit)
             ->get();
     }
@@ -111,7 +111,7 @@ class DashboardDataService
     {
         return $this->visibleWorkflowRequests($user)
             ->with(['formTemplate', 'creator', 'currentStep'])
-            ->latest()
+            ->latest('id')
             ->limit($limit)
             ->get();
     }

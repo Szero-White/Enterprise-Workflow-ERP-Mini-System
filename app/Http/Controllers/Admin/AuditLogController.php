@@ -11,7 +11,7 @@ class AuditLogController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = AuditLog::with('actor')->latest();
+        $query = AuditLog::with('actor')->latest('id');
 
         if ($request->filled('action')) {
             $query->where('action', 'like', '%'.$request->action.'%');

@@ -58,7 +58,7 @@ class WorkflowRequest extends Model
 
     public function histories()
     {
-        return $this->hasMany(ApprovalHistory::class, 'request_id')->latest();
+        return $this->hasMany(ApprovalHistory::class, 'request_id')->latest('id');
     }
 
     public function attachments()

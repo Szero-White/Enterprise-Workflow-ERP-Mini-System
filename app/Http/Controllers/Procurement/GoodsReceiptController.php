@@ -22,7 +22,7 @@ class GoodsReceiptController extends Controller
                 'purchaseOrder.supplier',
                 'warehouse',
                 'receiver',
-            ])->latest()->paginate(15),
+            ])->latest('id')->paginate(15),
         ]);
     }
 

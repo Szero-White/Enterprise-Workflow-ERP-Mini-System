@@ -24,7 +24,7 @@ class PurchaseRequestController extends Controller
             ->with(['workflowRequest.creator', 'items'])
             ->visibleTo($request->user())
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')->toString()))
-            ->latest()
+            ->latest('id')
             ->paginate(min(max($request->integer('per_page', 15), 1), 100));
 
         return PurchaseRequestResource::collection($purchaseRequests);

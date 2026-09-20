@@ -18,12 +18,8 @@ class InventoryStockController extends Controller
                 $request->integer('warehouse_id'),
                 fn ($query, $warehouseId) => $query->where('warehouse_id', $warehouseId)
             )
-            ->when($request->boolean('low_stock'), fn ($query) => $query->whereHas(
-                'item',
-                fn ($builder) => $builder->whereColumn('inventory_stocks.quantity', '<=', 'items.reorder_level')
-            ))
-            ->orderBy('warehouse_id')
-            ->orderBy('item_id')
+            ->when($request->boolean('low_stock'), fn ($query) => $query->lowStock())
+            ->latestActivity()
             ->paginate($this->perPage($request));
 
         return InventoryStockResource::collection($stocks);

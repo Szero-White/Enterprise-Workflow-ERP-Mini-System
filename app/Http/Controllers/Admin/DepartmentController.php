@@ -15,7 +15,7 @@ class DepartmentController extends Controller
 
     public function index(): View
     {
-        $departments = Department::latest()->paginate(10);
+        $departments = Department::latest('id')->paginate(10);
 
         return view('admin.departments.index', compact('departments'));
     }

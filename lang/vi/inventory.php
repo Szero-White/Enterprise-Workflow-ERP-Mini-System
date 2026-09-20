@@ -48,6 +48,7 @@ return [
         'current_stock' => 'Tồn hiện tại',
         'reorder_level' => 'Mức cảnh báo',
         'condition' => 'Tình trạng',
+        'health_summary' => 'Tổng quan tình trạng tồn kho',
         'low' => 'Cần nhập thêm',
         'healthy' => 'Ổn định',
         'empty' => 'Chưa có dữ liệu tồn kho.',
