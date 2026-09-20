@@ -208,3 +208,146 @@ textarea.form-control { min-height: 96px; resize: vertical; }
 :root[data-theme="dark"] .table thead th { color: var(--erp-muted); background: var(--erp-surface-muted); border-color: var(--erp-border); }
 :root[data-theme="dark"] .table tbody td { color: var(--erp-text-soft); border-color: var(--erp-border); }
 :root[data-theme="dark"] .erp-record-primary { color: var(--erp-text); }
+
+
+/* Unified compact status and action language */
+.erp-status-badge {
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: .66rem;
+    line-height: 1;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.erp-status-badge i { font-size: .7rem; }
+.erp-app-body .badge.text-bg-light.border {
+    border-color: var(--erp-border) !important;
+    color: var(--erp-text-soft) !important;
+    background: var(--erp-surface-muted) !important;
+}
+.erp-icon-action {
+    width: 34px;
+    height: 34px;
+    min-height: 34px;
+    flex: 0 0 34px;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--erp-border);
+    border-radius: 10px;
+    color: var(--erp-text-soft);
+    background: var(--erp-surface);
+    text-decoration: none;
+    box-shadow: var(--erp-shadow-sm);
+    transition: color .15s ease, background-color .15s ease, border-color .15s ease, transform .15s ease;
+}
+.erp-icon-action:hover,
+.erp-icon-action:focus-visible {
+    color: var(--erp-primary);
+    border-color: var(--erp-primary-border);
+    background: var(--erp-primary-soft);
+    outline: 0;
+}
+.erp-icon-action:active { transform: translateY(1px); }
+.erp-icon-action--primary {
+    color: #fff;
+    border-color: var(--erp-primary-action);
+    background: var(--erp-primary-action);
+}
+.erp-icon-action--primary:hover,
+.erp-icon-action--primary:focus-visible {
+    color: #fff;
+    border-color: var(--erp-primary-action-hover);
+    background: var(--erp-primary-action-hover);
+}
+
+/* Legacy table cards inherit the same flush enterprise table treatment. */
+.content-card.table-responsive {
+    padding: 0 !important;
+    overflow: hidden;
+}
+.content-card.table-responsive > .table { margin-bottom: 0; }
+.content-card.table-responsive > .pagination,
+.content-card.table-responsive > nav { margin: 0; padding: 12px 16px; border-top: 1px solid var(--erp-border); }
+
+/* BEGIN: soft enterprise status palette */
+/*
+ * Semantic statuses use muted enterprise tones instead of saturated Bootstrap fills.
+ * Keep contrast strong enough for operational scanning while reducing visual noise.
+ */
+.erp-status-badge.text-bg-success {
+    color: #2f6f52 !important;
+    background-color: #eaf5ef !important;
+    border: 1px solid #cde6d8 !important;
+}
+
+.erp-status-badge.text-bg-danger {
+    color: #a54852 !important;
+    background-color: #fbecef !important;
+    border: 1px solid #f1cfd4 !important;
+}
+
+.erp-status-badge.text-bg-warning {
+    color: #805f13 !important;
+    background-color: #fff4d8 !important;
+    border: 1px solid #ead9a5 !important;
+}
+
+.erp-status-badge.text-bg-info {
+    color: #356d80 !important;
+    background-color: #eaf5f8 !important;
+    border: 1px solid #cde4ea !important;
+}
+
+.erp-status-badge.text-bg-primary {
+    color: #3f6786 !important;
+    background-color: #edf4f8 !important;
+    border: 1px solid #d3e2eb !important;
+}
+
+.erp-status-badge.text-bg-secondary {
+    color: #5f6b76 !important;
+    background-color: #f1f4f6 !important;
+    border: 1px solid #dde3e7 !important;
+}
+
+:root[data-theme="dark"] .erp-status-badge.text-bg-success {
+    color: #9fd9ba !important;
+    background-color: rgba(55, 151, 103, .16) !important;
+    border-color: rgba(111, 195, 149, .25) !important;
+}
+
+:root[data-theme="dark"] .erp-status-badge.text-bg-danger {
+    color: #efadb5 !important;
+    background-color: rgba(194, 70, 86, .16) !important;
+    border-color: rgba(224, 110, 124, .25) !important;
+}
+
+:root[data-theme="dark"] .erp-status-badge.text-bg-warning {
+    color: #e6c678 !important;
+    background-color: rgba(178, 132, 31, .16) !important;
+    border-color: rgba(213, 168, 66, .25) !important;
+}
+
+:root[data-theme="dark"] .erp-status-badge.text-bg-info {
+    color: #9ccbd7 !important;
+    background-color: rgba(65, 137, 157, .16) !important;
+    border-color: rgba(105, 170, 188, .25) !important;
+}
+
+:root[data-theme="dark"] .erp-status-badge.text-bg-primary {
+    color: #a9c7dc !important;
+    background-color: rgba(78, 127, 168, .18) !important;
+    border-color: rgba(117, 161, 195, .25) !important;
+}
+
+:root[data-theme="dark"] .erp-status-badge.text-bg-secondary {
+    color: #bdc7d0 !important;
+    background-color: rgba(124, 139, 151, .14) !important;
+    border-color: rgba(157, 169, 178, .22) !important;
+}
+/* END: soft enterprise status palette */

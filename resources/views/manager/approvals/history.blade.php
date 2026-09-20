@@ -24,7 +24,7 @@
     </form>
 </div>
 
-<div class="content-card p-3 table-responsive">
+<div class="content-card table-responsive">
     <table class="table align-middle">
         <thead class="table-light">
         <tr>
@@ -52,11 +52,11 @@
                     @endphp
                     @if($userHistory)
                         @if($userHistory->action == 'approve')
-                            <span class="badge bg-success">{{ __('ui.approve') }}</span>
+                            <span class="badge text-bg-success erp-status-badge"><i class="bi bi-check-circle-fill"></i><span>{{ __('ui.approve') }}</span></span>
                         @elseif($userHistory->action == 'reject')
-                            <span class="badge bg-danger">{{ __('ui.reject') }}</span>
+                            <span class="badge text-bg-danger erp-status-badge"><i class="bi bi-x-circle-fill"></i><span>{{ __('ui.reject') }}</span></span>
                         @elseif($userHistory->action == 'return')
-                            <span class="badge bg-warning">{{ __('ui.return') }}</span>
+                            <span class="badge text-bg-warning erp-status-badge"><i class="bi bi-arrow-counterclockwise"></i><span>{{ __('ui.return') }}</span></span>
                         @endif
                     @else
                         <span class="text-muted">-</span>

@@ -284,3 +284,31 @@
 :root[data-theme="dark"] .erp-workspace-card { background: var(--erp-surface-muted); border-color: var(--erp-border); }
 :root[data-theme="dark"] .erp-sidebar__footer { background: var(--erp-sidebar); }
 :root[data-theme="dark"] .erp-nav-link:hover { background: var(--erp-surface-muted); }
+
+
+/* Profile menu refinement */
+.erp-profile-menu { min-width: 286px; padding: 9px; }
+.erp-profile-menu__header { padding: 10px; }
+.erp-profile-menu__identity { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.erp-avatar--menu { width: 40px; height: 40px; flex-basis: 40px; border-radius: 12px; }
+.erp-profile-menu__name { color: var(--erp-text); font-size: .79rem; font-weight: 620; }
+.erp-profile-menu__email { margin-top: 2px; color: var(--erp-muted); font-size: .67rem; }
+.erp-profile-menu__chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.erp-profile-chip {
+    min-height: 26px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border: 1px solid var(--erp-border);
+    border-radius: 999px;
+    color: var(--erp-text-soft);
+    background: var(--erp-surface-muted);
+    font-size: .63rem;
+    font-weight: 600;
+}
+.erp-profile-chip--primary {
+    color: var(--erp-primary);
+    border-color: var(--erp-primary-border);
+    background: var(--erp-primary-soft);
+}

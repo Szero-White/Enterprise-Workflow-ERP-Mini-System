@@ -272,7 +272,7 @@
 .erp-demo-roles summary { width: fit-content; color: var(--erp-primary-active); cursor: pointer; font-size: .67rem; font-weight: 600; list-style: none; }
 .erp-demo-roles summary::-webkit-details-marker { display: none; }
 .erp-demo-roles summary::after { content: " +"; }
-.erp-demo-roles[open] summary::after { content: " −"; }
+.erp-demo-roles[open] summary::after { content: " âˆ’"; }
 .erp-demo-roles__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
 .erp-demo-role { min-width: 0; padding: 8px 9px; border: 1px solid #dce4ec; border-radius: 9px; color: #445568; text-align: left; background: #fff; transition: border-color .15s ease, background .15s ease, box-shadow .15s ease; }
 .erp-demo-role:hover,
@@ -296,3 +296,188 @@
     color-scheme: light;
 }
 :root[data-theme="dark"] .erp-login-form .form-control::placeholder { color: #9aa5b4; }
+
+
+/* Notification center */
+.erp-notifications-list { overflow: hidden; }
+.erp-notification-form { margin: 0; }
+.erp-notification-item {
+    position: relative;
+    min-height: 118px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--erp-border);
+    background: var(--erp-surface);
+    transition: background-color .15s ease, box-shadow .15s ease;
+}
+.erp-notification-form:last-child .erp-notification-item,
+.erp-notification-item:last-child { border-bottom: 0; }
+.erp-notification-item.is-unread {
+    box-shadow: inset 3px 0 0 var(--erp-primary);
+    background: color-mix(in srgb, var(--erp-primary-soft) 52%, var(--erp-surface));
+}
+.erp-notification-item.is-unread:hover {
+    background: color-mix(in srgb, var(--erp-primary-soft) 70%, var(--erp-surface));
+}
+.erp-notification-item__hit-area {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+.erp-notification-item__main {
+    position: relative;
+    z-index: 0;
+    min-width: 0;
+    pointer-events: none;
+}
+.erp-notification-item__meta-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-bottom: 7px;
+}
+.erp-notification-item__unread-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: var(--erp-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--erp-primary) 12%, transparent);
+}
+.erp-notification-item__title {
+    margin: 0;
+    color: var(--erp-text);
+    font-size: .92rem;
+    line-height: 1.35;
+    font-weight: 620;
+    letter-spacing: -.012em;
+}
+.erp-notification-item__message {
+    max-width: 980px;
+    margin: 5px 0 0;
+    color: var(--erp-muted);
+    font-size: .78rem;
+    line-height: 1.58;
+}
+.erp-notification-item__meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 9px;
+    color: var(--erp-muted);
+    font-size: .67rem;
+}
+.erp-notification-item__meta span { display: inline-flex; align-items: center; gap: 5px; }
+.erp-notification-item__actions {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.erp-notification-item__actions form { margin: 0; }
+
+/* Request template chooser */
+.erp-template-grid { max-width: 1120px; }
+.erp-template-card {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.erp-template-card:hover {
+    border-color: color-mix(in srgb, var(--erp-primary) 22%, var(--erp-border));
+    box-shadow: var(--erp-shadow);
+    transform: translateY(-1px);
+}
+.erp-template-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 20px 20px 14px;
+}
+.erp-template-card__identity { min-width: 0; display: flex; align-items: flex-start; gap: 12px; }
+.erp-template-card__icon {
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--erp-primary-border);
+    border-radius: 11px;
+    color: var(--erp-primary);
+    background: var(--erp-primary-soft);
+    font-size: .95rem;
+}
+.erp-template-card__title { margin: 1px 0 0; color: var(--erp-text); font-size: 1rem; font-weight: 620; }
+.erp-template-card__meta { display: flex; align-items: center; gap: 6px; margin-top: 5px; color: var(--erp-muted); font-size: .68rem; }
+.erp-template-card__description { flex: 1; margin: 0; padding: 0 20px 18px; color: var(--erp-muted); font-size: .79rem; line-height: 1.62; }
+.erp-template-card__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 14px 20px 18px;
+    border-top: 1px solid var(--erp-border);
+    background: color-mix(in srgb, var(--erp-surface-muted) 58%, var(--erp-surface));
+}
+.erp-template-card__footer .btn { min-width: 126px; }
+
+/* BEGIN: compact notification typography */
+/*
+ * Notification-center typography only.
+ * Shared page headers keep the normal enterprise scale used everywhere else.
+ */
+.erp-notifications-list .erp-notification-item__meta-row .badge {
+    padding: .22rem .42rem;
+    font-size: .59rem;
+    line-height: 1;
+    font-weight: 600;
+}
+
+.erp-notifications-list .erp-notification-item__title {
+    font-size: .78rem;
+    line-height: 1.34;
+    font-weight: 600;
+    letter-spacing: -.006em;
+}
+
+.erp-notifications-list .erp-notification-item__message {
+    font-size: .69rem;
+    line-height: 1.48;
+}
+
+.erp-notifications-list .erp-notification-item__meta {
+    font-size: .60rem;
+    line-height: 1.34;
+}
+
+.erp-notifications-list .erp-notification-item__meta i {
+    font-size: .61rem;
+}
+
+@media (max-width: 767.98px) {
+    .erp-notifications-list .erp-notification-item__title {
+        font-size: .77rem;
+    }
+
+    .erp-notifications-list .erp-notification-item__message {
+        font-size: .68rem;
+    }
+
+    .erp-notifications-list .erp-notification-item__meta {
+        font-size: .59rem;
+    }
+}
+/* END: compact notification typography */

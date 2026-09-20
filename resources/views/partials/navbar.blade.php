@@ -57,12 +57,25 @@
             </button>
             <div class="dropdown-menu dropdown-menu-end erp-profile-menu">
                 <div class="erp-profile-menu__header">
-                    <div class="fw-semibold text-truncate">{{ $user->name }}</div>
-                    <div class="small text-muted text-truncate">{{ $user->email }}</div>
-                    <div class="d-flex gap-2 mt-2 flex-wrap">
-                        <span class="badge rounded-pill text-bg-primary-subtle text-primary-emphasis">{{ $user->role?->name ?? __('ui.no_role') }}</span>
+                    <div class="erp-profile-menu__identity">
+                        <span class="erp-avatar erp-avatar--menu">
+                            {{ \Illuminate\Support\Str::of($user->name)->explode(' ')->filter()->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))->take(2)->implode('') }}
+                        </span>
+                        <div class="min-w-0">
+                            <div class="erp-profile-menu__name text-truncate">{{ $user->name }}</div>
+                            <div class="erp-profile-menu__email text-truncate">{{ $user->email }}</div>
+                        </div>
+                    </div>
+                    <div class="erp-profile-menu__chips">
+                        <span class="erp-profile-chip erp-profile-chip--primary">
+                            <i class="bi bi-person-badge"></i>
+                            {{ $user->role?->name ?? __('ui.no_role') }}
+                        </span>
                         @if($user->department)
-                            <span class="badge rounded-pill text-bg-light border">{{ $user->department->code }}</span>
+                            <span class="erp-profile-chip" title="{{ $user->department->name }}">
+                                <i class="bi bi-diagram-3"></i>
+                                {{ $user->department->code }}
+                            </span>
                         @endif
                     </div>
                 </div>

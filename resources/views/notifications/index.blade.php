@@ -16,72 +16,88 @@
     </x-slot:actions>
 </x-erp.page-header>
 
-<div class="content-card p-0 overflow-hidden">
+<div class="content-card p-0 overflow-hidden erp-notifications-list">
     @forelse($notifications as $notification)
-        <div class="p-3 p-lg-4 border-bottom {{ $notification->read_at ? '' : 'bg-primary-subtle' }}">
-            <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-                <div class="flex-grow-1 min-w-0">
-                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                        @if(! $notification->read_at)
-                            <span class="badge text-bg-primary rounded-pill">{{ __('ui.new') }}</span>
-                        @endif
-                        <span class="badge text-bg-light border rounded-pill">
-                            {{ trans()->has('ui.notification_type.'.$notification->type) ? __('ui.notification_type.'.$notification->type) : str_replace('_', ' ', $notification->type) }}
-                        </span>
-                    </div>
-                    <h3 class="h6 mb-1">{{ $notification->title }}</h3>
-                    <p class="mb-2 text-muted">{{ $notification->message }}</p>
-                    <div class="small text-muted">
-                        {{ $notification->created_at->format('d/m/Y H:i') }}
-                        @if(data_get($notification->data, 'request_code'))
-                            &middot; {{ __('ui.request') }} {{ data_get($notification->data, 'request_code') }}
-                        @endif
-                    </div>
+        @if(! $notification->read_at)
+            <form method="POST" action="{{ route('notifications.read', $notification) }}" class="erp-notification-form">
+                @csrf
+        @endif
+
+        <article class="erp-notification-item {{ $notification->read_at ? 'is-read' : 'is-unread' }}">
+            @if(! $notification->read_at)
+                <button
+                    type="submit"
+                    class="erp-notification-item__hit-area"
+                    title="{{ __('ui.mark_as_read') }}"
+                    aria-label="{{ __('ui.mark_as_read') }}"
+                ></button>
+            @endif
+
+            <div class="erp-notification-item__main">
+                <div class="erp-notification-item__meta-row">
+                    @if(! $notification->read_at)
+                        <span class="erp-notification-item__unread-dot" aria-hidden="true"></span>
+                        <span class="badge text-bg-primary rounded-pill">{{ __('ui.new') }}</span>
+                    @endif
+                    <span class="badge text-bg-light border rounded-pill">
+                        {{ trans()->has('ui.notification_type.'.$notification->type) ? __('ui.notification_type.'.$notification->type) : str_replace('_', ' ', $notification->type) }}
+                    </span>
                 </div>
 
-                <div class="d-flex align-items-center gap-2 align-self-lg-center">
-                    @if(data_get($notification->data, 'purchase_request_id') && auth()->user()->hasRole(['procurement', 'admin']))
-                        <a
-                            href="{{ route('procurement.purchase-requests.show', data_get($notification->data, 'purchase_request_id')) }}"
-                            class="btn btn-sm btn-light border rounded-circle d-inline-flex align-items-center justify-content-center"
-                            title="{{ __('ui.open_related_request') }}"
-                            aria-label="{{ __('ui.open_related_request') }}"
-                        >
-                            <i class="bi bi-box-arrow-up-right"></i>
-                            <span class="visually-hidden">{{ __('ui.open_related_request') }}</span>
-                        </a>
-                    @endif
+                <h3 class="erp-notification-item__title">{{ $notification->title }}</h3>
+                <p class="erp-notification-item__message">{{ $notification->message }}</p>
 
-                    @if($notification->read_at)
-                        <form method="POST" action="{{ route('notifications.unread', $notification) }}">
-                            @csrf
-                            <button
-                                type="submit"
-                                class="btn btn-sm btn-light border rounded-circle d-inline-flex align-items-center justify-content-center"
-                                title="{{ __('ui.mark_as_unread') }}"
-                                aria-label="{{ __('ui.mark_as_unread') }}"
-                            >
-                                <i class="bi bi-envelope"></i>
-                                <span class="visually-hidden">{{ __('ui.mark_as_unread') }}</span>
-                            </button>
-                        </form>
-                    @else
-                        <form method="POST" action="{{ route('notifications.read', $notification) }}">
-                            @csrf
-                            <button
-                                type="submit"
-                                class="btn btn-sm btn-primary rounded-circle d-inline-flex align-items-center justify-content-center"
-                                title="{{ __('ui.mark_as_read') }}"
-                                aria-label="{{ __('ui.mark_as_read') }}"
-                            >
-                                <i class="bi bi-envelope-open"></i>
-                                <span class="visually-hidden">{{ __('ui.mark_as_read') }}</span>
-                            </button>
-                        </form>
+                <div class="erp-notification-item__meta">
+                    <span><i class="bi bi-clock"></i>{{ $notification->created_at->format('d/m/Y H:i') }}</span>
+                    @if(data_get($notification->data, 'request_code'))
+                        <span><i class="bi bi-file-earmark-text"></i>{{ data_get($notification->data, 'request_code') }}</span>
                     @endif
                 </div>
             </div>
-        </div>
+
+            <div class="erp-notification-item__actions">
+                @if(data_get($notification->data, 'purchase_request_id') && auth()->user()->hasRole(['procurement', 'admin']))
+                    <a
+                        href="{{ route('procurement.purchase-requests.show', data_get($notification->data, 'purchase_request_id')) }}"
+                        class="erp-icon-action"
+                        title="{{ __('ui.open_related_request') }}"
+                        aria-label="{{ __('ui.open_related_request') }}"
+                    >
+                        <i class="bi bi-box-arrow-up-right"></i>
+                        <span class="visually-hidden">{{ __('ui.open_related_request') }}</span>
+                    </a>
+                @endif
+
+                @if($notification->read_at)
+                    <form method="POST" action="{{ route('notifications.unread', $notification) }}">
+                        @csrf
+                        <button
+                            type="submit"
+                            class="erp-icon-action"
+                            title="{{ __('ui.mark_as_unread') }}"
+                            aria-label="{{ __('ui.mark_as_unread') }}"
+                        >
+                            <i class="bi bi-envelope"></i>
+                            <span class="visually-hidden">{{ __('ui.mark_as_unread') }}</span>
+                        </button>
+                    </form>
+                @else
+                    <button
+                        type="submit"
+                        class="erp-icon-action erp-icon-action--primary"
+                        title="{{ __('ui.mark_as_read') }}"
+                        aria-label="{{ __('ui.mark_as_read') }}"
+                    >
+                        <i class="bi bi-envelope-open"></i>
+                        <span class="visually-hidden">{{ __('ui.mark_as_read') }}</span>
+                    </button>
+                @endif
+            </div>
+        </article>
+
+        @if(! $notification->read_at)
+            </form>
+        @endif
     @empty
         <div class="p-4 text-muted">{{ __('ui.no_notifications') }}</div>
     @endforelse
