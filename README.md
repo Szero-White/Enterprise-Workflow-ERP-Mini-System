@@ -77,7 +77,11 @@ Goods Receipt
 - Policies and middleware for authorization and request-level access control.
 - Service-layer business logic for workflow, procurement, inventory, and asset operations.
 - Database transactions and row locking for concurrency-sensitive writes.
-- Versioned workflow configuration with ordered approval steps.
+- Versioned Dynamic Forms and workflow configuration with ordered approval steps.
+- Draft/current/legacy/inactive lifecycle semantics that preserve in-flight request history.
+- Dynamic field types for common business inputs, including text, textarea, number, email, phone, date, time, date-time, URL, select, radio, checkbox, and file.
+- Generic conditional field visibility/required rules without hard-coding a specific business form.
+- Business-context notifications with request type, requester, useful request details, contextual actions, and legacy-notification presentation support.
 - Approval history, notifications, and audit logging.
 - Purchase Request, Purchase Order, and Goods Receipt lifecycle.
 - Inventory stock tracking and inventory movement history.
@@ -165,6 +169,43 @@ Database
 ```
 
 Controllers stay focused on HTTP concerns. Validation belongs in Form Requests, authorization belongs in Policies/Middleware, and multi-step business logic belongs in Services.
+
+## Dynamic Forms and Workflow Versioning
+
+Dynamic Forms are configuration data, not hard-coded request screens. Administrators can define reusable fields using the supported business input types:
+
+```text
+Text / Textarea / Number / Email / Phone
+Date / Time / DateTime / URL
+Select / Radio / Checkbox / File
+```
+
+Conditional fields can depend on earlier fields in the same form. The backend validates those conditions and removes hidden values even if a client submits them manually.
+
+Published configuration is immutable for new changes. A change is made by creating an editable draft version, updating the draft, and publishing it. Existing requests remain bound to the form/workflow version that created them. This keeps approval history reproducible while allowing configuration to evolve safely.
+
+Lifecycle labels used by the administration UI are:
+
+```text
+Draft      -> editable configuration, not yet published
+Current    -> configuration used for new requests
+Legacy     -> no new requests; existing in-flight requests continue
+Inactive   -> retired from active processing
+```
+
+## Notification Architecture
+
+Notification content is built from business context instead of exposing internal request codes as the primary message. The notification layer is organized around reusable content builders/presenters so workflow and operations modules follow the same user-facing standard.
+
+A notification can carry:
+
+- a business title such as the form/request type;
+- the requester or relevant actor;
+- concise request-specific details;
+- a contextual destination/action;
+- the related workflow, purchase, receipt, or asset identifiers needed for navigation.
+
+Stored historical notifications remain untouched. When related business data still exists, the presenter can enrich older notification records for display without rewriting audit history. Realtime delivery, when configured, uses the same stored title/message/data payload as the notification center.
 
 ## Local Development
 

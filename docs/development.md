@@ -216,7 +216,7 @@ QUEUE_CONNECTION=sync
 SESSION_DRIVER=array
 ```
 
-The repository test suite covers workflow approval, security, authorization, procurement, inventory, asset lifecycle, UI rendering, and API behavior.
+The repository test suite covers workflow approval, workflow versioning/lifecycle, dynamic field types, conditional fields, notification business context, security, authorization, procurement, inventory, asset lifecycle, UI rendering, and API behavior.
 
 ## Quality Checks
 
@@ -246,6 +246,27 @@ php artisan test
 npm run build
 git diff --check
 ```
+
+### Focused checks for Dynamic Forms and notifications
+
+When changing Dynamic Forms, workflow lifecycle, or notifications, run the focused feature tests before the full suite:
+
+```powershell
+php artisan test --filter=DynamicFieldTypeTest
+php artisan test --filter=DynamicConditionalFieldTest
+php artisan test --filter=WorkflowConfigurationVersioningTest
+php artisan test --filter=WorkflowLifecycleTest
+php artisan test --filter=WorkflowApprovalTest
+```
+
+Notification changes that touch Procurement/Asset hand-offs should also run:
+
+```powershell
+php artisan test --filter=PurchaseRequestOrderFlowTest
+php artisan test --filter=GoodsReceiptFlowTest
+```
+
+The full suite remains the final regression gate.
 
 ## Common Issues
 

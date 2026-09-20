@@ -266,7 +266,8 @@ Check `https://workflow-erp.alwaysdata.net/up` first, then run the complete recr
 7. Login as Admin and verify configuration actions follow normal authorization and remain subject to the public-demo write-rate limits.
 8. Verify workflow file upload controls are disabled.
 9. Verify excessive writes receive HTTP 429 and that disabled dynamic workflow file uploads are rejected.
-10. Inspect `storage/logs/laravel.log` and the alwaysdata HTTP/PHP logs for new errors.
+10. Submit at least one Dynamic Form request and verify the recipient notification shows the business request type, requester, useful request details, and the correct contextual action/link.
+11. Inspect `storage/logs/laravel.log` and the alwaysdata HTTP/PHP logs for new errors.
 
 Check response headers from your own machine:
 
