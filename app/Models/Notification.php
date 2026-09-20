@@ -17,6 +17,8 @@ class Notification extends Model
 
     public const TYPE_REQUEST_COMPLETED = 'request_completed';
 
+    public const TYPE_PURCHASE_REQUEST_READY = 'purchase_request_ready';
+
     protected $fillable = [
         'user_id',
         'title',
@@ -53,6 +55,13 @@ class Notification extends Model
     {
         if ($this->read_at === null) {
             $this->forceFill(['read_at' => now()])->save();
+        }
+    }
+
+    public function markAsUnread(): void
+    {
+        if ($this->read_at !== null) {
+            $this->forceFill(['read_at' => null])->save();
         }
     }
 }

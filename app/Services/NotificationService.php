@@ -49,6 +49,20 @@ class NotificationService
             });
     }
 
+    public function notifyRoleUsers(
+        string $roleKey,
+        string $title,
+        string $message,
+        string $type,
+        array $data = []
+    ): void {
+        User::query()
+            ->where('is_active', true)
+            ->whereHas('role', fn ($query) => $query->where('key', $roleKey))
+            ->get()
+            ->each(fn (User $user) => $this->createForUser($user, $title, $message, $type, $data));
+    }
+
     public function notifyCreator(WorkflowRequest $workflowRequest, string $title, string $message, string $type, string $action): void
     {
         $workflowRequest->loadMissing('creator');
@@ -71,6 +85,13 @@ class NotificationService
         abort_if($notification->user_id !== $user->id, 403);
 
         $notification->markAsRead();
+    }
+
+    public function markAsUnreadForUser(Notification $notification, User $user): void
+    {
+        abort_if($notification->user_id !== $user->id, 403);
+
+        $notification->markAsUnread();
     }
 
     public function markAllAsReadForUser(User $user): void

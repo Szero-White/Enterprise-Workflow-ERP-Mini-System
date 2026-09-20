@@ -84,20 +84,7 @@
             </form>
         </div>
         @endif
-        <div class="content-card p-3 p-lg-4">
-            <h5 class="mb-3">{{ __('ui.history') }}</h5>
-            @forelse($workflowRequest->histories as $history)
-                <div class="border-bottom py-3">
-                    <div class="fw-semibold">{{ trans()->has('ui.action_labels.'.$history->action) ? __('ui.action_labels.'.$history->action) : strtoupper($history->action) }}</div>
-                    <div class="text-muted small">{{ $history->actor?->name ?? '-' }} &middot; {{ $history->acted_at ? $history->acted_at->format('d/m/Y H:i') : $history->created_at->format('d/m/Y H:i') }}</div>
-                    @if($history->comment)
-                        <div class="mt-2">{{ $history->comment }}</div>
-                    @endif
-                </div>
-            @empty
-                <div class="text-muted">{{ __('ui.no_approval_history') }}</div>
-            @endforelse
-        </div>
+        @include('partials.approval_progress', ['workflowRequest' => $workflowRequest])
     </div>
 </div>
 @endsection

@@ -53,6 +53,16 @@ return [
         'resubmit_hint' => 'Sau khi gửi lại, yêu cầu tiếp tục từ bước phê duyệt hiện tại.',
         'select_item' => '-- Chọn vật tư --',
         'create_po' => 'Tạo đơn mua hàng',
+        'next_action_label' => 'Việc cần làm tiếp theo',
+        'next_action' => [
+            'pending_approval' => 'Tiếp tục quy trình phê duyệt.',
+            'returned' => 'Người yêu cầu cần bổ sung thông tin và gửi lại.',
+            'approved' => 'Bộ phận Mua sắm tạo đơn mua hàng.',
+            'rejected' => 'Quy trình đã dừng do yêu cầu bị từ chối.',
+            'ordered' => 'Theo dõi giao hàng và ghi nhận phiếu nhận hàng.',
+            'closed' => 'Quy trình mua sắm đã hoàn tất.',
+            'purchase_order_draft' => 'Kiểm tra PO :po và phát hành khi thông tin đã chính xác.',
+        ],
         'status' => [
             'pending_approval' => 'Chờ phê duyệt',
             'returned' => 'Trả về bổ sung',

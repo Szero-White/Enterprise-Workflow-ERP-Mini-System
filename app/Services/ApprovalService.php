@@ -99,7 +99,10 @@ class ApprovalService
             $this->notificationService->notifyCreator(
                 $freshRequest,
                 __('messages.notification_request_rejected_title'),
-                __('messages.notification_request_rejected_body', ['code' => $freshRequest->request_code]),
+                __('messages.notification_request_rejected_body', [
+                    'code' => $freshRequest->request_code,
+                    'reason' => $comment ?? '-',
+                ]),
                 Notification::TYPE_REQUEST_REJECTED,
                 'rejected'
             );
@@ -132,7 +135,10 @@ class ApprovalService
             $this->notificationService->notifyCreator(
                 $freshRequest,
                 __('messages.notification_request_returned_title'),
-                __('messages.notification_request_returned_body', ['code' => $freshRequest->request_code]),
+                __('messages.notification_request_returned_body', [
+                    'code' => $freshRequest->request_code,
+                    'reason' => $comment ?? '-',
+                ]),
                 Notification::TYPE_REQUEST_RETURNED,
                 'returned'
             );

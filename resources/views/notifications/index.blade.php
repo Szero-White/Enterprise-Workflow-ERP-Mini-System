@@ -8,7 +8,10 @@
     <x-slot:actions>
         <form method="POST" action="{{ route('notifications.read-all') }}">
             @csrf
-            <button class="btn btn-light border"><i class="bi bi-check2-all"></i>{{ __('ui.mark_all_as_read') }}</button>
+            <button class="btn btn-light border">
+                <i class="bi bi-check2-all"></i>
+                {{ __('ui.mark_all_as_read') }}
+            </button>
         </form>
     </x-slot:actions>
 </x-erp.page-header>
@@ -17,8 +20,8 @@
     @forelse($notifications as $notification)
         <div class="p-3 p-lg-4 border-bottom {{ $notification->read_at ? '' : 'bg-primary-subtle' }}">
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
-                <div>
-                    <div class="d-flex align-items-center gap-2 mb-1">
+                <div class="flex-grow-1 min-w-0">
+                    <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                         @if(! $notification->read_at)
                             <span class="badge text-bg-primary rounded-pill">{{ __('ui.new') }}</span>
                         @endif
@@ -35,12 +38,48 @@
                         @endif
                     </div>
                 </div>
-                @if(! $notification->read_at)
-                    <form method="POST" action="{{ route('notifications.read', $notification) }}" class="align-self-lg-center">
-                        @csrf
-                        <button class="btn btn-sm btn-primary rounded-3">{{ __('ui.mark_as_read') }}</button>
-                    </form>
-                @endif
+
+                <div class="d-flex align-items-center gap-2 align-self-lg-center">
+                    @if(data_get($notification->data, 'purchase_request_id') && auth()->user()->hasRole(['procurement', 'admin']))
+                        <a
+                            href="{{ route('procurement.purchase-requests.show', data_get($notification->data, 'purchase_request_id')) }}"
+                            class="btn btn-sm btn-light border rounded-circle d-inline-flex align-items-center justify-content-center"
+                            title="{{ __('ui.open_related_request') }}"
+                            aria-label="{{ __('ui.open_related_request') }}"
+                        >
+                            <i class="bi bi-box-arrow-up-right"></i>
+                            <span class="visually-hidden">{{ __('ui.open_related_request') }}</span>
+                        </a>
+                    @endif
+
+                    @if($notification->read_at)
+                        <form method="POST" action="{{ route('notifications.unread', $notification) }}">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-light border rounded-circle d-inline-flex align-items-center justify-content-center"
+                                title="{{ __('ui.mark_as_unread') }}"
+                                aria-label="{{ __('ui.mark_as_unread') }}"
+                            >
+                                <i class="bi bi-envelope"></i>
+                                <span class="visually-hidden">{{ __('ui.mark_as_unread') }}</span>
+                            </button>
+                        </form>
+                    @else
+                        <form method="POST" action="{{ route('notifications.read', $notification) }}">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-primary rounded-circle d-inline-flex align-items-center justify-content-center"
+                                title="{{ __('ui.mark_as_read') }}"
+                                aria-label="{{ __('ui.mark_as_read') }}"
+                            >
+                                <i class="bi bi-envelope-open"></i>
+                                <span class="visually-hidden">{{ __('ui.mark_as_read') }}</span>
+                            </button>
+                        </form>
+                    @endif
+                </div>
             </div>
         </div>
     @empty

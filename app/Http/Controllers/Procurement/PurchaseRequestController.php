@@ -66,8 +66,14 @@ class PurchaseRequestController extends Controller
     {
         $purchaseRequest->load([
             'workflowRequest.creator',
-            'workflowRequest.currentStep',
+            'workflowRequest.currentStep.approverRole',
+            'workflowRequest.currentStep.approverDepartment',
+            'workflowRequest.currentStep.approverUser',
+            'workflowRequest.workflowTemplate.steps.approverRole',
+            'workflowRequest.workflowTemplate.steps.approverDepartment',
+            'workflowRequest.workflowTemplate.steps.approverUser',
             'workflowRequest.histories.actor',
+            'workflowRequest.histories.step',
             'items.item',
             'activePurchaseOrder',
         ]);

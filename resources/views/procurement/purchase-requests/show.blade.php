@@ -87,8 +87,29 @@
 
                     <dt class="col-5">{{ __('procurement.purchase_request.procurement_status') }}</dt>
                     <dd class="col-7"><span class="badge text-bg-light border">{{ $purchaseRequest->status->label() }}</span></dd>
+
+                    @if($purchaseRequest->workflowRequest->status === \App\Models\WorkflowRequest::STATUS_PENDING && $purchaseRequest->workflowRequest->currentStep)
+                        <dt class="col-5">{{ __('ui.current_approval_step') }}</dt>
+                        <dd class="col-7">
+                            <div class="fw-semibold">{{ $purchaseRequest->workflowRequest->currentStep->step_name }}</div>
+                            <div class="small text-muted">{{ $purchaseRequest->workflowRequest->currentStep->approverLabel() }}</div>
+                        </dd>
+                    @endif
+
+                    <dt class="col-5">{{ __('procurement.purchase_request.next_action_label') }}</dt>
+                    <dd class="col-7">
+                        @if($purchaseRequest->activePurchaseOrder?->status === \App\Enums\PurchaseOrderStatus::Draft)
+                            {{ __('procurement.purchase_request.next_action.purchase_order_draft', ['po' => $purchaseRequest->activePurchaseOrder->po_number]) }}
+                        @else
+                            {{ $purchaseRequest->status->nextActionLabel() }}
+                        @endif
+                    </dd>
                 </dl>
             </x-erp.panel>
+
+            <div class="mt-3">
+                @include('partials.approval_progress', ['workflowRequest' => $purchaseRequest->workflowRequest])
+            </div>
         </div>
     </div>
 @endsection

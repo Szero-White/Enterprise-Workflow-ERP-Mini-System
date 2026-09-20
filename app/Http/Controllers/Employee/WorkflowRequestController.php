@@ -78,7 +78,20 @@ class WorkflowRequestController extends Controller
     public function show(WorkflowRequest $workflowRequest): View
     {
         Gate::authorize('view', $workflowRequest);
-        $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'currentStep', 'purchaseRequest.items.item']);
+        $workflowRequest->load([
+            'formTemplate.fields',
+            'values.field',
+            'histories.actor',
+            'histories.step',
+            'attachments',
+            'currentStep.approverRole',
+            'currentStep.approverDepartment',
+            'currentStep.approverUser',
+            'workflowTemplate.steps.approverRole',
+            'workflowTemplate.steps.approverDepartment',
+            'workflowTemplate.steps.approverUser',
+            'purchaseRequest.items.item',
+        ]);
 
         return view('employee.requests.show', compact('workflowRequest'));
     }

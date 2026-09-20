@@ -4,6 +4,7 @@ namespace Tests\Feature\Procurement;
 
 use App\Enums\PurchaseOrderStatus;
 use App\Enums\PurchaseRequestStatus;
+use App\Models\Notification;
 use App\Models\PurchaseOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\BuildsProcurementFixture;
@@ -45,6 +46,22 @@ class PurchaseRequestOrderFlowTest extends TestCase
 
         $this->assertSame(PurchaseRequestStatus::Approved, $purchaseRequest->fresh()->status);
 
+        $this->assertDatabaseHas('notifications', [
+            'user_id' => $this->procurementUsers['procurement']->id,
+            'type' => Notification::TYPE_PURCHASE_REQUEST_READY,
+        ]);
+
+        $procurementNotification = Notification::query()
+            ->where('user_id', $this->procurementUsers['procurement']->id)
+            ->where('type', Notification::TYPE_PURCHASE_REQUEST_READY)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame(
+            $purchaseRequest->id,
+            (int) data_get($procurementNotification->data, 'purchase_request_id')
+        );
+
         $purchaseOrder = $this->createAndIssuePurchaseOrder(
             $purchaseRequest,
             unitCost: 14_500_000
@@ -57,6 +74,34 @@ class PurchaseRequestOrderFlowTest extends TestCase
         $this->assertSame('LAP-01', $orderItem->item_sku);
         $this->assertSame('Laptop', $orderItem->item_name);
         $this->assertSame($purchaseRequest->items()->firstOrFail()->id, $orderItem->purchase_request_item_id);
+    }
+
+    public function test_requester_can_see_return_reason_and_approval_progress(): void
+    {
+        $purchaseRequest = $this->submitPurchaseRequest();
+        $comment = 'Vui lòng bổ sung đơn giá dự kiến trước khi gửi lại.';
+
+        $this->actingAs($this->procurementUsers['manager'])
+            ->post(route('manager.approvals.return', $purchaseRequest->workflowRequest), [
+                'comment' => $comment,
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('notifications', [
+            'user_id' => $this->procurementUsers['employee']->id,
+            'type' => Notification::TYPE_REQUEST_RETURNED,
+            'message' => __('messages.notification_request_returned_body', [
+                'code' => $purchaseRequest->workflowRequest->request_code,
+                'reason' => $comment,
+            ]),
+        ]);
+
+        $this->actingAs($this->procurementUsers['employee'])
+            ->get(route('procurement.purchase-requests.show', $purchaseRequest))
+            ->assertOk()
+            ->assertSee(__('ui.approval_progress'))
+            ->assertSee(__('ui.return_reason'))
+            ->assertSee($comment);
     }
 
     public function test_cancelled_po_can_be_replaced_while_preserving_history(): void

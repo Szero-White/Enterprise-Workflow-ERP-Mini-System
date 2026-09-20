@@ -28,6 +28,13 @@ class NotificationController extends Controller
         return back()->with('success', __('messages.notification_read'));
     }
 
+    public function markAsUnread(Request $request, Notification $notification): RedirectResponse
+    {
+        $this->notificationService->markAsUnreadForUser($notification, $request->user());
+
+        return back()->with('success', __('messages.notification_unread'));
+    }
+
     public function markAllAsRead(Request $request): RedirectResponse
     {
         $this->notificationService->markAllAsReadForUser($request->user());

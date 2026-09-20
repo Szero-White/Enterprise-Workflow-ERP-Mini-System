@@ -241,6 +241,16 @@ class WorkflowApprovalTest extends TestCase
         $this->actingAs($this->manager)->post(route('notifications.read', $notification))->assertRedirect();
         $this->assertNotNull($notification->fresh()->read_at);
         $this->assertSame($workflowRequest->id, (int) data_get($notification->data, 'request_id'));
+
+        $this->actingAs($this->employee)
+            ->post(route('notifications.unread', $notification))
+            ->assertForbidden();
+        $this->assertNotNull($notification->fresh()->read_at);
+
+        $this->actingAs($this->manager)
+            ->post(route('notifications.unread', $notification))
+            ->assertRedirect();
+        $this->assertNull($notification->fresh()->read_at);
     }
 
     public function test_approval_creates_audit_log_and_approval_history_acted_at(): void

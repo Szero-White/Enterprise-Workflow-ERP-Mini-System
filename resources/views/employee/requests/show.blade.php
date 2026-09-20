@@ -56,21 +56,7 @@
         </div>
     </div>
     <div class="col-lg-5">
-        <div class="content-card p-3 p-lg-4">
-            <h5 class="mb-3">{{ __('menu.approval_history') }}</h5>
-            @forelse($workflowRequest->histories as $history)
-                <div class="border-bottom py-3">
-                    <div class="fw-semibold">{{ trans()->has('ui.action_labels.'.$history->action) ? __('ui.action_labels.'.$history->action) : strtoupper($history->action) }}</div>
-                    <div class="text-muted small">{{ $history->actor?->name ?? '-' }}</div>
-                    <div class="text-muted small">{{ $history->step?->step_name ?? '-' }} &middot; {{ $history->created_at->format('d/m/Y H:i') }}</div>
-                    @if($history->comment)
-                        <div class="mt-2">{{ $history->comment }}</div>
-                    @endif
-                </div>
-            @empty
-                <div class="text-muted">{{ __('ui.no_approval_history') }}</div>
-            @endforelse
-        </div>
+        @include('partials.approval_progress', ['workflowRequest' => $workflowRequest])
     </div>
 </div>
 @endsection

@@ -15,4 +15,9 @@ enum PurchaseRequestStatus: string
     {
         return __('procurement.purchase_request.status.'.$this->value);
     }
+
+    public function nextActionLabel(): string
+    {
+        return __('procurement.purchase_request.next_action.'.$this->value);
+    }
 }

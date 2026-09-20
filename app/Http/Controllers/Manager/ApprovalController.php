@@ -49,7 +49,21 @@ class ApprovalController extends Controller
     {
         Gate::authorize('review', $workflowRequest);
 
-        $workflowRequest->load(['formTemplate.fields', 'values.field', 'histories.actor', 'histories.step', 'attachments', 'creator', 'currentStep', 'workflowTemplate.steps', 'purchaseRequest.items.item']);
+        $workflowRequest->load([
+            'formTemplate.fields',
+            'values.field',
+            'histories.actor',
+            'histories.step',
+            'attachments',
+            'creator',
+            'currentStep.approverRole',
+            'currentStep.approverDepartment',
+            'currentStep.approverUser',
+            'workflowTemplate.steps.approverRole',
+            'workflowTemplate.steps.approverDepartment',
+            'workflowTemplate.steps.approverUser',
+            'purchaseRequest.items.item',
+        ]);
 
         return view('manager.approvals.show', compact('workflowRequest'));
     }
