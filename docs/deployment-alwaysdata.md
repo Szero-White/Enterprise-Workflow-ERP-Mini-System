@@ -23,10 +23,12 @@ cd "D:\Study\Laravel\Enterprise Workflow And ERP Mini System"
 
 git status
 php artisan optimize:clear
-php artisan migrate:fresh --seed
+php artisan migrate
+vendor\bin\pint --test
 php artisan test
 npm ci
 npm run build
+git diff --check
 ```
 
 Smoke-test login, dashboard, Purchase Request, approval, Purchase Order, Goods Receipt, inventory and asset lifecycle pages before committing the release.
@@ -92,14 +94,21 @@ git clone https://github.com/Szero-White/Enterprise-Workflow-ERP-Mini-System.git
 cd Enterprise-Workflow-ERP-Mini-System.next
 ```
 
-Create the production environment file:
+Prepare the production environment file. For an existing deployment, reuse the current production `.env` so the application key and deployment secrets remain stable:
+
+```bash
+cp ~/Enterprise-Workflow-ERP-Mini-System/.env .env
+nano .env
+```
+
+For the first deployment only, start from the production template instead:
 
 ```bash
 cp .env.production.example .env
 nano .env
 ```
 
-Set at minimum:
+Set or verify at minimum:
 
 ```dotenv
 APP_ENV=production
@@ -141,6 +150,7 @@ Composer is available on alwaysdata and Node/npm can be selected in the account 
 
 ```bash
 composer install --no-dev --optimize-autoloader --no-interaction
+# First deployment only, if APP_KEY is still blank:
 php artisan key:generate
 npm ci
 npm run build
@@ -153,18 +163,23 @@ Verify that Vite produced its manifest:
 test -f public/build/manifest.json && echo "Vite manifest OK"
 ```
 
-Do not continue if `public/build/manifest.json` is missing.
+Do not continue if `public/build/manifest.json` is missing. Do not rotate `APP_KEY` during routine deployments; reuse the existing production key so encrypted data and sessions are not invalidated unexpectedly.
 
 ## 7. Put the prepared release into maintenance mode and swap directories
 
-Still inside the `.next` directory:
+Put both the currently served release and the prepared `.next` release into maintenance mode immediately before the directory swap. This keeps the current site available during dependency installation while preventing either release from serving requests during the schema transition.
 
 ```bash
-php artisan down
+cd ~/Enterprise-Workflow-ERP-Mini-System
+php artisan down --retry=60
+
+cd ~/Enterprise-Workflow-ERP-Mini-System.next
+php artisan down --retry=60
+
 cd ~
 ```
 
-Keep one short-lived source backup for rollback:
+Keep one short-lived source backup for rollback, then perform the directory swap:
 
 ```bash
 rm -rf Enterprise-Workflow-ERP-Mini-System.previous
@@ -248,9 +263,9 @@ Check `https://workflow-erp.alwaysdata.net/up` first, then run the complete recr
 4. Record a Goods Receipt and confirm inventory increases.
 5. Confirm asset-trackable goods create individual Assets.
 6. Assign and return an Asset and verify stock movement.
-7. Login as Admin and verify configuration can be viewed but mutation/create/edit routes are blocked in public demo mode.
+7. Login as Admin and verify configuration actions follow normal authorization and remain subject to the public-demo write-rate limits.
 8. Verify workflow file upload controls are disabled.
-9. Verify incorrect destructive requests receive demo protection and excessive writes receive HTTP 429.
+9. Verify excessive writes receive HTTP 429 and that disabled dynamic workflow file uploads are rejected.
 10. Inspect `storage/logs/laravel.log` and the alwaysdata HTTP/PHP logs for new errors.
 
 Check response headers from your own machine:

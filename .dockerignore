@@ -1,7 +1,16 @@
 .git
 .github
+.idea
+.vscode
 node_modules
 vendor
-storage/logs/*
 .env
+.phpunit.result.cache
+database/*.sqlite*
+public/build
+public/hot
+public/storage
+bootstrap/cache/*.php
+storage/logs/*.log
+storage/framework/views/*.php
 .DS_Store
