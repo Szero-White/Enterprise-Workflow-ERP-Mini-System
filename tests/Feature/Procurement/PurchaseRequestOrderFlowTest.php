@@ -87,14 +87,15 @@ class PurchaseRequestOrderFlowTest extends TestCase
             ])
             ->assertRedirect();
 
-        $this->assertDatabaseHas('notifications', [
-            'user_id' => $this->procurementUsers['employee']->id,
-            'type' => Notification::TYPE_REQUEST_RETURNED,
-            'message' => __('messages.notification_request_returned_body', [
-                'code' => $purchaseRequest->workflowRequest->request_code,
-                'reason' => $comment,
-            ]),
-        ]);
+        $notification = Notification::query()
+            ->where('user_id', $this->procurementUsers['employee']->id)
+            ->where('type', Notification::TYPE_REQUEST_RETURNED)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertStringContainsString($comment, $notification->message);
+        $this->assertSame($this->procurementUsers['employee']->name, data_get($notification->data, 'requester_name'));
+        $this->assertSame('employee_request', data_get($notification->data, 'destination'));
 
         $this->actingAs($this->procurementUsers['employee'])
             ->get(route('procurement.purchase-requests.show', $purchaseRequest))

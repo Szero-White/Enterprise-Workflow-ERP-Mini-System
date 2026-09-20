@@ -67,7 +67,7 @@ class GoodsReceiptFlowTest extends TestCase
         $this->assertSame($receipt->receipt_number, data_get($notification->data, 'receipt_number'));
         $this->assertSame(2, (int) data_get($notification->data, 'asset_count'));
         $this->assertSame('review_ready_assets', data_get($notification->data, 'action'));
-        $this->assertStringContainsString($receipt->receipt_number, $notification->message);
+        $this->assertSame('assets', data_get($notification->data, 'destination'));
     }
 
     public function test_partial_receipts_close_po_only_after_all_quantity_is_received(): void

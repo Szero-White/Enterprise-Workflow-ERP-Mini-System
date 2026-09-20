@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@inject('notificationPresenter', 'App\Support\Notifications\NotificationPresenter')
+
 @section('page_title', __('menu.notifications'))
 @section('page_eyebrow', __('ui.account'))
 
@@ -18,6 +20,12 @@
 
 <div class="content-card p-0 overflow-hidden erp-notifications-list">
     @forelse($notifications as $notification)
+        @php
+            $display = $notificationPresenter->display($notification);
+            $actionUrl = $notificationPresenter->actionUrl($notification, auth()->user());
+            $details = collect(data_get($display->data, 'details', []))->filter(fn ($item) => filled(data_get($item, 'value')));
+        @endphp
+
         @if(! $notification->read_at)
             <form method="POST" action="{{ route('notifications.read', $notification) }}" class="erp-notification-form">
                 @csrf
@@ -44,39 +52,40 @@
                     </span>
                 </div>
 
-                <h3 class="erp-notification-item__title">{{ $notification->title }}</h3>
-                <p class="erp-notification-item__message">{{ $notification->message }}</p>
+                <h3 class="erp-notification-item__title">{{ $display->title }}</h3>
+                <p class="erp-notification-item__message">{{ $display->message }}</p>
+
+                @if(data_get($display->data, 'requester_name') || $details->isNotEmpty())
+                    <div class="erp-notification-context" aria-label="Thông tin liên quan">
+                        @if(data_get($display->data, 'requester_name'))
+                            <span class="erp-notification-context__item">
+                                <strong>{{ __('ui.notification_details.requester') }}:</strong>
+                                {{ data_get($display->data, 'requester_name') }}
+                            </span>
+                        @endif
+
+                        @foreach($details as $detail)
+                            <span class="erp-notification-context__item">
+                                <strong>{{ data_get($detail, 'label') }}:</strong>
+                                {{ data_get($detail, 'value') }}
+                            </span>
+                        @endforeach
+                    </div>
+                @endif
 
                 <div class="erp-notification-item__meta">
                     <span><i class="bi bi-clock"></i>{{ $notification->created_at->format('d/m/Y H:i') }}</span>
                     @if(data_get($notification->data, 'request_code'))
-                        <span><i class="bi bi-file-earmark-text"></i>{{ data_get($notification->data, 'request_code') }}</span>
+                        <span><i class="bi bi-file-earmark-text"></i>{{ __('ui.request_code') }}: {{ data_get($notification->data, 'request_code') }}</span>
                     @endif
                 </div>
             </div>
 
             <div class="erp-notification-item__actions">
-                @if(data_get($notification->data, 'purchase_request_id') && auth()->user()->hasRole(['procurement', 'asset_manager', 'admin']))
-                    <a
-                        href="{{ route('procurement.purchase-requests.show', data_get($notification->data, 'purchase_request_id')) }}"
-                        class="erp-icon-action"
-                        title="{{ __('ui.open_related_request') }}"
-                        aria-label="{{ __('ui.open_related_request') }}"
-                    >
-                        <i class="bi bi-box-arrow-up-right"></i>
-                        <span class="visually-hidden">{{ __('ui.open_related_request') }}</span>
-                    </a>
-                @endif
-
-                @if(data_get($notification->data, 'action') === 'review_ready_assets' && auth()->user()->hasRole(['asset_manager', 'admin']))
-                    <a
-                        href="{{ route('assets.index', ['status' => \App\Enums\AssetStatus::Available->value]) }}"
-                        class="erp-icon-action"
-                        title="{{ __('ui.open_ready_assets') }}"
-                        aria-label="{{ __('ui.open_ready_assets') }}"
-                    >
-                        <i class="bi bi-box-arrow-up-right"></i>
-                        <span class="visually-hidden">{{ __('ui.open_ready_assets') }}</span>
+                @if($actionUrl)
+                    <a href="{{ $actionUrl }}" class="btn btn-sm btn-outline-primary erp-notification-action-btn">
+                        {{ $notificationPresenter->actionLabel($notification) }}
+                        <i class="bi bi-arrow-right"></i>
                     </a>
                 @endif
 

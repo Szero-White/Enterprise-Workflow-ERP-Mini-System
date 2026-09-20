@@ -3,14 +3,20 @@
 namespace App\Services;
 
 use App\Jobs\SendRealtimeNotification;
+use App\Models\GoodsReceipt;
 use App\Models\Notification;
+use App\Models\PurchaseRequest;
 use App\Models\User;
 use App\Models\WorkflowRequest;
 use App\Models\WorkflowStep;
+use App\Services\Notifications\NotificationContentBuilder;
+use App\Support\Notifications\NotificationContent;
 use Illuminate\Support\Collection;
 
 class NotificationService
 {
+    public function __construct(private NotificationContentBuilder $contentBuilder) {}
+
     public function createForUser(User|int $recipient, string $title, string $message, string $type, array $data = []): Notification
     {
         $notification = Notification::create([
@@ -28,25 +34,85 @@ class NotificationService
         return $notification;
     }
 
-    public function notifyCurrentApprovers(WorkflowRequest $workflowRequest, string $type = Notification::TYPE_REQUEST_SUBMITTED): void
-    {
+    public function notifyCurrentApprovers(
+        WorkflowRequest $workflowRequest,
+        string $type = Notification::TYPE_REQUEST_SUBMITTED,
+        string $event = 'submitted',
+    ): void {
         $workflowRequest->loadMissing(['currentStep', 'creator', 'formTemplate']);
 
         if (! $workflowRequest->currentStep) {
             return;
         }
 
+        $content = $this->contentBuilder->pendingApproval($workflowRequest, $event);
+
         $this->approverUsers($workflowRequest->currentStep)
             ->reject(fn (User $user) => $user->id === $workflowRequest->created_by)
-            ->each(function (User $user) use ($workflowRequest, $type): void {
-                $this->createForUser(
-                    $user,
-                    __('messages.notification_pending_approval_title'),
-                    __('messages.notification_pending_approval_body', ['code' => $workflowRequest->request_code]),
-                    $type,
-                    $this->requestPayload($workflowRequest, 'pending_approval')
-                );
-            });
+            ->each(fn (User $user) => $this->createFromContent($user, $content, $type));
+    }
+
+    public function notifyRequestApproved(WorkflowRequest $workflowRequest, User $actor): void
+    {
+        $this->notifyWorkflowCreator(
+            $workflowRequest,
+            $this->contentBuilder->approved($workflowRequest, $actor),
+            Notification::TYPE_REQUEST_COMPLETED,
+        );
+    }
+
+    public function notifyRequestRejected(WorkflowRequest $workflowRequest, User $actor, string $reason): void
+    {
+        $this->notifyWorkflowCreator(
+            $workflowRequest,
+            $this->contentBuilder->rejected($workflowRequest, $actor, $reason),
+            Notification::TYPE_REQUEST_REJECTED,
+        );
+    }
+
+    public function notifyRequestReturned(WorkflowRequest $workflowRequest, User $actor, string $reason): void
+    {
+        $this->notifyWorkflowCreator(
+            $workflowRequest,
+            $this->contentBuilder->returned($workflowRequest, $actor, $reason),
+            Notification::TYPE_REQUEST_RETURNED,
+        );
+    }
+
+    public function notifyPurchaseRequestReady(WorkflowRequest $workflowRequest, PurchaseRequest $purchaseRequest): void
+    {
+        $this->notifyRoleWithContent(
+            'procurement',
+            $this->contentBuilder->purchaseRequestReady($workflowRequest, $purchaseRequest),
+            Notification::TYPE_PURCHASE_REQUEST_READY,
+        );
+    }
+
+    public function notifyPurchaseRequestStockReady(WorkflowRequest $workflowRequest, PurchaseRequest $purchaseRequest): void
+    {
+        $this->notifyRoleWithContent(
+            'asset_manager',
+            $this->contentBuilder->purchaseRequestStockReady($workflowRequest, $purchaseRequest),
+            Notification::TYPE_PURCHASE_REQUEST_STOCK_READY,
+        );
+    }
+
+    public function notifyPurchaseRequestStockFulfilled(WorkflowRequest $workflowRequest, PurchaseRequest $purchaseRequest): void
+    {
+        $this->notifyWorkflowCreator(
+            $workflowRequest,
+            $this->contentBuilder->purchaseRequestStockFulfilled($workflowRequest, $purchaseRequest),
+            Notification::TYPE_PURCHASE_REQUEST_STOCK_FULFILLED,
+        );
+    }
+
+    public function notifyAssetsReady(GoodsReceipt $receipt, int $assetCount): void
+    {
+        $this->notifyRoleWithContent(
+            'asset_manager',
+            $this->contentBuilder->assetsReady($receipt, $assetCount),
+            Notification::TYPE_ASSETS_READY,
+        );
     }
 
     public function notifyRoleUsers(
@@ -76,7 +142,7 @@ class NotificationService
             $title,
             $message,
             $type,
-            $this->requestPayload($workflowRequest, $action)
+            $this->requestPayload($workflowRequest, $action),
         );
     }
 
@@ -99,6 +165,35 @@ class NotificationService
         Notification::forUser($user)
             ->unread()
             ->update(['read_at' => now()]);
+    }
+
+    private function notifyWorkflowCreator(WorkflowRequest $workflowRequest, NotificationContent $content, string $type): void
+    {
+        $workflowRequest->loadMissing('creator');
+
+        if ($workflowRequest->creator) {
+            $this->createFromContent($workflowRequest->creator, $content, $type);
+        }
+    }
+
+    private function notifyRoleWithContent(string $roleKey, NotificationContent $content, string $type): void
+    {
+        User::query()
+            ->where('is_active', true)
+            ->whereHas('role', fn ($query) => $query->where('key', $roleKey))
+            ->get()
+            ->each(fn (User $user) => $this->createFromContent($user, $content, $type));
+    }
+
+    private function createFromContent(User|int $recipient, NotificationContent $content, string $type): Notification
+    {
+        return $this->createForUser(
+            $recipient,
+            $content->title,
+            $content->message,
+            $type,
+            $content->data,
+        );
     }
 
     private function approverUsers(WorkflowStep $step): Collection

@@ -73,6 +73,43 @@ class WorkflowApprovalTest extends TestCase
         ]);
     }
 
+    public function test_notification_center_shows_business_context_and_contextual_action(): void
+    {
+        $workflowRequest = $this->submitRequest();
+        $notification = Notification::query()
+            ->where('user_id', $this->manager->id)
+            ->where('type', Notification::TYPE_REQUEST_SUBMITTED)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertStringContainsString($this->formTemplate->name, $notification->title);
+        $this->assertStringContainsString($this->employee->name, $notification->message);
+        $this->assertSame($this->employee->name, data_get($notification->data, 'requester_name'));
+        $this->assertSame('approval', data_get($notification->data, 'destination'));
+        $this->assertNotEmpty(data_get($notification->data, 'details'));
+
+        $notification->forceFill([
+            'title' => 'Có đơn đang chờ duyệt',
+            'message' => 'Đơn '.$workflowRequest->request_code.' đang chờ bạn xử lý.',
+            'data' => [
+                'request_id' => $workflowRequest->id,
+                'request_code' => $workflowRequest->request_code,
+                'status' => $workflowRequest->status,
+                'action' => 'pending_approval',
+            ],
+        ])->save();
+
+        $this->actingAs($this->manager)
+            ->get(route('notifications.index'))
+            ->assertOk()
+            ->assertSee($this->formTemplate->name.' cần phê duyệt')
+            ->assertSee($this->employee->name)
+            ->assertSee(__('ui.notification_actions.pending_approval'))
+            ->assertDontSee('Có đơn đang chờ duyệt');
+
+        $this->assertSame($workflowRequest->id, (int) data_get($notification->data, 'request_id'));
+    }
+
     public function test_manager_approval_moves_request_to_hr_step(): void
     {
         $workflowRequest = $this->submitRequest();
@@ -391,7 +428,7 @@ class WorkflowApprovalTest extends TestCase
     private function createUser(string $email, Role $role, Department $department): User
     {
         return User::create([
-            'name' => str($email)->before('@')->headline(),
+            'name' => str($email)->before('@')->headline()->toString(),
             'email' => $email,
             'password' => Hash::make('password'),
             'department_id' => $department->id,

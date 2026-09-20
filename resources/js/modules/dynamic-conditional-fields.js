@@ -12,7 +12,13 @@ const conditionMatches = (container, form) => {
     }
 
     const source = form.elements.namedItem(sourceKey);
-    const sourceValue = source && !source.disabled ? String(source.value ?? '') : '';
+    let sourceValue = '';
+
+    if (source && !source.disabled) {
+        sourceValue = source instanceof HTMLInputElement && source.type === 'checkbox'
+            ? (source.checked ? String(source.value ?? '1') : '')
+            : String(source.value ?? '');
+    }
     const expected = String(container.dataset.conditionValue ?? '');
 
     switch (operator) {

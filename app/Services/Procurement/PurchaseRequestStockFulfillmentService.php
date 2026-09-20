@@ -6,7 +6,6 @@ use App\Enums\AssetStatus;
 use App\Enums\PurchaseRequestFulfillmentRoute;
 use App\Enums\PurchaseRequestStatus;
 use App\Models\Asset;
-use App\Models\Notification;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestItem;
 use App\Models\User;
@@ -161,15 +160,7 @@ class PurchaseRequestStockFulfillmentService
 
                 $workflowRequest = $purchaseRequest->workflowRequest;
                 if ($workflowRequest) {
-                    $this->notificationService->notifyCreator(
-                        $workflowRequest,
-                        __('messages.notification_purchase_request_stock_fulfilled_title'),
-                        __('messages.notification_purchase_request_stock_fulfilled_body', [
-                            'code' => $workflowRequest->request_code,
-                        ]),
-                        Notification::TYPE_PURCHASE_REQUEST_STOCK_FULFILLED,
-                        'stock_fulfilled'
-                    );
+                    $this->notificationService->notifyPurchaseRequestStockFulfilled($workflowRequest, $purchaseRequest);
                 }
             }
 

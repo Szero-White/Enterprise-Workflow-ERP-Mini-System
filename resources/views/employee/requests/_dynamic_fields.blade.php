@@ -11,6 +11,7 @@
     @php
         $value = $dynamicInput[$field->field_key] ?? '';
         $visible = $conditionService->isVisible($field, $dynamicInput, $formTemplate->fields);
+        $fieldType = $field->type();
     @endphp
     <div
         class="mb-3"
@@ -34,6 +35,20 @@
                     <option value="{{ $option }}" @selected($value === $option)>{{ $option }}</option>
                 @endforeach
             </select>
+        @elseif($field->field_type === 'radio')
+            <div class="d-flex flex-column gap-2">
+                @foreach($field->options ?? [] as $option)
+                    <div class="form-check">
+                        <input id="{{ $field->field_key }}_{{ $loop->index }}" type="radio" name="{{ $field->field_key }}" value="{{ $option }}" class="form-check-input @error($field->field_key) is-invalid @enderror" @checked($value === $option) @required($field->is_required && $visible) @disabled(! $visible)>
+                        <label class="form-check-label" for="{{ $field->field_key }}_{{ $loop->index }}">{{ $option }}</label>
+                    </div>
+                @endforeach
+            </div>
+        @elseif($field->field_type === 'checkbox')
+            <div class="form-check">
+                <input type="checkbox" name="{{ $field->field_key }}" value="1" class="form-check-input @error($field->field_key) is-invalid @enderror" @checked((string) $value === '1') @required($field->is_required && $visible) @disabled(! $visible)>
+                <label class="form-check-label">{{ __('ui.checkbox_confirmation_hint') }}</label>
+            </div>
         @elseif($field->field_type === 'file')
             @if(config('demo.enabled') && ! config('demo.uploads_enabled'))
                 <div class="alert alert-light border mb-0 py-2 small text-muted">
@@ -44,7 +59,7 @@
                 <div class="form-text">{{ __('ui.allowed_file_hint') }}</div>
             @endif
         @else
-            <input type="{{ $field->field_type }}" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" value="{{ $value }}" @required($field->is_required && $visible) @disabled(! $visible)>
+            <input type="{{ $fieldType?->htmlInputType() ?? 'text' }}" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" value="{{ $value }}" @required($field->is_required && $visible) @disabled(! $visible)>
         @endif
         @include('partials.form_error', ['field' => $field->field_key])
     </div>

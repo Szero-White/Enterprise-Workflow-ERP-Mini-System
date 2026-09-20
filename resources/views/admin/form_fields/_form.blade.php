@@ -20,8 +20,8 @@
     <div class="col-md-6">
         <label for="field_type" class="form-label erp-required">{{ __('ui.field_type') }}</label>
         <select name="field_type" id="field_type" data-form-field-type class="form-select @error('field_type') is-invalid @enderror" required>
-            @foreach(\App\Models\FormField::TYPES as $type)
-                <option value="{{ $type }}" @selected(old('field_type', $field->field_type ?? '') === $type)>{{ $type }}</option>
+            @foreach(\App\Enums\FormFieldType::cases() as $type)
+                <option value="{{ $type->value }}" @selected(old('field_type', $field->field_type ?? '') === $type->value)>{{ $type->label() }}</option>
             @endforeach
         </select>
         @include('partials.form_error', ['field' => 'field_type'])

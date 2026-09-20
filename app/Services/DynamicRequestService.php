@@ -111,7 +111,11 @@ class DynamicRequestService
             ]);
 
             $this->auditLogService->log('request.resubmitted', $workflowRequest, $old, $workflowRequest->fresh('values')->toArray());
-            $this->notificationService->notifyCurrentApprovers($workflowRequest, Notification::TYPE_REQUEST_SUBMITTED);
+            $this->notificationService->notifyCurrentApprovers(
+                $workflowRequest,
+                Notification::TYPE_REQUEST_SUBMITTED,
+                'resubmitted',
+            );
 
             return $workflowRequest->fresh();
         });

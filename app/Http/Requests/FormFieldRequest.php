@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\FormFieldType;
 use App\Models\FormField;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -27,7 +28,7 @@ class FormFieldRequest extends FormRequest
                     ->where('form_template_id', $template?->id)
                     ->ignore($field?->id),
             ],
-            'field_type' => ['required', Rule::in(FormField::TYPES)],
+            'field_type' => ['required', Rule::in(FormFieldType::values())],
             'is_required' => ['nullable', 'boolean'],
             'options_text' => ['nullable', 'string'],
             'sort_order' => ['required', 'integer', 'min:0'],
@@ -48,7 +49,9 @@ class FormFieldRequest extends FormRequest
 
     private function validateSelectOptions($validator): void
     {
-        if ($this->input('field_type') !== 'select') {
+        $type = FormFieldType::tryFrom((string) $this->input('field_type'));
+
+        if (! $type?->usesOptions()) {
             return;
         }
 
@@ -110,7 +113,7 @@ class FormFieldRequest extends FormRequest
             return;
         }
 
-        if ($source->field_type === 'select' && ! in_array($conditionValue, $source->options ?? [], true)) {
+        if ($source->type()?->usesOptions() && ! in_array($conditionValue, $source->options ?? [], true)) {
             $validator->errors()->add('condition_value', __('messages.form_field_condition_value_not_option'));
         }
     }

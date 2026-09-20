@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (fieldType && optionsBox) {
         const syncOptionsVisibility = () => {
-            optionsBox.hidden = fieldType.value !== 'select';
+            optionsBox.hidden = !['select', 'radio'].includes(fieldType.value);
         };
 
         fieldType.addEventListener('change', syncOptionsVisibility);

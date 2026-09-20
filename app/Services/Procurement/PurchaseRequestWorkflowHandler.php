@@ -5,7 +5,6 @@ namespace App\Services\Procurement;
 use App\Contracts\Workflow\WorkflowTransitionHandler;
 use App\Enums\PurchaseRequestFulfillmentRoute;
 use App\Enums\PurchaseRequestStatus;
-use App\Models\Notification;
 use App\Models\WorkflowRequest;
 use App\Services\NotificationService;
 
@@ -37,52 +36,14 @@ class PurchaseRequestWorkflowHandler implements WorkflowTransitionHandler
 
         if ($status === PurchaseRequestStatus::Approved) {
             if ($purchaseRequest->fulfillment_route === PurchaseRequestFulfillmentRoute::Stock) {
-                $this->notifyAssetManagerStockReady($workflowRequest, $purchaseRequest->id);
+                $this->notificationService->notifyPurchaseRequestStockReady($workflowRequest, $purchaseRequest);
             } else {
                 if ($purchaseRequest->fulfillment_route === PurchaseRequestFulfillmentRoute::Pending) {
                     $purchaseRequest->update(['fulfillment_route' => PurchaseRequestFulfillmentRoute::Procurement]);
                 }
 
-                $this->notifyProcurementReady($workflowRequest, $purchaseRequest->id);
+                $this->notificationService->notifyPurchaseRequestReady($workflowRequest, $purchaseRequest);
             }
         }
-    }
-
-    private function notifyAssetManagerStockReady(WorkflowRequest $workflowRequest, int $purchaseRequestId): void
-    {
-        $this->notificationService->notifyRoleUsers(
-            'asset_manager',
-            __('messages.notification_purchase_request_stock_ready_title'),
-            __('messages.notification_purchase_request_stock_ready_body', [
-                'code' => $workflowRequest->request_code,
-            ]),
-            Notification::TYPE_PURCHASE_REQUEST_STOCK_READY,
-            [
-                'request_id' => $workflowRequest->id,
-                'purchase_request_id' => $purchaseRequestId,
-                'request_code' => $workflowRequest->request_code,
-                'status' => $workflowRequest->status,
-                'action' => 'fulfill_from_stock',
-            ]
-        );
-    }
-
-    private function notifyProcurementReady(WorkflowRequest $workflowRequest, int $purchaseRequestId): void
-    {
-        $this->notificationService->notifyRoleUsers(
-            'procurement',
-            __('messages.notification_purchase_request_ready_title'),
-            __('messages.notification_purchase_request_ready_body', [
-                'code' => $workflowRequest->request_code,
-            ]),
-            Notification::TYPE_PURCHASE_REQUEST_READY,
-            [
-                'request_id' => $workflowRequest->id,
-                'purchase_request_id' => $purchaseRequestId,
-                'request_code' => $workflowRequest->request_code,
-                'status' => $workflowRequest->status,
-                'action' => 'create_purchase_order',
-            ]
-        );
     }
 }

@@ -604,3 +604,31 @@
     .erp-audit-filter-card .btn { min-height: 40px; }
     .erp-audit-table { min-width: 980px; }
 }
+
+/* Notification business context */
+.erp-notification-context {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 8px;
+}
+.erp-notification-context__item {
+    display: inline-flex;
+    gap: 4px;
+    max-width: min(100%, 520px);
+    color: var(--erp-text-soft);
+    font-size: .67rem;
+    line-height: 1.45;
+}
+.erp-notification-context__item strong {
+    color: var(--erp-text);
+    font-weight: 600;
+}
+.erp-notification-action-btn {
+    position: relative;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}

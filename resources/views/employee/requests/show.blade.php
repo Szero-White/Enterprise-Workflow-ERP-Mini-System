@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@inject('fieldValuePresenter', 'App\Support\Forms\DynamicFieldValuePresenter')
+
 @section('page_title', __('ui.request_detail'))
 @section('page_eyebrow', __('menu.employee').' / '.__('menu.my_requests'))
 
@@ -21,7 +23,7 @@
                     @forelse($displayValues as $value)
                         <tr>
                             <th width="220">{{ $value->field?->label ?? $value->field_key }}</th>
-                            <td>{{ $value->value ?: '-' }}</td>
+                            <td>{{ $value->field ? $fieldValuePresenter->display($value->field, $value->value) : ($value->value ?: '—') }}</td>
                         </tr>
                     @empty
                         <tr><td class="text-muted">{{ __('ui.no_request_data') }}</td></tr>

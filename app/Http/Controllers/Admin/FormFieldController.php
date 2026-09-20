@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\FormFieldType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormFieldRequest;
 use App\Models\FormField;
@@ -126,7 +127,8 @@ class FormFieldController extends Controller
     private function prepareData(array $data, FormFieldRequest $request): array
     {
         $options = null;
-        if (($data['field_type'] ?? null) === 'select' && filled($request->input('options_text'))) {
+        $fieldType = FormFieldType::tryFrom((string) ($data['field_type'] ?? ''));
+        if ($fieldType?->usesOptions() && filled($request->input('options_text'))) {
             $options = collect(preg_split('/\r\n|\r|\n/', $request->input('options_text')))
                 ->map(fn ($item) => trim($item))
                 ->filter()

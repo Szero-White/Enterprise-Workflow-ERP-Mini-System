@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\FormFieldType;
 use App\Models\FormTemplate;
 use Illuminate\Validation\Rule;
 
@@ -24,14 +25,32 @@ class DynamicFieldValidationService
 
             $fieldRules = $field->is_required ? ['required'] : ['nullable'];
 
-            switch ($field->field_type) {
-                case 'number':
+            switch (FormFieldType::tryFrom($field->field_type)) {
+                case FormFieldType::Number:
                     $fieldRules[] = 'numeric';
                     break;
-                case 'date':
-                    $fieldRules[] = 'date';
+                case FormFieldType::Date:
+                    $fieldRules[] = 'date_format:Y-m-d';
                     break;
-                case 'file':
+                case FormFieldType::Time:
+                    $fieldRules[] = 'date_format:H:i';
+                    break;
+                case FormFieldType::DateTime:
+                    $fieldRules[] = 'date_format:Y-m-d\TH:i';
+                    break;
+                case FormFieldType::Email:
+                    array_push($fieldRules, 'string', 'email', 'max:255');
+                    break;
+                case FormFieldType::Phone:
+                    array_push($fieldRules, 'string', 'max:30');
+                    break;
+                case FormFieldType::Url:
+                    array_push($fieldRules, 'string', 'url:http,https', 'max:2048');
+                    break;
+                case FormFieldType::Checkbox:
+                    $fieldRules = $field->is_required ? ['accepted'] : ['nullable', 'boolean'];
+                    break;
+                case FormFieldType::File:
                     if (config('demo.enabled') && ! config('demo.uploads_enabled')) {
                         $fieldRules = ['nullable', 'prohibited'];
                         break;
@@ -43,10 +62,11 @@ class DynamicFieldValidationService
 
                     array_push($fieldRules, 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:'.max(1, $maxKb));
                     break;
-                case 'select':
+                case FormFieldType::Select:
+                case FormFieldType::Radio:
                     $this->addSelectRules($fieldRules, $field->options ?? []);
                     break;
-                case 'textarea':
+                case FormFieldType::Textarea:
                     array_push($fieldRules, 'string', 'max:5000');
                     break;
                 default:

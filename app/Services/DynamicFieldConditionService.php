@@ -63,7 +63,7 @@ class DynamicFieldConditionService
             }
 
             if (
-                $source->field_type === 'select'
+                $source->type()?->usesOptions()
                 && $field->conditionRequiresValue()
                 && ! in_array((string) $field->condition_value, $source->options ?? [], true)
             ) {

@@ -29,7 +29,7 @@
                         @endif
                     </td>
                     <td><code class="erp-record-code">{{ $field->field_key }}</code></td>
-                    <td>{{ $field->field_type }}</td>
+                    <td>{{ $field->type()?->label() ?? $field->field_type }}</td>
                     <td>@include('partials.boolean_badge', ['value' => $field->is_required, 'trueLabel' => __('status.required'), 'falseLabel' => __('status.optional')])</td>
                     <td>{{ is_array($field->options) ? implode(', ', $field->options) : '-' }}</td>
                     <td>

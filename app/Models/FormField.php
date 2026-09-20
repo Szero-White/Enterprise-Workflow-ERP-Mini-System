@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\FormFieldType;
 use Illuminate\Database\Eloquent\Model;
 
 class FormField extends Model
 {
-    public const TYPES = ['text', 'textarea', 'number', 'date', 'select', 'file'];
-
     public const CONDITION_EQUALS = 'equals';
 
     public const CONDITION_NOT_EQUALS = 'not_equals';
@@ -42,6 +41,11 @@ class FormField extends Model
             'is_required' => 'boolean',
             'options' => 'array',
         ];
+    }
+
+    public function type(): ?FormFieldType
+    {
+        return FormFieldType::tryFrom($this->field_type);
     }
 
     public function hasCondition(): bool

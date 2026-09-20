@@ -70,15 +70,13 @@ class ApprovalService
             }
 
             if ($nextStep) {
-                $this->notificationService->notifyCurrentApprovers($freshRequest, Notification::TYPE_REQUEST_APPROVED);
-            } else {
-                $this->notificationService->notifyCreator(
+                $this->notificationService->notifyCurrentApprovers(
                     $freshRequest,
-                    __('messages.notification_request_approved_title'),
-                    __('messages.notification_request_approved_body', ['code' => $freshRequest->request_code]),
-                    Notification::TYPE_REQUEST_COMPLETED,
-                    'approved'
+                    Notification::TYPE_REQUEST_APPROVED,
+                    'forwarded',
                 );
+            } else {
+                $this->notificationService->notifyRequestApproved($freshRequest, $actor);
             }
 
             return $freshRequest;
@@ -110,16 +108,7 @@ class ApprovalService
             $this->auditLogService->log('request.rejected', $workflowRequest, $old, $freshRequest->toArray());
             $this->workflowTransitionDispatcher->dispatch($freshRequest);
             $this->workflowLifecycleService->retireIfEligible($workflowRequest->workflowTemplate);
-            $this->notificationService->notifyCreator(
-                $freshRequest,
-                __('messages.notification_request_rejected_title'),
-                __('messages.notification_request_rejected_body', [
-                    'code' => $freshRequest->request_code,
-                    'reason' => $comment ?? '-',
-                ]),
-                Notification::TYPE_REQUEST_REJECTED,
-                'rejected'
-            );
+            $this->notificationService->notifyRequestRejected($freshRequest, $actor, $comment ?? '-');
 
             return $freshRequest;
         });
@@ -146,16 +135,7 @@ class ApprovalService
             $freshRequest = $workflowRequest->fresh(['creator', 'formTemplate']);
             $this->auditLogService->log('request.returned', $workflowRequest, $old, $freshRequest->toArray());
             $this->workflowTransitionDispatcher->dispatch($freshRequest);
-            $this->notificationService->notifyCreator(
-                $freshRequest,
-                __('messages.notification_request_returned_title'),
-                __('messages.notification_request_returned_body', [
-                    'code' => $freshRequest->request_code,
-                    'reason' => $comment ?? '-',
-                ]),
-                Notification::TYPE_REQUEST_RETURNED,
-                'returned'
-            );
+            $this->notificationService->notifyRequestReturned($freshRequest, $actor, $comment ?? '-');
 
             return $freshRequest;
         });

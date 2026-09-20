@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@inject('fieldValuePresenter', 'App\Support\Forms\DynamicFieldValuePresenter')
+
 @php
     $isPending = $workflowRequest->status === \App\Models\WorkflowRequest::STATUS_PENDING;
     $pageTitle = $isPending ? __('ui.approve_request_title') : __('ui.request_detail');
@@ -33,7 +35,7 @@
                     <tr><th>{{ __('ui.creator') }}</th><td>{{ $workflowRequest->creator?->name ?? '-' }}</td></tr>
                     <tr><th>{{ __('ui.form') }}</th><td>{{ $workflowRequest->formTemplate?->name ?? '-' }}</td></tr>
                     @foreach($workflowRequest->values->filter(fn ($value) => $value->field?->field_type !== 'file') as $value)
-                        <tr><th width="220">{{ $value->field?->label ?? $value->field_key }}</th><td>{{ $value->value ?: '-' }}</td></tr>
+                        <tr><th width="220">{{ $value->field?->label ?? $value->field_key }}</th><td>{{ $value->field ? $fieldValuePresenter->display($value->field, $value->value) : ($value->value ?: '—') }}</td></tr>
                     @endforeach
                     </tbody>
                 </table>
