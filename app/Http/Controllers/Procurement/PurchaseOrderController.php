@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Procurement;
 
+use App\Enums\PurchaseRequestFulfillmentRoute;
 use App\Enums\PurchaseRequestStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PurchaseOrderStoreRequest;
@@ -39,6 +40,7 @@ class PurchaseOrderController extends Controller
 
         abort_unless(
             $purchaseRequest->status === PurchaseRequestStatus::Approved
+                && $purchaseRequest->fulfillment_route === PurchaseRequestFulfillmentRoute::Procurement
                 && ! $purchaseRequest->activePurchaseOrder,
             422,
             __('procurement.messages.purchase_request_not_ready')

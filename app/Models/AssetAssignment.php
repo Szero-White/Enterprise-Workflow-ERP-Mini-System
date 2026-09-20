@@ -10,6 +10,7 @@ class AssetAssignment extends Model
 {
     protected $fillable = [
         'asset_id',
+        'purchase_request_item_id',
         'assigned_to',
         'assigned_by',
         'source_warehouse_id',
@@ -29,6 +30,11 @@ class AssetAssignment extends Model
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class);
+    }
+
+    public function purchaseRequestItem(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseRequestItem::class);
     }
 
     public function assignee(): BelongsTo

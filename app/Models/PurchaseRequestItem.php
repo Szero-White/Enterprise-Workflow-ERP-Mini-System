@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Support\Money\VndMoney;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseRequestItem extends Model
 {
@@ -40,5 +41,10 @@ class PurchaseRequestItem extends Model
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class);
+    }
+
+    public function assetAssignments(): HasMany
+    {
+        return $this->hasMany(AssetAssignment::class);
     }
 }

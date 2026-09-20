@@ -61,6 +61,7 @@ return [
 
     'status' => [
         'available' => 'Sẵn sàng cấp phát',
+        'reserved' => 'Đã giữ cho yêu cầu',
         'assigned' => 'Đang cấp phát',
         'maintenance' => 'Đang bảo trì',
     ],

@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use App\Enums\PurchaseRequestFulfillmentRoute;
+use App\Enums\PurchaseRequestStatus;
 use App\Models\PurchaseRequest;
 use App\Models\User;
 use App\Models\WorkflowRequest;
@@ -10,12 +12,19 @@ class PurchaseRequestPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['employee', 'manager', 'procurement', 'finance', 'director', 'admin']);
+        return $user->hasRole(['employee', 'manager', 'procurement', 'finance', 'director', 'asset_manager', 'admin']);
     }
 
     public function view(User $user, PurchaseRequest $purchaseRequest): bool
     {
         return $purchaseRequest->canBeViewedBy($user);
+    }
+
+    public function fulfillFromStock(User $user, PurchaseRequest $purchaseRequest): bool
+    {
+        return $user->hasRole(['asset_manager', 'admin'])
+            && $purchaseRequest->fulfillment_route === PurchaseRequestFulfillmentRoute::Stock
+            && $purchaseRequest->status === PurchaseRequestStatus::Approved;
     }
 
     public function create(User $user): bool

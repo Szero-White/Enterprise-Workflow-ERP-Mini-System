@@ -19,6 +19,7 @@
 
             @if(
                 $purchaseRequest->status === \App\Enums\PurchaseRequestStatus::Approved
+                && $purchaseRequest->fulfillment_route === \App\Enums\PurchaseRequestFulfillmentRoute::Procurement
                 && auth()->user()->hasRole(['admin', 'procurement'])
                 && ! $purchaseRequest->activePurchaseOrder
             )
@@ -48,6 +49,9 @@
                                 <th>{{ __('procurement.purchase_request.quantity') }}</th>
                                 <th>{{ __('procurement.purchase_request.estimated_unit_cost') }}</th>
                                 <th class="text-end">{{ __('procurement.purchase_request.line_total') }}</th>
+                                @if($purchaseRequest->fulfillment_route === \App\Enums\PurchaseRequestFulfillmentRoute::Stock)
+                                    <th>{{ __('procurement.stock_fulfillment.assignment') }}</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -62,6 +66,26 @@
                                     <td class="text-end">
                                         {{ number_format($line->estimated_line_total, 0, ',', '.') }} ₫
                                     </td>
+                                    @if($purchaseRequest->fulfillment_route === \App\Enums\PurchaseRequestFulfillmentRoute::Stock)
+                                        @php
+                                            $assignedCount = $line->assetAssignments->count();
+                                            $requestedCount = (int) round((float) $line->requested_quantity);
+                                            $remainingCount = max(0, $requestedCount - $assignedCount);
+                                        @endphp
+                                        <td>
+                                            <div class="small mb-2">
+                                                {{ __('procurement.stock_fulfillment.progress', ['assigned' => $assignedCount, 'requested' => $requestedCount]) }}
+                                            </div>
+                                            @can('fulfillFromStock', $purchaseRequest)
+                                                @if($remainingCount > 0)
+                                                    <a class="btn btn-sm btn-outline-primary" href="{{ route('procurement.purchase-requests.stock-fulfillment.show', [$purchaseRequest, $line]) }}">
+                                                        <i class="bi bi-person-check"></i>
+                                                        {{ __('procurement.stock_fulfillment.assign_now') }}
+                                                    </a>
+                                                @endif
+                                            @endcan
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -88,6 +112,9 @@
                     <dt class="col-5">{{ __('procurement.purchase_request.procurement_status') }}</dt>
                     <dd class="col-7"><span class="badge text-bg-light border">{{ $purchaseRequest->status->label() }}</span></dd>
 
+                    <dt class="col-5">{{ __('procurement.purchase_request.fulfillment_route_label') }}</dt>
+                    <dd class="col-7"><span class="badge text-bg-light border">{{ $purchaseRequest->fulfillment_route->label() }}</span></dd>
+
                     @if($purchaseRequest->workflowRequest->status === \App\Models\WorkflowRequest::STATUS_PENDING && $purchaseRequest->workflowRequest->currentStep)
                         <dt class="col-5">{{ __('ui.current_approval_step') }}</dt>
                         <dd class="col-7">
@@ -100,6 +127,11 @@
                     <dd class="col-7">
                         @if($purchaseRequest->activePurchaseOrder?->status === \App\Enums\PurchaseOrderStatus::Draft)
                             {{ __('procurement.purchase_request.next_action.purchase_order_draft', ['po' => $purchaseRequest->activePurchaseOrder->po_number]) }}
+                        @elseif(
+                            $purchaseRequest->status === \App\Enums\PurchaseRequestStatus::Approved
+                            && $purchaseRequest->fulfillment_route === \App\Enums\PurchaseRequestFulfillmentRoute::Stock
+                        )
+                            {{ __('procurement.purchase_request.next_action.stock') }}
                         @else
                             {{ $purchaseRequest->status->nextActionLabel() }}
                         @endif

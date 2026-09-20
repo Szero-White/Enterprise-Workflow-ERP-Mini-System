@@ -35,7 +35,7 @@ class SidebarNavigation
             ]);
         }
 
-        if ($user->hasRole(['employee', 'manager', 'procurement', 'finance', 'director', 'admin'])) {
+        if ($user->hasRole(['employee', 'manager', 'procurement', 'finance', 'director', 'asset_manager', 'admin'])) {
             $items = [
                 $this->item(__('menu.purchase_requests'), 'procurement.purchase-requests.index', ['procurement.purchase-requests.*'], 'bi-cart-check-fill'),
             ];

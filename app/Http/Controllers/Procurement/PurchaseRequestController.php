@@ -75,6 +75,7 @@ class PurchaseRequestController extends Controller
             'workflowRequest.histories.actor',
             'workflowRequest.histories.step',
             'items.item',
+            'items.assetAssignments.asset',
             'activePurchaseOrder',
         ]);
 

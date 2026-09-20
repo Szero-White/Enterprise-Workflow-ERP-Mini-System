@@ -4,9 +4,11 @@ namespace App\Services\Workflow;
 
 use App\Models\FormField;
 use App\Models\FormTemplate;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkflowStep;
 use App\Models\WorkflowTemplate;
+use App\Services\Procurement\PurchaseRequestService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -87,6 +89,8 @@ class WorkflowConfigurationService
                 ]);
             }
 
+            $this->ensurePurchaseRequestManagerGate($workflowTemplate);
+
             WorkflowTemplate::query()
                 ->whereIn('id', $versions->pluck('id'))
                 ->where('id', '!=', $workflowTemplate->id)
@@ -96,6 +100,37 @@ class WorkflowConfigurationService
 
             return $workflowTemplate->fresh();
         });
+    }
+
+    private function ensurePurchaseRequestManagerGate(WorkflowTemplate $workflowTemplate): void
+    {
+        $workflowTemplate->loadMissing(['formTemplate', 'steps.approverRole']);
+
+        if ($workflowTemplate->formTemplate?->code !== PurchaseRequestService::FORM_CODE) {
+            return;
+        }
+
+        $firstStep = $workflowTemplate->steps->sortBy('step_order')->first();
+
+        if (
+            ! $firstStep
+            || $firstStep->approver_type !== WorkflowStep::APPROVER_ROLE
+            || $firstStep->approverRole?->key !== 'manager'
+        ) {
+            throw ValidationException::withMessages([
+                'workflow_template' => __('messages.purchase_request_workflow_requires_manager_first'),
+            ]);
+        }
+
+        $managerRoleId = Role::query()->where('key', 'manager')->value('id');
+        $hasActiveManager = $managerRoleId
+            && User::query()->where('role_id', $managerRoleId)->where('is_active', true)->exists();
+
+        if (! $hasActiveManager) {
+            throw ValidationException::withMessages([
+                'workflow_template' => __('messages.purchase_request_workflow_requires_active_manager'),
+            ]);
+        }
     }
 
     public function deactivateWorkflow(WorkflowTemplate $workflowTemplate): WorkflowTemplate

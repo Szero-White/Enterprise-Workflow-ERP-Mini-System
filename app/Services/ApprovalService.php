@@ -6,6 +6,7 @@ use App\Models\ApprovalHistory;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\WorkflowRequest;
+use App\Services\Workflow\WorkflowApprovalRoutingDispatcher;
 use App\Services\Workflow\WorkflowTransitionDispatcher;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +15,8 @@ class ApprovalService
     public function __construct(
         private AuditLogService $auditLogService,
         private NotificationService $notificationService,
-        private WorkflowTransitionDispatcher $workflowTransitionDispatcher
+        private WorkflowTransitionDispatcher $workflowTransitionDispatcher,
+        private WorkflowApprovalRoutingDispatcher $workflowApprovalRoutingDispatcher,
     ) {}
 
     public function approve(User $actor, WorkflowRequest $workflowRequest, ?string $comment = null): WorkflowRequest
@@ -34,11 +36,16 @@ class ApprovalService
                 'acted_at' => now(),
             ]);
 
-            $nextStep = $workflowRequest->workflowTemplate
-                ->steps()
-                ->where('step_order', '>', $currentStep->step_order)
-                ->orderBy('step_order')
-                ->first();
+            $completeEarly = $this->workflowApprovalRoutingDispatcher
+                ->shouldCompleteAfterApproval($workflowRequest, $currentStep);
+
+            $nextStep = $completeEarly
+                ? null
+                : $workflowRequest->workflowTemplate
+                    ->steps()
+                    ->where('step_order', '>', $currentStep->step_order)
+                    ->orderBy('step_order')
+                    ->first();
 
             if ($nextStep) {
                 $workflowRequest->update([
@@ -150,7 +157,7 @@ class ApprovalService
     private function lockRequest(WorkflowRequest $workflowRequest): WorkflowRequest
     {
         return WorkflowRequest::query()
-            ->with(['currentStep', 'workflowTemplate.steps'])
+            ->with(['currentStep.approverRole', 'workflowTemplate.steps', 'formTemplate', 'purchaseRequest.items.item'])
             ->lockForUpdate()
             ->findOrFail($workflowRequest->id);
     }

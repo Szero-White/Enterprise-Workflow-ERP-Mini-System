@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PurchaseOrderStatus;
+use App\Enums\PurchaseRequestFulfillmentRoute;
 use App\Enums\PurchaseRequestStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +19,7 @@ class PurchaseRequest extends Model
         'estimated_total',
         'currency',
         'status',
+        'fulfillment_route',
     ];
 
     protected function casts(): array
@@ -26,6 +28,7 @@ class PurchaseRequest extends Model
             'required_date' => 'date',
             'estimated_total' => 'integer',
             'status' => PurchaseRequestStatus::class,
+            'fulfillment_route' => PurchaseRequestFulfillmentRoute::class,
         ];
     }
 
@@ -57,8 +60,12 @@ class PurchaseRequest extends Model
             return true;
         }
 
-        return $user->hasRole('procurement')
-            && $workflowRequest->status === WorkflowRequest::STATUS_APPROVED;
+        if ($user->hasRole('procurement') && $workflowRequest->status === WorkflowRequest::STATUS_APPROVED) {
+            return true;
+        }
+
+        return $user->hasRole('asset_manager')
+            && $this->fulfillment_route === PurchaseRequestFulfillmentRoute::Stock;
     }
 
     public function scopeVisibleTo($query, User $user)
@@ -71,6 +78,10 @@ class PurchaseRequest extends Model
                     'workflowRequest',
                     fn ($workflow) => $workflow->where('status', WorkflowRequest::STATUS_APPROVED)
                 );
+            }
+
+            if ($user->hasRole('asset_manager')) {
+                $builder->orWhere('fulfillment_route', PurchaseRequestFulfillmentRoute::Stock->value);
             }
         });
     }

@@ -3,6 +3,7 @@
 namespace App\Services\Procurement;
 
 use App\Contracts\Workflow\WorkflowTransitionHandler;
+use App\Enums\PurchaseRequestFulfillmentRoute;
 use App\Enums\PurchaseRequestStatus;
 use App\Models\Notification;
 use App\Models\WorkflowRequest;
@@ -35,8 +36,35 @@ class PurchaseRequestWorkflowHandler implements WorkflowTransitionHandler
         $purchaseRequest->update(['status' => $status]);
 
         if ($status === PurchaseRequestStatus::Approved) {
-            $this->notifyProcurementReady($workflowRequest, $purchaseRequest->id);
+            if ($purchaseRequest->fulfillment_route === PurchaseRequestFulfillmentRoute::Stock) {
+                $this->notifyAssetManagerStockReady($workflowRequest, $purchaseRequest->id);
+            } else {
+                if ($purchaseRequest->fulfillment_route === PurchaseRequestFulfillmentRoute::Pending) {
+                    $purchaseRequest->update(['fulfillment_route' => PurchaseRequestFulfillmentRoute::Procurement]);
+                }
+
+                $this->notifyProcurementReady($workflowRequest, $purchaseRequest->id);
+            }
         }
+    }
+
+    private function notifyAssetManagerStockReady(WorkflowRequest $workflowRequest, int $purchaseRequestId): void
+    {
+        $this->notificationService->notifyRoleUsers(
+            'asset_manager',
+            __('messages.notification_purchase_request_stock_ready_title'),
+            __('messages.notification_purchase_request_stock_ready_body', [
+                'code' => $workflowRequest->request_code,
+            ]),
+            Notification::TYPE_PURCHASE_REQUEST_STOCK_READY,
+            [
+                'request_id' => $workflowRequest->id,
+                'purchase_request_id' => $purchaseRequestId,
+                'request_code' => $workflowRequest->request_code,
+                'status' => $workflowRequest->status,
+                'action' => 'fulfill_from_stock',
+            ]
+        );
     }
 
     private function notifyProcurementReady(WorkflowRequest $workflowRequest, int $purchaseRequestId): void

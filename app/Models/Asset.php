@@ -15,6 +15,7 @@ class Asset extends Model
         'asset_code',
         'item_id',
         'goods_receipt_item_id',
+        'reserved_for_purchase_request_item_id',
         'warehouse_id',
         'serial_number',
         'acquired_at',
@@ -42,6 +43,11 @@ class Asset extends Model
     public function sourceReceiptItem(): BelongsTo
     {
         return $this->belongsTo(GoodsReceiptItem::class, 'goods_receipt_item_id');
+    }
+
+    public function reservedForPurchaseRequestItem(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseRequestItem::class, 'reserved_for_purchase_request_item_id');
     }
 
     public function warehouse(): BelongsTo

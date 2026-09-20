@@ -60,9 +60,16 @@ class UserController extends Controller
 
         $newRole = Role::findOrFail($data['role_id']);
         $removesAdminAccess = $user->hasRole('admin') && (! $data['is_active'] || $newRole->key !== 'admin');
+        $removesManagerAccess = $user->is_active
+            && $user->hasRole('manager')
+            && (! $data['is_active'] || $newRole->key !== 'manager');
 
         if ($removesAdminAccess && User::query()->where('is_active', true)->whereHas('role', fn ($query) => $query->where('key', 'admin'))->count() <= 1) {
             return back()->withInput()->with('error', __('messages.last_active_admin_protected'));
+        }
+
+        if ($removesManagerAccess && User::query()->where('is_active', true)->whereHas('role', fn ($query) => $query->where('key', 'manager'))->count() <= 1) {
+            return back()->withInput()->with('error', __('messages.last_active_purchase_request_manager_protected'));
         }
 
         if (! $data['is_active'] && $user->workflowStepsAsApprover()->exists()) {
@@ -90,6 +97,11 @@ class UserController extends Controller
         if ($user->hasRole('admin') && $user->is_active
             && User::query()->where('is_active', true)->whereHas('role', fn ($query) => $query->where('key', 'admin'))->count() <= 1) {
             return back()->with('error', __('messages.last_active_admin_protected'));
+        }
+
+        if ($user->hasRole('manager') && $user->is_active
+            && User::query()->where('is_active', true)->whereHas('role', fn ($query) => $query->where('key', 'manager'))->count() <= 1) {
+            return back()->with('error', __('messages.last_active_purchase_request_manager_protected'));
         }
 
         if ($user->hasOperationalHistory()) {

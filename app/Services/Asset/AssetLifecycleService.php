@@ -31,7 +31,18 @@ class AssetLifecycleService
                 ->lockForUpdate()
                 ->findOrFail($asset->id);
 
-            if ($lockedAsset->status !== AssetStatus::Available || ! $lockedAsset->warehouse_id) {
+            $purchaseRequestItemId = isset($data['purchase_request_item_id'])
+                ? (int) $data['purchase_request_item_id']
+                : null;
+
+            $isReservedForRequest = $lockedAsset->status === AssetStatus::Reserved
+                && $purchaseRequestItemId !== null
+                && (int) $lockedAsset->reserved_for_purchase_request_item_id === $purchaseRequestItemId;
+
+            if (
+                (! $isReservedForRequest && $lockedAsset->status !== AssetStatus::Available)
+                || ! $lockedAsset->warehouse_id
+            ) {
                 throw ValidationException::withMessages([
                     'asset' => __('assets.messages.asset_not_available'),
                 ]);
@@ -56,6 +67,7 @@ class AssetLifecycleService
 
             $assignment = AssetAssignment::create([
                 'asset_id' => $lockedAsset->id,
+                'purchase_request_item_id' => $purchaseRequestItemId,
                 'assigned_to' => $assignee->id,
                 'assigned_by' => $actor->id,
                 'source_warehouse_id' => $warehouse->id,
@@ -82,6 +94,7 @@ class AssetLifecycleService
             $lockedAsset->update([
                 'status' => AssetStatus::Assigned,
                 'warehouse_id' => null,
+                'reserved_for_purchase_request_item_id' => null,
             ]);
 
             $this->auditLogService->log(

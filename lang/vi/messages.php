@@ -55,6 +55,7 @@ return [
 
     'login_throttled' => 'Bạn đã thử đăng nhập quá nhiều lần. Vui lòng thử lại sau :seconds giây.',
     'last_active_admin_protected' => 'Hệ thống phải luôn còn ít nhất một quản trị viên đang hoạt động.',
+    'last_active_purchase_request_manager_protected' => 'Hệ thống phải luôn còn ít nhất một người dùng Quản lý đang hoạt động để duyệt Yêu cầu mua hàng.',
 
     'form_template_created_draft' => 'Đã tạo biểu mẫu ở trạng thái nháp. Hãy cấu hình trường và workflow trước khi kích hoạt.',
     'form_template_locked' => 'Biểu mẫu đã được sử dụng nên cấu trúc được khóa để bảo toàn dữ liệu lịch sử. Hãy tạo phiên bản mới nếu cần thay đổi.',
@@ -76,6 +77,8 @@ return [
     'workflow_template_deactivate_before_edit' => 'Hãy ngừng kích hoạt workflow trước khi thay đổi cấu hình.',
     'workflow_template_deactivate_before_delete' => 'Hãy ngừng kích hoạt workflow trước khi xóa.',
     'workflow_template_requires_steps' => 'Workflow phải có ít nhất một bước duyệt trước khi kích hoạt.',
+    'purchase_request_workflow_requires_manager_first' => 'Workflow Yêu cầu mua hàng phải bắt đầu bằng bước duyệt theo vai trò Quản lý.',
+    'purchase_request_workflow_requires_active_manager' => 'Không thể kích hoạt workflow Yêu cầu mua hàng vì chưa có người dùng Quản lý đang hoạt động.',
     'workflow_deactivate_active_form_forbidden' => 'Không thể ngừng workflow đang phục vụ một biểu mẫu hoạt động. Hãy ngừng biểu mẫu trước.',
     'workflow_template_activated' => 'Đã kích hoạt workflow. Workflow khác của cùng biểu mẫu đã được ngừng kích hoạt.',
     'workflow_template_deactivated' => 'Đã ngừng kích hoạt workflow.',
@@ -96,6 +99,10 @@ return [
     'notification_request_returned_body' => 'Đơn :code của bạn đã được trả về để chỉnh sửa. Lý do: :reason',
     'notification_purchase_request_ready_title' => 'Yêu cầu mua hàng đã sẵn sàng xử lý',
     'notification_purchase_request_ready_body' => 'Đơn :code đã hoàn tất phê duyệt. Vui lòng tạo đơn mua hàng để tiếp tục quy trình mua sắm.',
+    'notification_purchase_request_stock_ready_title' => 'Yêu cầu có thể cấp từ tồn kho',
+    'notification_purchase_request_stock_ready_body' => 'Đơn :code đã được Quản lý duyệt và hệ thống đã giữ đủ tài sản có sẵn. Vui lòng xác nhận cấp phát.',
+    'notification_purchase_request_stock_fulfilled_title' => 'Yêu cầu đã được cấp từ tồn kho',
+    'notification_purchase_request_stock_fulfilled_body' => 'Đơn :code đã được cấp đủ tài sản từ tồn kho.',
     'notification_assets_ready_title' => 'Tài sản mới sẵn sàng cấp phát',
     'notification_assets_ready_body' => 'Phiếu nhận hàng :receipt đã ghi nhận :count tài sản mới tại :warehouse. Vui lòng kiểm tra danh sách tài sản và thực hiện cấp phát khi có nhu cầu phù hợp.',
     'notification_unread' => 'Đã đánh dấu thông báo là chưa đọc.',

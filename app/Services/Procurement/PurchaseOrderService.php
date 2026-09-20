@@ -3,6 +3,7 @@
 namespace App\Services\Procurement;
 
 use App\Enums\PurchaseOrderStatus;
+use App\Enums\PurchaseRequestFulfillmentRoute;
 use App\Enums\PurchaseRequestStatus;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseRequest;
@@ -35,7 +36,8 @@ class PurchaseOrderService
 
             abort_unless(
                 $purchaseRequest->workflowRequest->status === WorkflowRequest::STATUS_APPROVED
-                    && $purchaseRequest->status === PurchaseRequestStatus::Approved,
+                    && $purchaseRequest->status === PurchaseRequestStatus::Approved
+                    && $purchaseRequest->fulfillment_route === PurchaseRequestFulfillmentRoute::Procurement,
                 422,
                 __('procurement.messages.purchase_request_not_approved')
             );

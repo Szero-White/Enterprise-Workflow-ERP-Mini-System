@@ -16,6 +16,8 @@
     $isApproved = $workflowRequest->status === \App\Models\WorkflowRequest::STATUS_APPROVED;
     $isReturned = $workflowRequest->status === \App\Models\WorkflowRequest::STATUS_RETURNED;
     $isRejected = $workflowRequest->status === \App\Models\WorkflowRequest::STATUS_REJECTED;
+    $isStockFulfillment = isset($purchaseRequest)
+        && $purchaseRequest->fulfillment_route === \App\Enums\PurchaseRequestFulfillmentRoute::Stock;
 @endphp
 
 <div class="content-card p-3 p-lg-4">
@@ -38,7 +40,9 @@
     @elseif($isApproved)
         <div class="alert alert-success mb-3">
             <div class="fw-semibold"><i class="bi bi-check-circle-fill me-1"></i>{{ __('ui.approval_completed') }}</div>
-            <div class="small mt-1">{{ __('ui.approval_completed_description') }}</div>
+            <div class="small mt-1">
+                {{ $isStockFulfillment ? __('ui.approval_completed_stock_description') : __('ui.approval_completed_description') }}
+            </div>
         </div>
     @endif
 
@@ -68,12 +72,17 @@
                     $isFeedbackStep = $latestFeedback && (int) $latestFeedback->workflow_step_id === (int) $step->id;
                     $stepState = $approval
                         ? 'approved'
-                        : ($isCurrentStep ? 'pending' : (($isReturned || $isRejected) && $isFeedbackStep ? $workflowRequest->status : 'waiting'));
+                        : ($isCurrentStep
+                            ? 'pending'
+                            : (($isReturned || $isRejected) && $isFeedbackStep
+                                ? $workflowRequest->status
+                                : ($isApproved && $isStockFulfillment ? 'skipped_stock' : 'waiting')));
                     $stepMeta = match ($stepState) {
                         'approved' => ['icon' => 'bi-check-circle-fill', 'class' => 'text-success', 'label' => __('ui.approved')],
                         'pending' => ['icon' => 'bi-hourglass-split', 'class' => 'text-warning', 'label' => __('ui.approval_waiting')],
                         'returned' => ['icon' => 'bi-arrow-counterclockwise', 'class' => 'text-info', 'label' => __('ui.returned')],
                         'rejected' => ['icon' => 'bi-x-circle-fill', 'class' => 'text-danger', 'label' => __('ui.rejected')],
+                        'skipped_stock' => ['icon' => 'bi-skip-forward-fill', 'class' => 'text-muted', 'label' => __('ui.approval_skipped_stock')],
                         default => ['icon' => 'bi-circle', 'class' => 'text-muted', 'label' => __('ui.approval_not_started')],
                     };
                 @endphp

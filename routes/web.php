@@ -27,6 +27,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Procurement\GoodsReceiptController;
 use App\Http\Controllers\Procurement\PurchaseOrderController;
 use App\Http\Controllers\Procurement\PurchaseRequestController;
+use App\Http\Controllers\Procurement\PurchaseRequestStockFulfillmentController;
 use App\Http\Controllers\Procurement\SupplierController;
 use Illuminate\Support\Facades\Route;
 
@@ -71,9 +72,20 @@ Route::middleware(['auth', 'active', 'demo.safe'])->group(function () {
             Route::put('purchase-requests/{purchaseRequest}', [PurchaseRequestController::class, 'update'])->name('purchase-requests.update');
         });
 
-        Route::middleware('role:employee,manager,procurement,finance,director,admin')->group(function () {
+        Route::middleware('role:employee,manager,procurement,finance,director,asset_manager,admin')->group(function () {
             Route::get('purchase-requests', [PurchaseRequestController::class, 'index'])->name('purchase-requests.index');
             Route::get('purchase-requests/{purchaseRequest}', [PurchaseRequestController::class, 'show'])->name('purchase-requests.show');
+        });
+
+        Route::middleware('role:asset_manager,admin')->group(function () {
+            Route::get(
+                'purchase-requests/{purchaseRequest}/stock-fulfillment/{line}',
+                [PurchaseRequestStockFulfillmentController::class, 'show']
+            )->name('purchase-requests.stock-fulfillment.show');
+            Route::post(
+                'purchase-requests/{purchaseRequest}/stock-fulfillment/{line}',
+                [PurchaseRequestStockFulfillmentController::class, 'store']
+            )->name('purchase-requests.stock-fulfillment.store');
         });
 
         Route::middleware('role:procurement,admin')->group(function () {

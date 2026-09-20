@@ -56,7 +56,7 @@
             </div>
 
             <div class="erp-notification-item__actions">
-                @if(data_get($notification->data, 'purchase_request_id') && auth()->user()->hasRole(['procurement', 'admin']))
+                @if(data_get($notification->data, 'purchase_request_id') && auth()->user()->hasRole(['procurement', 'asset_manager', 'admin']))
                     <a
                         href="{{ route('procurement.purchase-requests.show', data_get($notification->data, 'purchase_request_id')) }}"
                         class="erp-icon-action"
