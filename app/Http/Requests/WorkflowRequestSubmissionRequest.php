@@ -28,7 +28,7 @@ class WorkflowRequestSubmissionRequest extends FormRequest
             return [];
         }
 
-        return app(DynamicFieldValidationService::class)->rulesFor($formTemplate);
+        return app(DynamicFieldValidationService::class)->rulesFor($formTemplate, $this->all());
     }
 
     public function attributes(): array

@@ -20,7 +20,8 @@ class DynamicRequestService
 {
     public function __construct(
         private AuditLogService $auditLogService,
-        private NotificationService $notificationService
+        private NotificationService $notificationService,
+        private DynamicFieldConditionService $conditionService,
     ) {}
 
     public function create(User $user, FormTemplate $formTemplate, Request $httpRequest): WorkflowRequest
@@ -136,7 +137,22 @@ class DynamicRequestService
         User $user,
         bool $replace = false
     ): void {
+        $input = $httpRequest->all();
+
         foreach ($formTemplate->fields as $field) {
+            if (! $this->conditionService->isVisible($field, $input, $formTemplate->fields)) {
+                if ($replace && $field->field_type === 'file') {
+                    $this->deleteAttachmentsForField($workflowRequest, $field->id);
+                }
+
+                RequestValue::updateOrCreate(
+                    ['request_id' => $workflowRequest->id, 'form_field_id' => $field->id],
+                    ['field_key' => $field->field_key, 'value' => null]
+                );
+
+                continue;
+            }
+
             $value = $httpRequest->input($field->field_key);
 
             if ($field->field_type === 'file') {

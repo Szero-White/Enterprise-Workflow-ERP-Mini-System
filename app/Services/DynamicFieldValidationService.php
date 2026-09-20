@@ -7,13 +7,21 @@ use Illuminate\Validation\Rule;
 
 class DynamicFieldValidationService
 {
-    public function rulesFor(FormTemplate $formTemplate): array
+    public function __construct(private DynamicFieldConditionService $conditionService) {}
+
+    public function rulesFor(FormTemplate $formTemplate, array $input = []): array
     {
         $formTemplate->loadMissing('fields');
 
         $rules = [];
 
         foreach ($formTemplate->fields as $field) {
+            if (! $this->conditionService->isVisible($field, $input, $formTemplate->fields)) {
+                $rules[$field->field_key] = ['exclude'];
+
+                continue;
+            }
+
             $fieldRules = $field->is_required ? ['required'] : ['nullable'];
 
             switch ($field->field_type) {

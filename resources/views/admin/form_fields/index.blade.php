@@ -22,7 +22,12 @@
             @forelse($fields as $field)
                 <tr>
                     <td><span class="erp-order-chip">{{ $field->sort_order }}</span></td>
-                    <td><span class="erp-record-primary">{{ $field->label }}</span></td>
+                    <td>
+                        <span class="erp-record-primary">{{ $field->label }}</span>
+                        @if($field->hasCondition())
+                            <div class="small text-muted mt-1">{{ $field->condition_field_key }} · {{ __('ui.condition_operators.'.$field->condition_operator) }}@if($field->conditionRequiresValue()) · {{ $field->condition_value }}@endif</div>
+                        @endif
+                    </td>
                     <td><code class="erp-record-code">{{ $field->field_key }}</code></td>
                     <td>{{ $field->field_type }}</td>
                     <td>@include('partials.boolean_badge', ['value' => $field->is_required, 'trueLabel' => __('status.required'), 'falseLabel' => __('status.optional')])</td>

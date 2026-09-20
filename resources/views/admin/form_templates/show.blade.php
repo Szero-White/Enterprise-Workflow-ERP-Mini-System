@@ -94,7 +94,12 @@
             <tr>
                 <td class="text-muted fw-semibold">{{ $loop->iteration }}</td>
                 <td>{{ $field->sort_order }}</td>
-                <td class="fw-semibold">{{ $field->label }}</td>
+                <td class="fw-semibold">
+                    {{ $field->label }}
+                    @if($field->hasCondition())
+                        <div class="small text-muted fw-normal mt-1">{{ $field->condition_field_key }} · {{ __('ui.condition_operators.'.$field->condition_operator) }}@if($field->conditionRequiresValue()) · {{ $field->condition_value }}@endif</div>
+                    @endif
+                </td>
                 <td><code>{{ $field->field_key }}</code></td>
                 <td>{{ $field->field_type }}</td>
                 <td>@include('partials.boolean_badge', ['value' => $field->is_required, 'trueLabel' => __('status.required'), 'falseLabel' => __('status.optional')])</td>

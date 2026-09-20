@@ -10,7 +10,7 @@
         <p class="erp-section-subtitle mb-0">{{ __('ui.edit_returned_request_description') }}</p>
     </div>
 
-    <form method="POST" action="{{ route('employee.requests.update', $workflowRequest) }}" enctype="multipart/form-data">
+    <form data-dynamic-form method="POST" action="{{ route('employee.requests.update', $workflowRequest) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         @include('employee.requests._dynamic_fields', ['formTemplate' => $formTemplate, 'oldValues' => $oldValues])

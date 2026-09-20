@@ -10,7 +10,7 @@
         <p class="erp-section-subtitle mb-0">{{ __('ui.create_request_description') }}</p>
     </div>
 
-    <form method="POST" action="{{ route('employee.requests.store', $formTemplate) }}" enctype="multipart/form-data">
+    <form data-dynamic-form method="POST" action="{{ route('employee.requests.store', $formTemplate) }}" enctype="multipart/form-data">
         @csrf
         @include('employee.requests._dynamic_fields', ['formTemplate' => $formTemplate, 'oldValues' => collect()])
         @include('partials.form_actions', ['submitLabel' => __('ui.submit_request'), 'cancelUrl' => route('employee.requests.select-template'), 'cancelLabel' => __('ui.back')])

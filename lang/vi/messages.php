@@ -52,6 +52,14 @@ return [
     'not_current_approver' => 'Bạn không phải người duyệt của bước hiện tại.',
     'select_approver_required' => 'Cần chọn người duyệt cho bước quy trình.',
     'select_options_required' => 'Trường chọn phải có ít nhất một lựa chọn.',
+    'form_field_condition_source_required' => 'Bạn chưa chọn trường dùng để quyết định khi nào trường này được hiển thị.',
+    'form_field_condition_source_invalid' => 'Trường dùng làm điều kiện không còn tồn tại trong biểu mẫu. Hãy chọn lại một trường khác.',
+    'form_field_condition_self_forbidden' => 'Không thể dùng chính trường này làm điều kiện hiển thị cho nó.',
+    'form_field_condition_source_must_precede' => 'Trường dùng làm điều kiện phải nằm trước trường đang cấu hình. Ví dụ: đặt "Loại nghỉ phép" ở thứ tự 1, rồi đặt "Lý do khác" ở thứ tự 2.',
+    'form_field_condition_operator_invalid' => 'Kiểu điều kiện không hợp lệ. Hãy chọn lại điều kiện.',
+    'form_field_condition_value_required' => 'Bạn chưa nhập giá trị để so sánh cho điều kiện này.',
+    'form_field_condition_value_not_option' => 'Giá trị so sánh không khớp với các lựa chọn của trường dùng làm điều kiện. Hãy chọn hoặc nhập lại đúng giá trị.',
+    'form_field_condition_invalid' => 'Không thể lưu điều kiện hiển thị cho trường ":field". :reason',
 
     'login_throttled' => 'Bạn đã thử đăng nhập quá nhiều lần. Vui lòng thử lại sau :seconds giây.',
     'last_active_admin_protected' => 'Hệ thống phải luôn còn ít nhất một quản trị viên đang hoạt động.',
@@ -71,6 +79,7 @@ return [
     'form_template_deactivate_before_delete' => 'Hãy ngừng kích hoạt biểu mẫu trước khi xóa bản nháp này.',
     'form_template_delete_in_use' => 'Không thể xóa biểu mẫu vì vẫn còn dữ liệu nghiệp vụ liên quan.',
     'form_field_delete_in_use' => 'Không thể xóa trường đã có dữ liệu yêu cầu lịch sử.',
+    'form_field_delete_condition_source' => 'Không thể xóa trường đang được trường khác dùng làm điều kiện. Hãy bỏ hoặc đổi điều kiện phụ thuộc trước.',
 
     'workflow_template_created_draft' => 'Đã tạo workflow ở trạng thái nháp. Hãy thêm bước duyệt rồi kích hoạt.',
     'workflow_template_locked' => 'Workflow đã được sử dụng nên cấu hình được khóa. Hãy tạo phiên bản mới nếu cần thay đổi.',

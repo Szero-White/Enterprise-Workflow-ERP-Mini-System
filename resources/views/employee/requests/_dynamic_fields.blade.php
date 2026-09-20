@@ -1,11 +1,34 @@
+@php
+    $dynamicInput = $formTemplate->fields
+        ->mapWithKeys(fn ($candidate) => [
+            $candidate->field_key => old($candidate->field_key, $oldValues[$candidate->field_key] ?? ''),
+        ])
+        ->all();
+    $conditionService = app(\App\Services\DynamicFieldConditionService::class);
+@endphp
+
 @foreach($formTemplate->fields as $field)
-    @php($value = old($field->field_key, $oldValues[$field->field_key] ?? ''))
-    <div class="mb-3">
+    @php
+        $value = $dynamicInput[$field->field_key] ?? '';
+        $visible = $conditionService->isVisible($field, $dynamicInput, $formTemplate->fields);
+    @endphp
+    <div
+        class="mb-3"
+        data-dynamic-field
+        data-field-key="{{ $field->field_key }}"
+        data-required="{{ $field->is_required ? '1' : '0' }}"
+        @if($field->hasCondition())
+            data-condition-field-key="{{ $field->condition_field_key }}"
+            data-condition-operator="{{ $field->condition_operator }}"
+            data-condition-value="{{ $field->condition_value }}"
+        @endif
+        @if(! $visible) hidden @endif
+    >
         <label class="form-label">{{ $field->label }} @if($field->is_required)<span class="text-danger">*</span>@endif</label>
         @if($field->field_type === 'textarea')
-            <textarea name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" rows="4" @required($field->is_required)>{{ $value }}</textarea>
+            <textarea name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" rows="4" @required($field->is_required && $visible) @disabled(! $visible)>{{ $value }}</textarea>
         @elseif($field->field_type === 'select')
-            <select name="{{ $field->field_key }}" class="form-select @error($field->field_key) is-invalid @enderror" @required($field->is_required)>
+            <select name="{{ $field->field_key }}" class="form-select @error($field->field_key) is-invalid @enderror" @required($field->is_required && $visible) @disabled(! $visible)>
                 <option value="">{{ __('ui.select_placeholder') }}</option>
                 @foreach($field->options ?? [] as $option)
                     <option value="{{ $option }}" @selected($value === $option)>{{ $option }}</option>
@@ -17,11 +40,11 @@
                     <i class="bi bi-shield-lock me-1"></i>{{ __('ui.demo_upload_disabled') }}
                 </div>
             @else
-                <input type="file" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" @required($field->is_required)>
+                <input type="file" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" @required($field->is_required && $visible) @disabled(! $visible)>
                 <div class="form-text">{{ __('ui.allowed_file_hint') }}</div>
             @endif
         @else
-            <input type="{{ $field->field_type }}" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" value="{{ $value }}" @required($field->is_required)>
+            <input type="{{ $field->field_type }}" name="{{ $field->field_key }}" class="form-control @error($field->field_key) is-invalid @enderror" value="{{ $value }}" @required($field->is_required && $visible) @disabled(! $visible)>
         @endif
         @include('partials.form_error', ['field' => $field->field_key])
     </div>

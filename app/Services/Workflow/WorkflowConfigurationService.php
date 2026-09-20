@@ -8,12 +8,15 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkflowStep;
 use App\Models\WorkflowTemplate;
+use App\Services\DynamicFieldConditionService;
 use App\Services\Procurement\PurchaseRequestService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class WorkflowConfigurationService
 {
+    public function __construct(private DynamicFieldConditionService $conditionService) {}
+
     public function ensureFormMutable(FormTemplate $formTemplate): void
     {
         if ($formTemplate->isLocked()) {
@@ -54,6 +57,8 @@ class WorkflowConfigurationService
                     'form_template' => __('messages.form_template_requires_active_workflow'),
                 ]);
             }
+
+            $this->conditionService->ensureTemplateConditionsValid($formTemplate);
 
             FormTemplate::query()
                 ->whereIn('id', $versions->pluck('id'))
@@ -172,7 +177,9 @@ class WorkflowConfigurationService
 
             $source->fields->each(function (FormField $field) use ($clone): void {
                 $clone->fields()->create($field->only([
-                    'label', 'field_key', 'field_type', 'is_required', 'options', 'sort_order',
+                    'label', 'field_key', 'field_type', 'is_required',
+                    'condition_field_key', 'condition_operator', 'condition_value',
+                    'options', 'sort_order',
                 ]));
             });
 
