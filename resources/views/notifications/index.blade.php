@@ -68,6 +68,18 @@
                     </a>
                 @endif
 
+                @if(data_get($notification->data, 'action') === 'review_ready_assets' && auth()->user()->hasRole(['asset_manager', 'admin']))
+                    <a
+                        href="{{ route('assets.index', ['status' => \App\Enums\AssetStatus::Available->value]) }}"
+                        class="erp-icon-action"
+                        title="{{ __('ui.open_ready_assets') }}"
+                        aria-label="{{ __('ui.open_ready_assets') }}"
+                    >
+                        <i class="bi bi-box-arrow-up-right"></i>
+                        <span class="visually-hidden">{{ __('ui.open_ready_assets') }}</span>
+                    </a>
+                @endif
+
                 @if($notification->read_at)
                     <form method="POST" action="{{ route('notifications.unread', $notification) }}">
                         @csrf

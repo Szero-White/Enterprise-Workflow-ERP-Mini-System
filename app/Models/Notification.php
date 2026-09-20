@@ -19,6 +19,8 @@ class Notification extends Model
 
     public const TYPE_PURCHASE_REQUEST_READY = 'purchase_request_ready';
 
+    public const TYPE_ASSETS_READY = 'assets_ready';
+
     protected $fillable = [
         'user_id',
         'title',

@@ -6,6 +6,7 @@ use App\Enums\PurchaseOrderStatus;
 use App\Enums\PurchaseRequestStatus;
 use App\Models\GoodsReceipt;
 use App\Models\InventoryStock;
+use App\Models\Notification;
 use App\Models\PurchaseOrder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Support\BuildsProcurementFixture;
@@ -44,6 +45,29 @@ class GoodsReceiptFlowTest extends TestCase
             'item_id' => $this->procurementItem->id,
             'reference_type' => GoodsReceipt::class,
         ]);
+    }
+
+    public function test_asset_manager_is_notified_when_receipt_registers_trackable_assets(): void
+    {
+        $purchaseRequest = $this->submitPurchaseRequest(quantity: 2);
+        $this->approvePurchaseRequest($purchaseRequest);
+        $purchaseOrder = $this->createAndIssuePurchaseOrder($purchaseRequest, unitCost: 14_500_000);
+        $orderItem = $purchaseOrder->items()->firstOrFail();
+
+        $this->postGoodsReceipt($purchaseOrder, $orderItem->id, 2);
+
+        $receipt = GoodsReceipt::query()->latest('id')->firstOrFail();
+        $notification = Notification::query()
+            ->where('user_id', $this->procurementUsers['asset_manager']->id)
+            ->where('type', Notification::TYPE_ASSETS_READY)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame($receipt->id, (int) data_get($notification->data, 'goods_receipt_id'));
+        $this->assertSame($receipt->receipt_number, data_get($notification->data, 'receipt_number'));
+        $this->assertSame(2, (int) data_get($notification->data, 'asset_count'));
+        $this->assertSame('review_ready_assets', data_get($notification->data, 'action'));
+        $this->assertStringContainsString($receipt->receipt_number, $notification->message);
     }
 
     public function test_partial_receipts_close_po_only_after_all_quantity_is_received(): void

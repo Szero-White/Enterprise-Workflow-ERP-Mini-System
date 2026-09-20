@@ -6,11 +6,13 @@ use App\Enums\InventoryMovementType;
 use App\Enums\PurchaseOrderStatus;
 use App\Enums\PurchaseRequestStatus;
 use App\Models\GoodsReceipt;
+use App\Models\Notification;
 use App\Models\PurchaseOrder;
 use App\Models\User;
 use App\Services\Asset\AssetRegistrationService;
 use App\Services\AuditLogService;
 use App\Services\Inventory\InventoryStockService;
+use App\Services\NotificationService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +22,8 @@ class GoodsReceiptService
     public function __construct(
         private InventoryStockService $inventoryStockService,
         private AssetRegistrationService $assetRegistrationService,
-        private AuditLogService $auditLogService
+        private AuditLogService $auditLogService,
+        private NotificationService $notificationService
     ) {}
 
     public function receive(User $actor, PurchaseOrder $purchaseOrder, array $data): GoodsReceipt
@@ -78,6 +81,8 @@ class GoodsReceiptService
                 'receipt_number' => sprintf('GR-%s-%06d', now()->format('Ym'), $receipt->id),
             ]);
 
+            $registeredAssetCount = 0;
+
             foreach ($order->items as $orderItem) {
                 $quantity = (float) $requestedQuantities->get($orderItem->id, 0);
 
@@ -117,7 +122,9 @@ class GoodsReceiptService
                     movementType: InventoryMovementType::PurchaseReceipt,
                 );
 
-                $this->assetRegistrationService->registerFromReceiptItem($receiptItem);
+                $registeredAssetCount += $this->assetRegistrationService
+                    ->registerFromReceiptItem($receiptItem)
+                    ->count();
 
                 $orderItem->update([
                     'received_quantity' => (float) $orderItem->received_quantity + $quantity,
@@ -146,6 +153,29 @@ class GoodsReceiptService
                 null,
                 $receipt->fresh('items')->toArray()
             );
+
+            if ($registeredAssetCount > 0) {
+                $this->notificationService->notifyRoleUsers(
+                    'asset_manager',
+                    __('messages.notification_assets_ready_title'),
+                    __('messages.notification_assets_ready_body', [
+                        'count' => $registeredAssetCount,
+                        'receipt' => $receipt->receipt_number,
+                        'warehouse' => $order->warehouse->name,
+                    ]),
+                    Notification::TYPE_ASSETS_READY,
+                    [
+                        'goods_receipt_id' => $receipt->id,
+                        'receipt_number' => $receipt->receipt_number,
+                        'purchase_order_id' => $order->id,
+                        'po_number' => $order->po_number,
+                        'asset_count' => $registeredAssetCount,
+                        'warehouse_id' => $order->warehouse_id,
+                        'warehouse_name' => $order->warehouse->name,
+                        'action' => 'review_ready_assets',
+                    ]
+                );
+            }
 
             return $receipt->fresh([
                 'purchaseOrder.supplier',

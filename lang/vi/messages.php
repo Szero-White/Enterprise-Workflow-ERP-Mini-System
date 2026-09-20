@@ -96,6 +96,8 @@ return [
     'notification_request_returned_body' => 'Đơn :code của bạn đã được trả về để chỉnh sửa. Lý do: :reason',
     'notification_purchase_request_ready_title' => 'Yêu cầu mua hàng đã sẵn sàng xử lý',
     'notification_purchase_request_ready_body' => 'Đơn :code đã hoàn tất phê duyệt. Vui lòng tạo đơn mua hàng để tiếp tục quy trình mua sắm.',
+    'notification_assets_ready_title' => 'Tài sản mới sẵn sàng cấp phát',
+    'notification_assets_ready_body' => 'Phiếu nhận hàng :receipt đã ghi nhận :count tài sản mới tại :warehouse. Vui lòng kiểm tra danh sách tài sản và thực hiện cấp phát khi có nhu cầu phù hợp.',
     'notification_unread' => 'Đã đánh dấu thông báo là chưa đọc.',
     'form_template_code_immutable' => 'Mã biểu mẫu không thể thay đổi sau khi phiên bản đã được tạo.',
     'workflow_form_template_immutable' => 'Không thể chuyển workflow sang biểu mẫu khác sau khi đã tạo.',
