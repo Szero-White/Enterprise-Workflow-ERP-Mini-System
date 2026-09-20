@@ -272,7 +272,7 @@
 .erp-demo-roles summary { width: fit-content; color: var(--erp-primary-active); cursor: pointer; font-size: .67rem; font-weight: 600; list-style: none; }
 .erp-demo-roles summary::-webkit-details-marker { display: none; }
 .erp-demo-roles summary::after { content: " +"; }
-.erp-demo-roles[open] summary::after { content: " âˆ’"; }
+.erp-demo-roles[open] summary::after { content: " \2212"; }
 .erp-demo-roles__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
 .erp-demo-role { min-width: 0; padding: 8px 9px; border: 1px solid #dce4ec; border-radius: 9px; color: #445568; text-align: left; background: #fff; transition: border-color .15s ease, background .15s ease, box-shadow .15s ease; }
 .erp-demo-role:hover,
