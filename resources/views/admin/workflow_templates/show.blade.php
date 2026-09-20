@@ -9,31 +9,32 @@
     :subtitle="__('ui.form').': '.($workflowTemplate->formTemplate?->displayName() ?? '-').' · '.__('ui.version').' v'.$workflowTemplate->version"
 >
     <x-slot:actions>
-        @if($workflowTemplate->is_active)
-            <form action="{{ route('admin.workflow-templates.deactivate', $workflowTemplate) }}" method="POST">
-                @csrf
-                <button class="btn btn-outline-secondary"><i class="bi bi-pause-circle"></i>{{ __('ui.deactivate') }}</button>
-            </form>
-        @else
-            <form action="{{ route('admin.workflow-templates.activate', $workflowTemplate) }}" method="POST">
-                @csrf
-                <button class="btn btn-primary"><i class="bi bi-play-circle"></i>{{ __('ui.activate') }}</button>
-            </form>
+        @if($workflowTemplate->lifecycle_status === \App\Enums\LifecycleStatus::Draft)
+            @if($workflowTemplate->is_active)
+                <form action="{{ route('admin.workflow-templates.deactivate', $workflowTemplate) }}" method="POST">
+                    @csrf
+                    <button class="btn btn-outline-secondary"><i class="bi bi-pause-circle"></i>{{ __('ui.deactivate') }}</button>
+                </form>
+            @else
+                <form action="{{ route('admin.workflow-templates.activate', $workflowTemplate) }}" method="POST">
+                    @csrf
+                    <button class="btn btn-primary"><i class="bi bi-play-circle"></i>{{ __('ui.activate') }}</button>
+                </form>
+            @endif
         @endif
 
-        <form action="{{ route('admin.workflow-templates.clone-version', $workflowTemplate) }}" method="POST">
-            @csrf
-            <button class="btn btn-outline-primary"><i class="bi bi-files"></i>{{ __('ui.clone_version') }}</button>
-        </form>
+        @if(in_array($workflowTemplate->lifecycle_status, [\App\Enums\LifecycleStatus::Current, \App\Enums\LifecycleStatus::Draft], true))
+            <form action="{{ route('admin.workflow-templates.clone-version', $workflowTemplate) }}" method="POST">
+                @csrf
+                <button class="btn btn-outline-primary"><i class="bi bi-files"></i>{{ __('ui.clone_version') }}</button>
+            </form>
+        @endif
 
         @if(! $workflowTemplate->isLocked() && ! $workflowTemplate->is_active)
             <a href="{{ route('admin.workflow-templates.edit', $workflowTemplate) }}" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i>{{ __('ui.edit') }}</a>
             <a href="{{ route('admin.workflow-templates.steps.create', $workflowTemplate) }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i>{{ __('ui.add_workflow_step') }}
             </a>
-        @endif
-
-        @if(! $workflowTemplate->isLocked() && ! $workflowTemplate->is_active)
             <form action="{{ route('admin.workflow-templates.destroy', $workflowTemplate) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_workflow') }}">
                 @csrf
                 @method('DELETE')
@@ -42,6 +43,11 @@
         @endif
     </x-slot:actions>
 </x-erp.page-header>
+
+<div class="mb-3 d-flex align-items-center gap-2">
+    <span class="text-muted small">{{ __('ui.status') }}:</span>
+    <x-erp.lifecycle-badge :status="$workflowTemplate->lifecycle_status" />
+</div>
 
 @if($workflowTemplate->isLocked())
     <div class="alert alert-secondary d-flex gap-2 align-items-start" role="alert">

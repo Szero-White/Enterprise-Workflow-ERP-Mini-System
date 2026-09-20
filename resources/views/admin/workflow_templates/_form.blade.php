@@ -21,7 +21,7 @@
         @else
             <select id="workflow_form_template_id" name="form_template_id" class="form-select @error('form_template_id') is-invalid @enderror" required>
                 @foreach($formTemplates as $template)
-                    <option value="{{ $template->id }}" @selected(old('form_template_id') == $template->id)>{{ $template->displayName() }}</option>
+                    <option value="{{ $template->id }}" @selected(old('form_template_id', request('form_template_id')) == $template->id)>{{ $template->displayName() }}</option>
                 @endforeach
             </select>
         @endisset

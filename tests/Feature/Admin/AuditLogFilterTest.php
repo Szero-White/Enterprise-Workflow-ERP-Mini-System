@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\Department;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\WorkflowTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -72,6 +73,27 @@ class AuditLogFilterTest extends TestCase
             ->assertSee('Operations Manager')
             ->assertSee('Xem thay đổi')
             ->assertSee('Approved request for audit UX test');
+    }
+
+    public function test_audit_log_uses_vietnamese_labels_for_actions_and_targets(): void
+    {
+        AuditLog::create([
+            'actor_id' => $this->admin->id,
+            'action' => 'workflow_template.version_cloned',
+            'description' => 'Workflow template version cloned',
+            'auditable_type' => WorkflowTemplate::class,
+            'auditable_id' => 13,
+            'ip_address' => '127.0.0.1',
+        ]);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.audit-logs.index'))
+            ->assertOk()
+            ->assertSee('Tạo phiên bản quy trình duyệt mới')
+            ->assertSee('Quy trình duyệt')
+            ->assertSee('ID #13')
+            ->assertDontSee('Workflow template version cloned')
+            ->assertDontSee('WorkflowTemplate');
     }
 
     public function test_audit_log_filters_can_be_combined_without_exposing_unmatched_rows(): void

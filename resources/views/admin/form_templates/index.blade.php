@@ -32,7 +32,7 @@
                 <td><code>{{ $template->code }}</code></td>
                 <td><span class="badge text-bg-light border">v{{ $template->version }}</span></td>
                 <td>{{ $template->fields_count }}</td>
-                <td>@include('partials.boolean_badge', ['value' => $template->is_active])</td>
+                <td><x-erp.lifecycle-badge :status="$template->lifecycle_status" /></td>
                 <td>
                     @if($template->isLocked())
                         <span class="badge text-bg-secondary"><i class="bi bi-lock-fill me-1"></i>{{ __('ui.locked') }}</span>

@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\LifecycleStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkflowTemplateRequest;
 use App\Models\FormTemplate;
 use App\Models\WorkflowTemplate;
 use App\Services\AuditLogService;
 use App\Services\Workflow\WorkflowConfigurationService;
+use App\Services\Workflow\WorkflowLifecycleService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -18,16 +21,42 @@ class WorkflowTemplateController extends Controller
     public function __construct(
         private AuditLogService $auditLogService,
         private WorkflowConfigurationService $configurationService,
+        private WorkflowLifecycleService $lifecycleService,
     ) {}
 
     public function index(): View
     {
-        $workflows = WorkflowTemplate::with(['formTemplate'])
+        $allWorkflows = WorkflowTemplate::with('formTemplate')
             ->withCount(['steps', 'requests'])
             ->latest('id')
-            ->paginate(10);
+            ->get();
 
-        return view('admin.workflow_templates.index', compact('workflows'));
+        $this->lifecycleService->decorateWorkflows($allWorkflows);
+
+        $statusCounts = collect(LifecycleStatus::cases())->mapWithKeys(
+            fn (LifecycleStatus $status) => [$status->value => $allWorkflows->where('lifecycle_status', $status)->count()]
+        );
+
+        $selectedStatus = request()->string('status')->toString();
+        if (! in_array($selectedStatus, array_column(LifecycleStatus::cases(), 'value'), true)) {
+            $selectedStatus = '';
+        }
+
+        $filtered = $selectedStatus === ''
+            ? $allWorkflows
+            : $allWorkflows->where('lifecycle_status', LifecycleStatus::from($selectedStatus))->values();
+
+        $perPage = 10;
+        $page = LengthAwarePaginator::resolveCurrentPage();
+        $workflows = new LengthAwarePaginator(
+            $filtered->forPage($page, $perPage)->values(),
+            $filtered->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('admin.workflow_templates.index', compact('workflows', 'statusCounts', 'selectedStatus'));
     }
 
     public function create(): View
@@ -64,6 +93,7 @@ class WorkflowTemplateController extends Controller
     {
         $workflowTemplate->load(['formTemplate', 'steps.approverRole', 'steps.approverDepartment', 'steps.approverUser'])
             ->loadCount('requests');
+        $this->lifecycleService->decorateWorkflows(collect([$workflowTemplate]));
 
         return view('admin.workflow_templates.show', compact('workflowTemplate'));
     }

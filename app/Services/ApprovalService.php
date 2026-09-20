@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Models\WorkflowRequest;
 use App\Services\Workflow\WorkflowApprovalRoutingDispatcher;
+use App\Services\Workflow\WorkflowLifecycleService;
 use App\Services\Workflow\WorkflowTransitionDispatcher;
 use Illuminate\Support\Facades\DB;
 
@@ -17,6 +18,7 @@ class ApprovalService
         private NotificationService $notificationService,
         private WorkflowTransitionDispatcher $workflowTransitionDispatcher,
         private WorkflowApprovalRoutingDispatcher $workflowApprovalRoutingDispatcher,
+        private WorkflowLifecycleService $workflowLifecycleService,
     ) {}
 
     public function approve(User $actor, WorkflowRequest $workflowRequest, ?string $comment = null): WorkflowRequest
@@ -63,6 +65,10 @@ class ApprovalService
             $this->auditLogService->log('request.approved', $workflowRequest, $old, $freshRequest->toArray());
             $this->workflowTransitionDispatcher->dispatch($freshRequest);
 
+            if (! $nextStep) {
+                $this->workflowLifecycleService->retireIfEligible($workflowRequest->workflowTemplate);
+            }
+
             if ($nextStep) {
                 $this->notificationService->notifyCurrentApprovers($freshRequest, Notification::TYPE_REQUEST_APPROVED);
             } else {
@@ -103,6 +109,7 @@ class ApprovalService
             $freshRequest = $workflowRequest->fresh(['creator', 'formTemplate']);
             $this->auditLogService->log('request.rejected', $workflowRequest, $old, $freshRequest->toArray());
             $this->workflowTransitionDispatcher->dispatch($freshRequest);
+            $this->workflowLifecycleService->retireIfEligible($workflowRequest->workflowTemplate);
             $this->notificationService->notifyCreator(
                 $freshRequest,
                 __('messages.notification_request_rejected_title'),

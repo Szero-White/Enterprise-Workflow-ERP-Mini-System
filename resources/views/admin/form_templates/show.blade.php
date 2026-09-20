@@ -16,9 +16,9 @@
                 <button class="btn btn-outline-secondary"><i class="bi bi-pause-circle"></i>{{ __('ui.deactivate') }}</button>
             </form>
         @else
-            <form action="{{ route('admin.form-templates.activate', $formTemplate) }}" method="POST">
+            <form action="{{ route('admin.form-templates.activate', $formTemplate) }}" method="POST" data-confirm="{{ __('ui.confirm_publish_version') }}">
                 @csrf
-                <button class="btn btn-primary"><i class="bi bi-play-circle"></i>{{ __('ui.activate') }}</button>
+                <button class="btn btn-primary"><i class="bi bi-rocket-takeoff"></i>{{ __('ui.publish_version') }}</button>
             </form>
         @endif
 
@@ -42,6 +42,11 @@
     </x-slot:actions>
 </x-erp.page-header>
 
+<div class="mb-3 d-flex align-items-center gap-2">
+    <span class="text-muted small">{{ __('ui.status') }}:</span>
+    <x-erp.lifecycle-badge :status="$formTemplate->lifecycle_status" />
+</div>
+
 @if($formTemplate->isLocked())
     <div class="alert alert-secondary d-flex gap-2 align-items-start" role="alert">
         <i class="bi bi-lock-fill mt-1"></i>
@@ -51,6 +56,30 @@
     <div class="alert alert-info d-flex gap-2 align-items-start" role="alert">
         <i class="bi bi-info-circle mt-1"></i>
         <div>{{ __('ui.configuration_active_hint') }}</div>
+    </div>
+@else
+    <div class="content-card p-3 mb-3">
+        <div class="d-flex gap-3 align-items-start justify-content-between flex-wrap">
+            <div>
+                <div class="fw-semibold mb-1"><i class="bi bi-diagram-3 me-2"></i>{{ __('ui.inherited_workflow_title') }}</div>
+                @if($publishWorkflow)
+                    <div class="mb-1">{{ $publishWorkflow->name }} · {{ __('ui.approval_steps_count', ['count' => $publishWorkflow->steps->count()]) }}</div>
+                    <div class="text-muted small">{{ __('ui.inherited_workflow_ready') }}</div>
+                @else
+                    <div class="text-muted small">{{ __('ui.inherited_workflow_missing') }}</div>
+                @endif
+            </div>
+
+            @if($publishWorkflow)
+                <a href="{{ route('admin.workflow-templates.show', $publishWorkflow) }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-pencil-square"></i>{{ __('ui.review_workflow') }}
+                </a>
+            @else
+                <a href="{{ route('admin.workflow-templates.create', ['form_template_id' => $formTemplate->id]) }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-diagram-3"></i>{{ __('ui.setup_workflow') }}
+                </a>
+            @endif
+        </div>
     </div>
 @endif
 

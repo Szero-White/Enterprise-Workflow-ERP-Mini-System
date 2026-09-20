@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@inject('auditPresenter', 'App\Support\Audit\AuditLogPresenter')
+
 @section('page_title', __('menu.audit_logs'))
 @section('page_eyebrow', __('menu.admin').' / '.__('menu.audit_logs'))
 
@@ -13,9 +15,8 @@
             <select id="audit-action" name="action" class="form-select">
                 <option value="">{{ __('ui.all_actions') }}</option>
                 @foreach($actions as $action)
-                    @php($actionKey = 'ui.audit_actions.'.str_replace('.', '_', $action))
                     <option value="{{ $action }}" @selected(($filters['action'] ?? '') === $action)>
-                        {{ trans()->has($actionKey) ? __($actionKey) : ucfirst(str_replace(['.', '_'], ' ', $action)) }}
+                        {{ $auditPresenter->actionLabel($action) }}
                     </option>
                 @endforeach
             </select>
@@ -71,7 +72,6 @@
             </thead>
             <tbody>
             @forelse($logs as $log)
-                @php($actionKey = 'ui.audit_actions.'.str_replace('.', '_', $log->action))
                 <tr>
                     <td class="text-muted fw-semibold">{{ $logs->firstItem() + $loop->index }}</td>
                     <td>
@@ -85,15 +85,12 @@
                         @endif
                     </td>
                     <td>
-                        <div class="erp-audit-primary">
-                            {{ $log->description ?? (trans()->has($actionKey) ? __($actionKey) : ucfirst(str_replace(['.', '_'], ' ', $log->action))) }}
-                        </div>
-                        <code class="erp-audit-code">{{ $log->action }}</code>
+                        <div class="erp-audit-primary">{{ $auditPresenter->actionLabel($log->action, $log->description) }}</div>
                     </td>
                     <td>
                         @if($log->auditable_type)
-                            <div class="erp-audit-primary">{{ class_basename($log->auditable_type) }}</div>
-                            <div class="erp-audit-secondary">#{{ $log->auditable_id ?? '-' }}</div>
+                            <div class="erp-audit-primary">{{ $auditPresenter->targetLabel($log->auditable_type) }}</div>
+                            <div class="erp-audit-secondary">ID #{{ $log->auditable_id ?? '-' }}</div>
                         @else
                             <span class="text-muted">—</span>
                         @endif

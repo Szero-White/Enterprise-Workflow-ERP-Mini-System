@@ -2,10 +2,12 @@
 
 namespace App\Services\Workflow;
 
+use App\Enums\LifecycleStatus;
 use App\Models\FormField;
 use App\Models\FormTemplate;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\WorkflowRequest;
 use App\Models\WorkflowStep;
 use App\Models\WorkflowTemplate;
 use App\Services\DynamicFieldConditionService;
@@ -15,7 +17,10 @@ use Illuminate\Validation\ValidationException;
 
 class WorkflowConfigurationService
 {
-    public function __construct(private DynamicFieldConditionService $conditionService) {}
+    public function __construct(
+        private DynamicFieldConditionService $conditionService,
+        private WorkflowLifecycleService $lifecycleService,
+    ) {}
 
     public function ensureFormMutable(FormTemplate $formTemplate): void
     {
@@ -53,9 +58,19 @@ class WorkflowConfigurationService
 
             $activeWorkflow = $formTemplate->activeWorkflow()->withCount('steps')->first();
             if (! $activeWorkflow || $activeWorkflow->steps_count < 1) {
-                throw ValidationException::withMessages([
-                    'form_template' => __('messages.form_template_requires_active_workflow'),
-                ]);
+                $workflowToPublish = $formTemplate->workflows()
+                    ->whereHas('steps')
+                    ->orderByDesc('version')
+                    ->orderByDesc('id')
+                    ->first();
+
+                if (! $workflowToPublish) {
+                    throw ValidationException::withMessages([
+                        'form_template' => __('messages.form_template_requires_ready_workflow'),
+                    ]);
+                }
+
+                $activeWorkflow = $this->activateWorkflow($workflowToPublish);
             }
 
             $this->conditionService->ensureTemplateConditionsValid($formTemplate);
@@ -66,6 +81,7 @@ class WorkflowConfigurationService
                 ->update(['is_active' => false]);
 
             $formTemplate->update(['is_active' => true]);
+            $this->lifecycleService->retireSupersededWorkflowsForFormFamily($formTemplate);
 
             return $formTemplate->fresh();
         });
@@ -91,6 +107,13 @@ class WorkflowConfigurationService
             if (! $workflowTemplate->steps()->exists()) {
                 throw ValidationException::withMessages([
                     'workflow_template' => __('messages.workflow_template_requires_steps'),
+                ]);
+            }
+
+            $workflowTemplate->loadMissing('formTemplate');
+            if ($this->lifecycleService->formStatus($workflowTemplate->formTemplate) === LifecycleStatus::Legacy) {
+                throw ValidationException::withMessages([
+                    'workflow_template' => __('messages.workflow_legacy_reactivate_forbidden'),
                 ]);
             }
 
@@ -143,6 +166,16 @@ class WorkflowConfigurationService
         if ($workflowTemplate->formTemplate?->is_active) {
             throw ValidationException::withMessages([
                 'workflow_template' => __('messages.workflow_deactivate_active_form_forbidden'),
+            ]);
+        }
+
+        $hasOpenRequests = $workflowTemplate->requests()
+            ->whereIn('status', [WorkflowRequest::STATUS_PENDING, WorkflowRequest::STATUS_RETURNED])
+            ->exists();
+
+        if ($hasOpenRequests) {
+            throw ValidationException::withMessages([
+                'workflow_template' => __('messages.workflow_deactivate_open_requests_forbidden'),
             ]);
         }
 

@@ -1,4 +1,4 @@
-/* Page hierarchy */
+﻿/* Page hierarchy */
 .erp-page-header {
     display: flex;
     align-items: flex-end;
@@ -351,3 +351,76 @@ textarea.form-control { min-height: 96px; resize: vertical; }
     border-color: rgba(157, 169, 178, .22) !important;
 }
 /* END: soft enterprise status palette */
+
+/* Workflow lifecycle semantic badges */
+.erp-lifecycle-badge {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.erp-lifecycle-badge--current {
+    color: #23664f !important;
+    background: #edf8f3 !important;
+    border-color: #cce8db !important;
+}
+
+.erp-lifecycle-badge--draft {
+    color: #855b19 !important;
+    background: #fff8e8 !important;
+    border-color: #f1dfb6 !important;
+}
+
+.erp-lifecycle-badge--legacy {
+    color: #5d6d79 !important;
+    background: #f2f5f7 !important;
+    border-color: #dbe3e8 !important;
+}
+
+.erp-lifecycle-badge--inactive {
+    color: #687680 !important;
+    background: #f5f7f8 !important;
+    border-color: #dfe5e9 !important;
+}
+
+.erp-lifecycle-badge .bi-info-circle {
+    opacity: .72;
+}
+
+/* Keep configuration badges visually secondary to lifecycle state. */
+.erp-workflow-lock-badge {
+    color: #5f6f7a !important;
+    background: #eef2f4 !important;
+    border: 1px solid #d9e1e6 !important;
+}
+
+:root[data-theme="dark"] .erp-lifecycle-badge--current {
+    color: #a9ddc9 !important;
+    background: #17342d !important;
+    border-color: #285849 !important;
+}
+
+:root[data-theme="dark"] .erp-lifecycle-badge--draft {
+    color: #eed09a !important;
+    background: #392d1b !important;
+    border-color: #654d27 !important;
+}
+
+:root[data-theme="dark"] .erp-lifecycle-badge--legacy {
+    color: #c1cdd4 !important;
+    background: #24323c !important;
+    border-color: #3b4b56 !important;
+}
+
+:root[data-theme="dark"] .erp-lifecycle-badge--inactive {
+    color: #aab7bf !important;
+    background: #202b33 !important;
+    border-color: #34434d !important;
+}
+
+:root[data-theme="dark"] .erp-workflow-lock-badge {
+    color: #c1cdd4 !important;
+    background: #24323c !important;
+    border-color: #3b4b56 !important;
+}

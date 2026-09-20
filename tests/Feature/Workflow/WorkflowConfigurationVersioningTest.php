@@ -51,6 +51,37 @@ class WorkflowConfigurationVersioningTest extends TestCase
         $this->assertFalse($form->fresh()->is_active);
     }
 
+    public function test_publishing_cloned_form_automatically_activates_inherited_workflow(): void
+    {
+        [$admin, $adminRole] = $this->createAdmin();
+
+        $source = $this->createDraftForm($admin);
+        FormField::create($this->fieldData($source));
+        $sourceWorkflow = $this->createWorkflow($source, $admin, $adminRole, 'Leave approval');
+        $sourceWorkflow->update(['is_active' => true]);
+        $source->update(['is_active' => true]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.form-templates.clone-version', $source))
+            ->assertRedirect();
+
+        $clone = FormTemplate::query()->where('code', 'LEAVE')->where('version', 2)->firstOrFail();
+        $inheritedWorkflow = $clone->workflows()->with('steps')->firstOrFail();
+
+        $this->assertFalse($clone->is_active);
+        $this->assertFalse($inheritedWorkflow->is_active);
+        $this->assertCount(1, $inheritedWorkflow->steps);
+
+        $this->actingAs($admin)
+            ->post(route('admin.form-templates.activate', $clone))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertTrue($clone->fresh()->is_active);
+        $this->assertFalse($source->fresh()->is_active);
+        $this->assertTrue($inheritedWorkflow->fresh()->is_active);
+    }
+
     public function test_first_submission_locks_configuration_and_clone_creates_editable_version(): void
     {
         [$admin, $adminRole] = $this->createAdmin();

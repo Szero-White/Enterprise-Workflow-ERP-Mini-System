@@ -10,6 +10,29 @@
     </x-slot:actions>
 </x-erp.page-header>
 
+<div class="row g-3 mb-3">
+    @foreach(\App\Enums\LifecycleStatus::cases() as $status)
+        <div class="col-6 col-xl-3">
+            <a href="{{ route('admin.workflow-templates.index', ['status' => $status->value]) }}" class="text-decoration-none">
+                <div class="erp-stat-card p-3 h-100 {{ $selectedStatus === $status->value ? 'border border-primary' : '' }}">
+                    <div class="d-flex align-items-center justify-content-between gap-2">
+                        <span class="text-muted small">{{ $status->label() }}</span>
+                        <span class="badge {{ $status->badgeClass() }}">{{ $statusCounts->get($status->value, 0) }}</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    @endforeach
+</div>
+
+@if($selectedStatus !== '')
+    <div class="mb-3">
+        <a href="{{ route('admin.workflow-templates.index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-x-lg"></i>{{ __('ui.clear_status_filter') }}
+        </a>
+    </div>
+@endif
+
 <div class="content-card p-3 table-responsive">
     <table class="table align-middle">
         <thead class="table-light">
@@ -29,13 +52,13 @@
             <tr>
                 <td class="text-muted fw-semibold">{{ $workflows->firstItem() + $loop->index }}</td>
                 <td class="fw-semibold">{{ $workflow->name }}</td>
-                <td>{{ $workflow->formTemplate?->displayName() ?? '-' }}</td>
+                <td>{{ $workflow->formTemplate?->name ?? '-' }}</td>
                 <td><span class="badge text-bg-light border">v{{ $workflow->version }}</span></td>
-                <td>{{ $workflow->steps_count }}</td>
-                <td>@include('partials.boolean_badge', ['value' => $workflow->is_active])</td>
+                <td>{{ __('ui.approval_steps_count', ['count' => $workflow->steps_count]) }}</td>
+                <td><x-erp.lifecycle-badge :status="$workflow->lifecycle_status" /></td>
                 <td>
                     @if($workflow->isLocked())
-                        <span class="badge text-bg-secondary"><i class="bi bi-lock-fill me-1"></i>{{ __('ui.locked') }}</span>
+                        <span class="badge erp-workflow-lock-badge"><i class="bi bi-lock-fill me-1"></i>{{ __('ui.locked') }}</span>
                     @else
                         <span class="badge text-bg-light border">{{ __('ui.editable') }}</span>
                     @endif
@@ -46,10 +69,12 @@
                         @if(! $workflow->isLocked() && ! $workflow->is_active)
                             <a href="{{ route('admin.workflow-templates.edit', $workflow) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
                         @endif
-                        <form action="{{ route('admin.workflow-templates.clone-version', $workflow) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-sm btn-outline-primary">{{ __('ui.clone_version') }}</button>
-                        </form>
+                        @if($workflow->lifecycle_status !== \App\Enums\LifecycleStatus::Legacy && $workflow->lifecycle_status !== \App\Enums\LifecycleStatus::Inactive)
+                            <form action="{{ route('admin.workflow-templates.clone-version', $workflow) }}" method="POST">
+                                @csrf
+                                <button class="btn btn-sm btn-outline-primary">{{ __('ui.clone_version') }}</button>
+                            </form>
+                        @endif
                     </div>
                 </td>
             </tr>
