@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\NotificationFilterRequest;
 use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
@@ -12,13 +13,19 @@ class NotificationController extends Controller
 {
     public function __construct(private NotificationService $notificationService) {}
 
-    public function index(Request $request): View
+    public function index(NotificationFilterRequest $request): View
     {
-        $notifications = Notification::forUser($request->user())
-            ->latest('id')
-            ->paginate(15);
+        $view = $request->viewMode();
+        $baseQuery = Notification::forUser($request->user());
+        $unreadCount = (clone $baseQuery)->unread()->count();
 
-        return view('notifications.index', compact('notifications'));
+        $notifications = $baseQuery
+            ->when($view === NotificationFilterRequest::VIEW_UNREAD, fn ($query) => $query->unread())
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('notifications.index', compact('notifications', 'unreadCount', 'view'));
     }
 
     public function markAsRead(Request $request, Notification $notification): RedirectResponse

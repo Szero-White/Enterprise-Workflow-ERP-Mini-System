@@ -8,13 +8,27 @@
 @section('content')
 <x-erp.page-header :title="__('menu.notifications')" :eyebrow="__('ui.account')" :description="__('ui.notifications_description')">
     <x-slot:actions>
-        <form method="POST" action="{{ route('notifications.read-all') }}">
-            @csrf
-            <button class="btn btn-light border">
-                <i class="bi bi-check2-all"></i>
-                {{ __('ui.mark_all_as_read') }}
-            </button>
-        </form>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <a
+                href="{{ $view === \App\Http\Requests\NotificationFilterRequest::VIEW_UNREAD ? route('notifications.index') : route('notifications.index', ['view' => \App\Http\Requests\NotificationFilterRequest::VIEW_UNREAD]) }}"
+                class="btn {{ $view === \App\Http\Requests\NotificationFilterRequest::VIEW_UNREAD ? 'btn-primary' : 'btn-outline-primary' }}"
+                aria-pressed="{{ $view === \App\Http\Requests\NotificationFilterRequest::VIEW_UNREAD ? 'true' : 'false' }}"
+            >
+                <i class="bi {{ $view === \App\Http\Requests\NotificationFilterRequest::VIEW_UNREAD ? 'bi-inbox' : 'bi-envelope-exclamation' }}"></i>
+                {{ $view === \App\Http\Requests\NotificationFilterRequest::VIEW_UNREAD ? __('filters.all_notifications') : __('filters.unread_notifications') }}
+                @if($view !== \App\Http\Requests\NotificationFilterRequest::VIEW_UNREAD)
+                    <span class="badge rounded-pill text-bg-primary">{{ $unreadCount > 99 ? '99+' : $unreadCount }}</span>
+                @endif
+            </a>
+
+            <form method="POST" action="{{ route('notifications.read-all') }}">
+                @csrf
+                <button class="btn btn-light border" @disabled($unreadCount === 0)>
+                    <i class="bi bi-check2-all"></i>
+                    {{ __('ui.mark_all_as_read') }}
+                </button>
+            </form>
+        </div>
     </x-slot:actions>
 </x-erp.page-header>
 
@@ -120,7 +134,7 @@
             </form>
         @endif
     @empty
-        <div class="p-4 text-muted">{{ __('ui.no_notifications') }}</div>
+        <div class="p-4 text-muted">{{ $view === \App\Http\Requests\NotificationFilterRequest::VIEW_UNREAD ? __('filters.no_unread_notifications') : __('ui.no_notifications') }}</div>
     @endforelse
 </div>
 

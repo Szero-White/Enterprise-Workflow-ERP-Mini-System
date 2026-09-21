@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Employee;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EmployeeRequestFilterRequest;
 use App\Http\Requests\WorkflowRequestSubmissionRequest;
 use App\Models\FormTemplate;
 use App\Models\WorkflowRequest;
 use App\Services\DynamicRequestService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -16,27 +16,37 @@ class WorkflowRequestController extends Controller
 {
     public function __construct(private DynamicRequestService $dynamicRequestService) {}
 
-    public function index(Request $request): View
+    public function index(EmployeeRequestFilterRequest $request): View
     {
+        $filters = $request->filters();
+
         $query = WorkflowRequest::with(['formTemplate', 'currentStep'])
             ->where('created_by', $request->user()->id)
             ->whereHas('formTemplate', fn ($builder) => $builder->dynamicSubmission())
             ->latest('id');
 
-        if ($request->filled('keyword')) {
-            $query->where('request_code', 'like', '%'.$request->keyword.'%');
+        if (filled($filters['keyword'])) {
+            $keyword = $filters['keyword'];
+
+            $query->where(function ($builder) use ($keyword): void {
+                $builder->where('request_code', 'like', '%'.$keyword.'%')
+                    ->orWhereHas('formTemplate', function ($formTemplate) use ($keyword): void {
+                        $formTemplate->where('name', 'like', '%'.$keyword.'%')
+                            ->orWhere('code', 'like', '%'.$keyword.'%');
+                    });
+            });
         }
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        if (filled($filters['status'])) {
+            $query->where('status', $filters['status']);
         }
 
-        if ($request->filled('from_date')) {
-            $query->whereDate('created_at', '>=', $request->from_date);
+        if (filled($filters['from_date'])) {
+            $query->whereDate('created_at', '>=', $filters['from_date']);
         }
 
-        if ($request->filled('to_date')) {
-            $query->whereDate('created_at', '<=', $request->to_date);
+        if (filled($filters['to_date'])) {
+            $query->whereDate('created_at', '<=', $filters['to_date']);
         }
 
         $requests = $query->paginate(10)->withQueryString();
