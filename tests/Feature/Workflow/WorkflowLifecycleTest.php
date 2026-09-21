@@ -39,7 +39,7 @@ class WorkflowLifecycleTest extends TestCase
         $oldWorkflow = $oldWorkflow->fresh('formTemplate');
         $service->decorateWorkflows(collect([$oldWorkflow]));
 
-        $this->assertSame(LifecycleStatus::Legacy, $oldWorkflow->getAttribute('lifecycle_status'));
+        $this->assertSame(LifecycleStatus::Inactive, $oldWorkflow->getAttribute('lifecycle_status'));
     }
 
     public function test_publishing_new_form_keeps_legacy_workflow_active_while_open_request_exists(): void

@@ -13,7 +13,9 @@ use App\Services\Workflow\WorkflowLifecycleService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class WorkflowTemplateController extends Controller
@@ -62,20 +64,27 @@ class WorkflowTemplateController extends Controller
     public function create(): View
     {
         return view('admin.workflow_templates.create', [
-            'formTemplates' => FormTemplate::orderBy('name')->orderByDesc('version')->get(),
+            'formTemplates' => $this->configurableFormTemplates(),
         ]);
     }
 
     public function store(WorkflowTemplateRequest $request): RedirectResponse
     {
-        $workflow = DB::transaction(function () use ($request): WorkflowTemplate {
-            $data = $request->validated();
-            FormTemplate::query()->whereKey($data['form_template_id'])->lockForUpdate()->firstOrFail();
+        $data = $request->validated();
+        $formTemplate = FormTemplate::query()->findOrFail($data['form_template_id']);
+
+        Gate::authorize('createWorkflow', $formTemplate);
+
+        $workflow = DB::transaction(function () use ($request, $data, $formTemplate): WorkflowTemplate {
+            $lockedForm = FormTemplate::query()->whereKey($formTemplate->id)->lockForUpdate()->firstOrFail();
+            $this->configurationService->ensureFormAllowsWorkflowDraft($lockedForm);
+
             $versions = WorkflowTemplate::query()
-                ->where('form_template_id', $data['form_template_id'])
+                ->where('form_template_id', $lockedForm->id)
                 ->orderBy('id')
                 ->lockForUpdate()
                 ->get();
+
             $data['version'] = ((int) $versions->max('version')) + 1;
             $data['is_active'] = false;
             $data['created_by'] = $request->user()->id;
@@ -100,17 +109,19 @@ class WorkflowTemplateController extends Controller
 
     public function edit(WorkflowTemplate $workflowTemplate): View
     {
+        Gate::authorize('update', $workflowTemplate);
+        $workflowTemplate->loadMissing('formTemplate');
+
         return view('admin.workflow_templates.edit', [
             'workflowTemplate' => $workflowTemplate,
-            'formTemplates' => FormTemplate::orderBy('name')->orderByDesc('version')->get(),
+            'formTemplates' => collect([$workflowTemplate->formTemplate])->filter(),
         ]);
     }
 
     public function update(WorkflowTemplateRequest $request, WorkflowTemplate $workflowTemplate): RedirectResponse
     {
-        if ($response = $this->guardConfiguration($workflowTemplate)) {
-            return $response;
-        }
+        Gate::authorize('update', $workflowTemplate);
+        $this->configurationService->ensureWorkflowMutable($workflowTemplate);
 
         $old = $workflowTemplate->toArray();
         $data = $request->validated();
@@ -125,13 +136,8 @@ class WorkflowTemplateController extends Controller
 
     public function destroy(WorkflowTemplate $workflowTemplate): RedirectResponse
     {
-        if ($workflowTemplate->isLocked()) {
-            return back()->with('error', __('messages.workflow_template_delete_locked'));
-        }
-
-        if ($workflowTemplate->is_active) {
-            return back()->with('error', __('messages.workflow_template_deactivate_before_delete'));
-        }
+        Gate::authorize('delete', $workflowTemplate);
+        $this->configurationService->ensureWorkflowMutable($workflowTemplate);
 
         try {
             $old = $workflowTemplate->toArray();
@@ -146,6 +152,8 @@ class WorkflowTemplateController extends Controller
 
     public function activate(WorkflowTemplate $workflowTemplate): RedirectResponse
     {
+        Gate::authorize('activate', $workflowTemplate);
+
         $old = $workflowTemplate->toArray();
         $workflow = $this->configurationService->activateWorkflow($workflowTemplate);
         $this->auditLogService->log('workflow_template.activated', $workflow, $old, $workflow->toArray());
@@ -155,6 +163,8 @@ class WorkflowTemplateController extends Controller
 
     public function deactivate(WorkflowTemplate $workflowTemplate): RedirectResponse
     {
+        Gate::authorize('deactivate', $workflowTemplate);
+
         $old = $workflowTemplate->toArray();
         $workflow = $this->configurationService->deactivateWorkflow($workflowTemplate);
         $this->auditLogService->log('workflow_template.deactivated', $workflow, $old, $workflow->toArray());
@@ -164,6 +174,8 @@ class WorkflowTemplateController extends Controller
 
     public function cloneVersion(WorkflowTemplate $workflowTemplate): RedirectResponse
     {
+        Gate::authorize('cloneVersion', $workflowTemplate);
+
         $clone = $this->configurationService->cloneWorkflowVersion($workflowTemplate, request()->user());
         $this->auditLogService->log('workflow_template.version_cloned', $clone, null, $clone->toArray());
 
@@ -171,16 +183,22 @@ class WorkflowTemplateController extends Controller
             ->with('success', __('messages.workflow_template_version_cloned', ['version' => $clone->version]));
     }
 
-    private function guardConfiguration(WorkflowTemplate $workflowTemplate): ?RedirectResponse
+    private function configurableFormTemplates(): Collection
     {
-        if ($workflowTemplate->isLocked()) {
-            return back()->with('error', __('messages.workflow_template_locked'));
-        }
+        $forms = FormTemplate::query()
+            ->withCount('requests')
+            ->orderBy('name')
+            ->orderByDesc('version')
+            ->get();
 
-        if ($workflowTemplate->is_active) {
-            return back()->with('error', __('messages.workflow_template_deactivate_before_edit'));
-        }
+        $this->lifecycleService->decorateForms($forms);
 
-        return null;
+        return $forms
+            ->filter(fn (FormTemplate $form) => in_array(
+                $form->getAttribute('lifecycle_status'),
+                [LifecycleStatus::Draft, LifecycleStatus::Current],
+                true
+            ))
+            ->values();
     }
 }

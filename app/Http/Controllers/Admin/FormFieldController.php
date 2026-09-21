@@ -13,6 +13,7 @@ use App\Services\Workflow\WorkflowConfigurationService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class FormFieldController extends Controller
@@ -32,6 +33,8 @@ class FormFieldController extends Controller
 
     public function create(FormTemplate $formTemplate): View
     {
+        Gate::authorize('manageFields', $formTemplate);
+
         $conditionFields = $formTemplate->fields()->get();
 
         return view('admin.form_fields.create', compact('formTemplate', 'conditionFields'));
@@ -39,9 +42,8 @@ class FormFieldController extends Controller
 
     public function store(FormFieldRequest $request, FormTemplate $formTemplate): RedirectResponse
     {
-        if ($response = $this->guardConfiguration($formTemplate)) {
-            return $response;
-        }
+        Gate::authorize('manageFields', $formTemplate);
+        $this->configurationService->ensureFormMutable($formTemplate);
 
         $data = $this->prepareData($request->validated(), $request);
         $data['form_template_id'] = $formTemplate->id;
@@ -54,6 +56,8 @@ class FormFieldController extends Controller
 
     public function edit(FormTemplate $formTemplate, FormField $field): View
     {
+        Gate::authorize('manageFields', $formTemplate);
+
         $conditionFields = $formTemplate->fields()->whereKeyNot($field->id)->get();
 
         return view('admin.form_fields.edit', compact('formTemplate', 'field', 'conditionFields'));
@@ -61,9 +65,8 @@ class FormFieldController extends Controller
 
     public function update(FormFieldRequest $request, FormTemplate $formTemplate, FormField $field): RedirectResponse
     {
-        if ($response = $this->guardConfiguration($formTemplate)) {
-            return $response;
-        }
+        Gate::authorize('manageFields', $formTemplate);
+        $this->configurationService->ensureFormMutable($formTemplate);
 
         $old = $field->toArray();
         $data = $this->prepareData($request->validated(), $request);
@@ -88,9 +91,8 @@ class FormFieldController extends Controller
 
     public function destroy(FormTemplate $formTemplate, FormField $field): RedirectResponse
     {
-        if ($response = $this->guardConfiguration($formTemplate)) {
-            return $response;
-        }
+        Gate::authorize('manageFields', $formTemplate);
+        $this->configurationService->ensureFormMutable($formTemplate);
 
         if ($field->requestValues()->exists()) {
             return back()->with('error', __('messages.form_field_delete_in_use'));
@@ -109,19 +111,6 @@ class FormFieldController extends Controller
         }
 
         return back()->with('success', __('messages.form_field_deleted'));
-    }
-
-    private function guardConfiguration(FormTemplate $formTemplate): ?RedirectResponse
-    {
-        if ($formTemplate->isLocked()) {
-            return back()->with('error', __('messages.form_template_locked'));
-        }
-
-        if ($formTemplate->is_active) {
-            return back()->with('error', __('messages.form_template_deactivate_before_edit'));
-        }
-
-        return null;
     }
 
     private function prepareData(array $data, FormFieldRequest $request): array

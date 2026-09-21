@@ -24,24 +24,43 @@ class WorkflowConfigurationService
 
     public function ensureFormMutable(FormTemplate $formTemplate): void
     {
-        if ($formTemplate->isLocked()) {
+        if ($this->lifecycleService->formStatus($formTemplate) !== LifecycleStatus::Draft
+            || $formTemplate->is_active
+            || $formTemplate->isLocked()) {
             throw ValidationException::withMessages([
-                'form_template' => __('messages.form_template_locked'),
+                'form_template' => __('messages.form_template_read_only'),
             ]);
         }
     }
 
     public function ensureWorkflowMutable(WorkflowTemplate $workflowTemplate): void
     {
-        if ($workflowTemplate->isLocked()) {
+        if ($this->lifecycleService->workflowStatus($workflowTemplate) !== LifecycleStatus::Draft
+            || $workflowTemplate->is_active
+            || $workflowTemplate->isLocked()) {
             throw ValidationException::withMessages([
-                'workflow_template' => __('messages.workflow_template_locked'),
+                'workflow_template' => __('messages.workflow_template_read_only'),
+            ]);
+        }
+    }
+
+    public function ensureFormAllowsWorkflowDraft(FormTemplate $formTemplate): void
+    {
+        if (! in_array($this->lifecycleService->formStatus($formTemplate), [LifecycleStatus::Draft, LifecycleStatus::Current], true)) {
+            throw ValidationException::withMessages([
+                'form_template' => __('messages.form_template_workflow_read_only'),
             ]);
         }
     }
 
     public function activateForm(FormTemplate $formTemplate): FormTemplate
     {
+        if ($this->lifecycleService->formStatus($formTemplate) !== LifecycleStatus::Draft || $formTemplate->is_active) {
+            throw ValidationException::withMessages([
+                'form_template' => __('messages.form_template_publish_draft_only'),
+            ]);
+        }
+
         return DB::transaction(function () use ($formTemplate): FormTemplate {
             $versions = FormTemplate::query()
                 ->where('code', $formTemplate->code)
@@ -89,13 +108,30 @@ class WorkflowConfigurationService
 
     public function deactivateForm(FormTemplate $formTemplate): FormTemplate
     {
-        $formTemplate->update(['is_active' => false]);
+        if ($this->lifecycleService->formStatus($formTemplate) !== LifecycleStatus::Current || ! $formTemplate->is_active) {
+            throw ValidationException::withMessages([
+                'form_template' => __('messages.form_template_deactivate_current_only'),
+            ]);
+        }
 
-        return $formTemplate->fresh();
+        return DB::transaction(function () use ($formTemplate): FormTemplate {
+            $formTemplate->update(['is_active' => false]);
+            $this->lifecycleService->retireEligibleWorkflowsForForm($formTemplate->fresh());
+
+            return $formTemplate->fresh();
+        });
     }
 
     public function activateWorkflow(WorkflowTemplate $workflowTemplate): WorkflowTemplate
     {
+        if ($this->lifecycleService->workflowStatus($workflowTemplate) !== LifecycleStatus::Draft
+            || $workflowTemplate->is_active
+            || $workflowTemplate->isLocked()) {
+            throw ValidationException::withMessages([
+                'workflow_template' => __('messages.workflow_template_publish_draft_only'),
+            ]);
+        }
+
         return DB::transaction(function () use ($workflowTemplate): WorkflowTemplate {
             $versions = WorkflowTemplate::query()
                 ->where('form_template_id', $workflowTemplate->form_template_id)
@@ -186,6 +222,12 @@ class WorkflowConfigurationService
 
     public function cloneFormVersion(FormTemplate $source, User $actor): FormTemplate
     {
+        if ($this->lifecycleService->formStatus($source) !== LifecycleStatus::Current) {
+            throw ValidationException::withMessages([
+                'form_template' => __('messages.form_template_clone_current_only'),
+            ]);
+        }
+
         return DB::transaction(function () use ($source, $actor): FormTemplate {
             $source = FormTemplate::query()->lockForUpdate()->findOrFail($source->id);
             $source->load(['fields', 'workflows.steps']);
@@ -244,6 +286,12 @@ class WorkflowConfigurationService
 
     public function cloneWorkflowVersion(WorkflowTemplate $source, User $actor): WorkflowTemplate
     {
+        if ($this->lifecycleService->workflowStatus($source) !== LifecycleStatus::Current) {
+            throw ValidationException::withMessages([
+                'workflow_template' => __('messages.workflow_template_clone_current_only'),
+            ]);
+        }
+
         return DB::transaction(function () use ($source, $actor): WorkflowTemplate {
             FormTemplate::query()->whereKey($source->form_template_id)->lockForUpdate()->firstOrFail();
             $source = WorkflowTemplate::query()->findOrFail($source->id);

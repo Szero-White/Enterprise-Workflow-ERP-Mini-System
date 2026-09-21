@@ -31,7 +31,7 @@ class WorkflowTemplate extends Model
 
     public function steps()
     {
-        return $this->hasMany(WorkflowStep::class)->orderBy('step_order');
+        return $this->hasMany(WorkflowStep::class)->orderBy('step_order')->orderBy('id');
     }
 
     public function requests()

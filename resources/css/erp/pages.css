@@ -632,3 +632,147 @@
     gap: 6px;
     white-space: nowrap;
 }
+
+
+/* Approval workspace */
+.erp-current-step-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--erp-primary-border);
+    border-radius: 999px;
+    color: var(--erp-primary-active);
+    background: var(--erp-primary-soft);
+    font-size: .69rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.erp-approval-action-card {
+    border-color: color-mix(in srgb, var(--erp-primary) 16%, var(--erp-border));
+}
+
+.erp-approval-action-card__description {
+    margin: -6px 0 14px;
+    color: var(--erp-muted);
+    font-size: .7rem;
+    line-height: 1.5;
+}
+
+.erp-approval-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.erp-approval-actions .btn {
+    min-width: 0;
+    min-height: 40px;
+}
+
+.erp-approval-current-card {
+    padding: 13px 14px;
+    border: 1px solid var(--erp-primary-border);
+    border-radius: 12px;
+    background: var(--erp-primary-soft);
+}
+
+.erp-approval-current-card__label {
+    margin-bottom: 3px;
+    color: var(--erp-muted);
+    font-size: .67rem;
+    font-weight: 600;
+}
+
+.erp-approval-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 14px;
+    border: 1px solid var(--erp-border);
+    border-radius: 12px;
+    background: var(--erp-surface);
+    transition: border-color .15s ease, background-color .15s ease;
+}
+
+.erp-approval-step__icon {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    place-items: center;
+    margin-top: 1px;
+    border-radius: 50%;
+    color: var(--erp-muted);
+    background: var(--erp-surface-muted);
+    font-size: .9rem;
+}
+
+.erp-approval-step__state {
+    font-size: .68rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.erp-approval-step--approved {
+    border-color: #d5e8de;
+    background: color-mix(in srgb, #edf7f2 55%, var(--erp-surface));
+}
+.erp-approval-step--approved .erp-approval-step__icon,
+.erp-approval-step--approved .erp-approval-step__state { color: #2f6f52; }
+.erp-approval-step--approved .erp-approval-step__icon { background: #e7f4ed; }
+
+.erp-approval-step--pending {
+    border-color: #eadbb5;
+    background: color-mix(in srgb, #fff7e6 58%, var(--erp-surface));
+}
+.erp-approval-step--pending .erp-approval-step__icon,
+.erp-approval-step--pending .erp-approval-step__state { color: #765719; }
+.erp-approval-step--pending .erp-approval-step__icon { background: #fff0c9; }
+
+.erp-approval-step--returned {
+    border-color: #cfe4e9;
+    background: color-mix(in srgb, #edf6f8 58%, var(--erp-surface));
+}
+.erp-approval-step--returned .erp-approval-step__icon,
+.erp-approval-step--returned .erp-approval-step__state { color: #356d80; }
+.erp-approval-step--returned .erp-approval-step__icon { background: #e4f2f5; }
+
+.erp-approval-step--rejected {
+    border-color: #efcfd5;
+    background: color-mix(in srgb, #fbeef0 58%, var(--erp-surface));
+}
+.erp-approval-step--rejected .erp-approval-step__icon,
+.erp-approval-step--rejected .erp-approval-step__state { color: #984653; }
+.erp-approval-step--rejected .erp-approval-step__icon { background: #fae7ea; }
+
+.erp-approval-step--waiting .erp-approval-step__state,
+.erp-approval-step--skipped_stock .erp-approval-step__state { color: var(--erp-muted); }
+
+.erp-approval-activity summary {
+    color: var(--erp-text-soft);
+    cursor: pointer;
+    font-size: .74rem;
+    font-weight: 600;
+}
+
+@media (min-width: 992px) {
+    .erp-approval-sidebar {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .erp-approval-actions {
+        grid-template-columns: 1fr;
+    }
+    .erp-approval-actions .btn {
+        width: 100%;
+    }
+    .erp-current-step-badge {
+        max-width: 100%;
+        white-space: normal;
+    }
+}

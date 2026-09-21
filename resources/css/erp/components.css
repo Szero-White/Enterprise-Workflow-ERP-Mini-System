@@ -1,4 +1,4 @@
-﻿/* Page hierarchy */
+/* Page hierarchy */
 .erp-page-header {
     display: flex;
     align-items: flex-end;
@@ -423,4 +423,143 @@ textarea.form-control { min-height: 96px; resize: vertical; }
     color: #c1cdd4 !important;
     background: #24323c !important;
     border-color: #3b4b56 !important;
+}
+
+
+/* Shared business-list filters */
+.erp-list-filter-card .form-label {
+    margin-bottom: .42rem;
+    color: var(--erp-text-soft);
+    font-size: .72rem;
+    font-weight: 600;
+}
+
+.erp-list-filter-card__actions .btn {
+    min-width: 112px;
+}
+
+.erp-list-filter-card__hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--erp-border);
+    color: var(--erp-muted);
+    font-size: .68rem;
+    line-height: 1.5;
+}
+
+.erp-list-filter-card__hint i {
+    margin-top: 2px;
+    color: var(--erp-primary);
+}
+
+@media (max-width: 767.98px) {
+    .erp-list-filter-card__actions .btn {
+        min-height: 40px;
+        flex: 1 1 140px;
+    }
+}
+
+
+/* Unified enterprise semantic actions */
+.btn-outline-secondary {
+    --bs-btn-color: var(--erp-text-soft);
+    --bs-btn-border-color: var(--erp-border-strong);
+    --bs-btn-hover-color: var(--erp-text);
+    --bs-btn-hover-bg: var(--erp-surface-strong);
+    --bs-btn-hover-border-color: var(--erp-border-strong);
+    --bs-btn-active-color: var(--erp-text);
+    --bs-btn-active-bg: var(--erp-surface-strong);
+    --bs-btn-active-border-color: var(--erp-border-strong);
+}
+
+.btn-success {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--erp-success-action);
+    --bs-btn-border-color: var(--erp-success-action);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--erp-success-action-hover);
+    --bs-btn-hover-border-color: var(--erp-success-action-hover);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--erp-success-action-active);
+    --bs-btn-active-border-color: var(--erp-success-action-active);
+}
+
+.btn-warning {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--erp-warning-action);
+    --bs-btn-border-color: var(--erp-warning-action);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--erp-warning-action-hover);
+    --bs-btn-hover-border-color: var(--erp-warning-action-hover);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--erp-warning-action-active);
+    --bs-btn-active-border-color: var(--erp-warning-action-active);
+}
+
+.btn-danger {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--erp-danger-action);
+    --bs-btn-border-color: var(--erp-danger-action);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--erp-danger-action-hover);
+    --bs-btn-hover-border-color: var(--erp-danger-action-hover);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--erp-danger-action-active);
+    --bs-btn-active-border-color: var(--erp-danger-action-active);
+}
+
+.btn-outline-danger {
+    --bs-btn-color: var(--erp-danger-action);
+    --bs-btn-border-color: color-mix(in srgb, var(--erp-danger-action) 42%, var(--erp-border));
+    --bs-btn-hover-color: var(--erp-danger-action);
+    --bs-btn-hover-bg: color-mix(in srgb, var(--erp-danger-action) 9%, var(--erp-surface));
+    --bs-btn-hover-border-color: color-mix(in srgb, var(--erp-danger-action) 58%, var(--erp-border));
+    --bs-btn-active-color: var(--erp-danger-action);
+    --bs-btn-active-bg: color-mix(in srgb, var(--erp-danger-action) 14%, var(--erp-surface));
+    --bs-btn-active-border-color: color-mix(in srgb, var(--erp-danger-action) 65%, var(--erp-border));
+}
+
+/* Alerts and badges use the same muted semantic language across every module. */
+.erp-app-body .alert {
+    border-radius: 12px;
+    box-shadow: none;
+}
+.erp-app-body .alert-success { color: #2f6f52; background: #edf7f2; border-color: #cfe6d9; }
+.erp-app-body .alert-warning { color: #765719; background: #fff7e6; border-color: #eadbb5; }
+.erp-app-body .alert-danger { color: #984653; background: #fbeef0; border-color: #efcfd5; }
+.erp-app-body .alert-info { color: #356d80; background: #edf6f8; border-color: #cfe4e9; }
+.erp-app-body .alert-secondary { color: var(--erp-text-soft); background: var(--erp-surface-muted); border-color: var(--erp-border); }
+
+.erp-app-body .badge.text-bg-success:not(.erp-lifecycle-badge) {
+    color: #2f6f52 !important;
+    background: #eaf5ef !important;
+    border: 1px solid #cde6d8;
+}
+.erp-app-body .badge.text-bg-warning:not(.erp-lifecycle-badge) {
+    color: #805f13 !important;
+    background: #fff4d8 !important;
+    border: 1px solid #ead9a5;
+}
+.erp-app-body .badge.text-bg-danger:not(.erp-lifecycle-badge) {
+    color: #a54852 !important;
+    background: #fbecef !important;
+    border: 1px solid #f1cfd4;
+}
+.erp-app-body .badge.text-bg-info:not(.erp-lifecycle-badge) {
+    color: #356d80 !important;
+    background: #eaf5f8 !important;
+    border: 1px solid #cde4ea;
+}
+.erp-app-body .badge.text-bg-primary:not(.erp-lifecycle-badge) {
+    color: #3f6786 !important;
+    background: #edf4f8 !important;
+    border: 1px solid #d3e2eb;
+}
+.erp-app-body .badge.text-bg-secondary:not(.erp-lifecycle-badge) {
+    color: #5f6b76 !important;
+    background: #f1f4f6 !important;
+    border: 1px solid #dde3e7;
 }

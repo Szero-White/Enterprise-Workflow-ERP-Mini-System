@@ -19,10 +19,12 @@
             <input type="hidden" name="form_template_id" value="{{ $workflowTemplate->form_template_id }}">
             <input id="workflow_form_template_id" class="form-control" value="{{ $workflowTemplate->formTemplate?->displayName() ?? '-' }}" disabled>
         @else
-            <select id="workflow_form_template_id" name="form_template_id" class="form-select @error('form_template_id') is-invalid @enderror" required>
-                @foreach($formTemplates as $template)
+            <select id="workflow_form_template_id" name="form_template_id" class="form-select @error('form_template_id') is-invalid @enderror" required @disabled($formTemplates->isEmpty())>
+                @forelse($formTemplates as $template)
                     <option value="{{ $template->id }}" @selected(old('form_template_id', request('form_template_id')) == $template->id)>{{ $template->displayName() }}</option>
-                @endforeach
+                @empty
+                    <option value="">{{ __('ui.no_configurable_form_templates') }}</option>
+                @endforelse
             </select>
         @endisset
         @include('partials.form_error', ['field' => 'form_template_id'])

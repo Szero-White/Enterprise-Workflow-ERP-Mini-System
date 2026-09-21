@@ -10,6 +10,7 @@ use App\Services\Workflow\WorkflowConfigurationService;
 use App\Services\Workflow\WorkflowLifecycleService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class FormTemplateController extends Controller
@@ -63,12 +64,15 @@ class FormTemplateController extends Controller
 
     public function edit(FormTemplate $formTemplate): View
     {
+        Gate::authorize('update', $formTemplate);
+
         return view('admin.form_templates.edit', compact('formTemplate'));
     }
 
     public function update(FormTemplateRequest $request, FormTemplate $formTemplate): RedirectResponse
     {
-        $this->ensureEditable($formTemplate);
+        Gate::authorize('update', $formTemplate);
+        $this->configurationService->ensureFormMutable($formTemplate);
 
         $old = $formTemplate->toArray();
         $data = $request->validated();
@@ -84,13 +88,8 @@ class FormTemplateController extends Controller
 
     public function destroy(FormTemplate $formTemplate): RedirectResponse
     {
-        if ($formTemplate->isLocked()) {
-            return back()->with('error', __('messages.form_template_delete_locked'));
-        }
-
-        if ($formTemplate->is_active) {
-            return back()->with('error', __('messages.form_template_deactivate_before_delete'));
-        }
+        Gate::authorize('delete', $formTemplate);
+        $this->configurationService->ensureFormMutable($formTemplate);
 
         try {
             $old = $formTemplate->toArray();
@@ -105,6 +104,8 @@ class FormTemplateController extends Controller
 
     public function activate(FormTemplate $formTemplate): RedirectResponse
     {
+        Gate::authorize('publish', $formTemplate);
+
         $old = $formTemplate->toArray();
         $workflowBeforePublish = $formTemplate->activeWorkflow()->first();
         $template = $this->configurationService->activateForm($formTemplate);
@@ -126,6 +127,8 @@ class FormTemplateController extends Controller
 
     public function deactivate(FormTemplate $formTemplate): RedirectResponse
     {
+        Gate::authorize('deactivate', $formTemplate);
+
         $old = $formTemplate->toArray();
         $template = $this->configurationService->deactivateForm($formTemplate);
         $this->auditLogService->log('form_template.deactivated', $template, $old, $template->toArray());
@@ -135,19 +138,12 @@ class FormTemplateController extends Controller
 
     public function cloneVersion(FormTemplate $formTemplate): RedirectResponse
     {
+        Gate::authorize('cloneVersion', $formTemplate);
+
         $clone = $this->configurationService->cloneFormVersion($formTemplate, request()->user());
         $this->auditLogService->log('form_template.version_cloned', $clone, null, $clone->toArray());
 
         return redirect()->route('admin.form-templates.show', $clone)
             ->with('success', __('messages.form_template_version_cloned', ['version' => $clone->version]));
-    }
-
-    private function ensureEditable(FormTemplate $formTemplate): void
-    {
-        $this->configurationService->ensureFormMutable($formTemplate);
-
-        if ($formTemplate->is_active) {
-            abort(422, __('messages.form_template_deactivate_before_edit'));
-        }
     }
 }

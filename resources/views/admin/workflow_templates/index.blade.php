@@ -27,7 +27,7 @@
 
 @if($selectedStatus !== '')
     <div class="mb-3">
-        <a href="{{ route('admin.workflow-templates.index') }}" class="btn btn-sm btn-outline-secondary">
+        <a href="{{ route('admin.workflow-templates.index') }}" class="btn btn-sm btn-light border">
             <i class="bi bi-x-lg"></i>{{ __('ui.clear_status_filter') }}
         </a>
     </div>
@@ -57,24 +57,27 @@
                 <td>{{ __('ui.approval_steps_count', ['count' => $workflow->steps_count]) }}</td>
                 <td><x-erp.lifecycle-badge :status="$workflow->lifecycle_status" /></td>
                 <td>
-                    @if($workflow->isLocked())
-                        <span class="badge erp-workflow-lock-badge"><i class="bi bi-lock-fill me-1"></i>{{ __('ui.locked') }}</span>
-                    @else
+                    @can('update', $workflow)
                         <span class="badge text-bg-light border">{{ __('ui.editable') }}</span>
-                    @endif
+                    @else
+                        <span class="badge erp-workflow-lock-badge">
+                            <i class="bi {{ $workflow->isLocked() ? 'bi-lock-fill' : 'bi-eye-fill' }} me-1"></i>
+                            {{ $workflow->isLocked() ? __('ui.locked') : __('ui.read_only') }}
+                        </span>
+                    @endcan
                 </td>
                 <td>
                     <div class="d-flex gap-2 flex-wrap">
-                        <a href="{{ route('admin.workflow-templates.show', $workflow) }}" class="btn btn-sm btn-outline-secondary">{{ __('ui.view') }}</a>
-                        @if(! $workflow->isLocked() && ! $workflow->is_active)
+                        <a href="{{ route('admin.workflow-templates.show', $workflow) }}" class="btn btn-sm btn-light border">{{ __('ui.view') }}</a>
+                        @can('update', $workflow)
                             <a href="{{ route('admin.workflow-templates.edit', $workflow) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
-                        @endif
-                        @if($workflow->lifecycle_status !== \App\Enums\LifecycleStatus::Legacy && $workflow->lifecycle_status !== \App\Enums\LifecycleStatus::Inactive)
+                        @endcan
+                        @can('cloneVersion', $workflow)
                             <form action="{{ route('admin.workflow-templates.clone-version', $workflow) }}" method="POST">
                                 @csrf
                                 <button class="btn btn-sm btn-outline-primary">{{ __('ui.clone_version') }}</button>
                             </form>
-                        @endif
+                        @endcan
                     </div>
                 </td>
             </tr>

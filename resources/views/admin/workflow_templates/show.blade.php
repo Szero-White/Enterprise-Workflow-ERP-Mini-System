@@ -9,38 +9,46 @@
     :subtitle="__('ui.form').': '.($workflowTemplate->formTemplate?->displayName() ?? '-').' · '.__('ui.version').' v'.$workflowTemplate->version"
 >
     <x-slot:actions>
-        @if($workflowTemplate->lifecycle_status === \App\Enums\LifecycleStatus::Draft)
-            @if($workflowTemplate->is_active)
-                <form action="{{ route('admin.workflow-templates.deactivate', $workflowTemplate) }}" method="POST">
-                    @csrf
-                    <button class="btn btn-outline-secondary"><i class="bi bi-pause-circle"></i>{{ __('ui.deactivate') }}</button>
-                </form>
-            @else
-                <form action="{{ route('admin.workflow-templates.activate', $workflowTemplate) }}" method="POST">
-                    @csrf
-                    <button class="btn btn-primary"><i class="bi bi-play-circle"></i>{{ __('ui.activate') }}</button>
-                </form>
-            @endif
-        @endif
+        @can('activate', $workflowTemplate)
+            <form action="{{ route('admin.workflow-templates.activate', $workflowTemplate) }}" method="POST">
+                @csrf
+                <button class="btn btn-primary"><i class="bi bi-play-circle"></i>{{ __('ui.activate') }}</button>
+            </form>
+        @endcan
 
-        @if(in_array($workflowTemplate->lifecycle_status, [\App\Enums\LifecycleStatus::Current, \App\Enums\LifecycleStatus::Draft], true))
+        @can('cloneVersion', $workflowTemplate)
             <form action="{{ route('admin.workflow-templates.clone-version', $workflowTemplate) }}" method="POST">
                 @csrf
-                <button class="btn btn-outline-primary"><i class="bi bi-files"></i>{{ __('ui.clone_version') }}</button>
+                <button class="btn btn-primary"><i class="bi bi-files"></i>{{ __('ui.clone_version') }}</button>
             </form>
-        @endif
+        @endcan
 
-        @if(! $workflowTemplate->isLocked() && ! $workflowTemplate->is_active)
-            <a href="{{ route('admin.workflow-templates.edit', $workflowTemplate) }}" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i>{{ __('ui.edit') }}</a>
-            <a href="{{ route('admin.workflow-templates.steps.create', $workflowTemplate) }}" class="btn btn-primary">
+        @can('manageSteps', $workflowTemplate)
+            <a href="{{ route('admin.workflow-templates.steps.create', $workflowTemplate) }}" class="btn btn-outline-primary">
                 <i class="bi bi-plus-circle"></i>{{ __('ui.add_workflow_step') }}
             </a>
+        @endcan
+
+        @can('update', $workflowTemplate)
+            <a href="{{ route('admin.workflow-templates.edit', $workflowTemplate) }}" class="btn btn-light border">
+                <i class="bi bi-pencil"></i>{{ __('ui.edit') }}
+            </a>
+        @endcan
+
+        @can('deactivate', $workflowTemplate)
+            <form action="{{ route('admin.workflow-templates.deactivate', $workflowTemplate) }}" method="POST">
+                @csrf
+                <button class="btn btn-light border"><i class="bi bi-pause-circle"></i>{{ __('ui.deactivate') }}</button>
+            </form>
+        @endcan
+
+        @can('delete', $workflowTemplate)
             <form action="{{ route('admin.workflow-templates.destroy', $workflowTemplate) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_workflow') }}">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-outline-danger"><i class="bi bi-trash"></i>{{ __('ui.delete') }}</button>
             </form>
-        @endif
+        @endcan
     </x-slot:actions>
 </x-erp.page-header>
 
@@ -54,10 +62,15 @@
         <i class="bi bi-lock-fill mt-1"></i>
         <div>{{ __('ui.configuration_locked_hint') }}</div>
     </div>
-@elseif($workflowTemplate->is_active)
+@elseif($workflowTemplate->lifecycle_status === \App\Enums\LifecycleStatus::Current)
     <div class="alert alert-info d-flex gap-2 align-items-start" role="alert">
-        <i class="bi bi-info-circle mt-1"></i>
-        <div>{{ __('ui.configuration_active_hint') }}</div>
+        <i class="bi bi-shield-check mt-1"></i>
+        <div>{{ __('ui.workflow_configuration_current_hint') }}</div>
+    </div>
+@elseif(in_array($workflowTemplate->lifecycle_status, [\App\Enums\LifecycleStatus::Legacy, \App\Enums\LifecycleStatus::Inactive], true))
+    <div class="alert alert-secondary d-flex gap-2 align-items-start" role="alert">
+        <i class="bi bi-eye mt-1"></i>
+        <div>{{ __('ui.configuration_read_only_hint') }}</div>
     </div>
 @endif
 
@@ -103,7 +116,7 @@
                 <td>{{ __('ui.approver_type_'.$step->approver_type) }}</td>
                 <td>{{ $step->approverLabel() }}</td>
                 <td>
-                    @if(! $workflowTemplate->isLocked() && ! $workflowTemplate->is_active)
+                    @can('manageSteps', $workflowTemplate)
                         <div class="d-flex gap-2 flex-wrap">
                             <a href="{{ route('admin.workflow-templates.steps.edit', [$workflowTemplate, $step]) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
                             <form action="{{ route('admin.workflow-templates.steps.destroy', [$workflowTemplate, $step]) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_step') }}">
@@ -113,8 +126,11 @@
                             </form>
                         </div>
                     @else
-                        <span class="text-muted small"><i class="bi bi-lock me-1"></i>{{ __('ui.locked') }}</span>
-                    @endif
+                        <span class="text-muted small">
+                            <i class="bi {{ $workflowTemplate->isLocked() ? 'bi-lock' : 'bi-eye' }} me-1"></i>
+                            {{ $workflowTemplate->isLocked() ? __('ui.locked') : __('ui.read_only') }}
+                        </span>
+                    @endcan
                 </td>
             </tr>
         @empty

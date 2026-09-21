@@ -110,7 +110,7 @@ class WorkflowConfigurationVersioningTest extends TestCase
                 'is_required' => 1,
                 'sort_order' => 1,
             ])
-            ->assertSessionHas('error');
+            ->assertForbidden();
 
         $this->actingAs($admin)
             ->post(route('admin.form-templates.clone-version', $form))
@@ -122,6 +122,98 @@ class WorkflowConfigurationVersioningTest extends TestCase
         $this->assertCount(1, $clone->fields);
         $this->assertCount(1, $clone->workflows);
         $this->assertCount(1, $clone->workflows->first()->steps);
+    }
+
+    public function test_form_actions_follow_draft_current_and_legacy_lifecycle(): void
+    {
+        [$admin, $adminRole] = $this->createAdmin();
+
+        $current = $this->createDraftForm($admin);
+        FormField::create($this->fieldData($current));
+        $currentWorkflow = $this->createWorkflow($current, $admin, $adminRole, 'Current approval');
+        $currentWorkflow->update(['is_active' => true]);
+        $current->update(['is_active' => true]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.form-templates.edit', $current))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->get(route('admin.form-templates.fields.create', $current))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->post(route('admin.form-templates.clone-version', $current))
+            ->assertRedirect();
+
+        $draft = FormTemplate::query()->where('code', 'LEAVE')->where('version', 2)->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(route('admin.form-templates.edit', $draft))
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->get(route('admin.form-templates.fields.create', $draft))
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->post(route('admin.form-templates.clone-version', $draft))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->post(route('admin.form-templates.activate', $draft))
+            ->assertRedirect();
+
+        $legacy = $current->fresh();
+        $this->assertFalse($legacy->is_active);
+
+        $this->actingAs($admin)
+            ->get(route('admin.form-templates.edit', $legacy))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->post(route('admin.form-templates.clone-version', $legacy))
+            ->assertForbidden();
+    }
+
+    public function test_workflow_actions_follow_draft_and_current_lifecycle(): void
+    {
+        [$admin, $adminRole] = $this->createAdmin();
+        $form = $this->createDraftForm($admin);
+        FormField::create($this->fieldData($form));
+        $workflow = $this->createWorkflow($form, $admin, $adminRole, 'Approval');
+
+        $workflow->update(['is_active' => true]);
+        $form->update(['is_active' => true]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.workflow-templates.edit', $workflow))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->get(route('admin.workflow-templates.steps.create', $workflow))
+            ->assertForbidden();
+
+        $this->actingAs($admin)
+            ->post(route('admin.workflow-templates.clone-version', $workflow))
+            ->assertRedirect();
+
+        $draft = WorkflowTemplate::query()
+            ->where('form_template_id', $form->id)
+            ->where('version', 2)
+            ->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(route('admin.workflow-templates.edit', $draft))
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->get(route('admin.workflow-templates.steps.create', $draft))
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->post(route('admin.workflow-templates.clone-version', $draft))
+            ->assertForbidden();
     }
 
     private function createAdmin(): array

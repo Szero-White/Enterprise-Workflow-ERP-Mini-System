@@ -67,6 +67,11 @@ return [
 
     'form_template_created_draft' => 'Đã tạo biểu mẫu ở trạng thái nháp. Hãy cấu hình trường và quy trình duyệt trước khi phát hành.',
     'form_template_locked' => 'Biểu mẫu đã được sử dụng nên cấu trúc được khóa để bảo toàn dữ liệu lịch sử. Hãy tạo phiên bản mới nếu cần thay đổi.',
+    'form_template_read_only' => 'Chỉ bản nháp chưa phát hành mới được chỉnh sửa trực tiếp. Hãy tạo phiên bản mới từ bản hiện hành nếu cần thay đổi.',
+    'form_template_workflow_read_only' => 'Chỉ biểu mẫu bản nháp hoặc hiện hành mới được tạo cấu hình quy trình duyệt mới.',
+    'form_template_publish_draft_only' => 'Chỉ bản nháp chưa phát hành mới có thể được phát hành.',
+    'form_template_deactivate_current_only' => 'Chỉ biểu mẫu hiện hành mới có thể ngừng sử dụng.',
+    'form_template_clone_current_only' => 'Chỉ biểu mẫu hiện hành mới có thể tạo phiên bản mới.',
     'form_template_deactivate_before_edit' => 'Hãy ngừng kích hoạt biểu mẫu trước khi thay đổi cấu hình.',
     'form_template_requires_fields' => 'Biểu mẫu phải có ít nhất một trường trước khi kích hoạt.',
     'form_template_requires_active_workflow' => 'Biểu mẫu cần một quy trình duyệt đang hoạt động và có ít nhất một bước duyệt trước khi kích hoạt.',
@@ -85,6 +90,9 @@ return [
 
     'workflow_template_created_draft' => 'Đã tạo workflow ở trạng thái nháp. Hãy thêm bước duyệt rồi kích hoạt.',
     'workflow_template_locked' => 'Workflow đã được sử dụng nên cấu hình được khóa. Hãy tạo phiên bản mới nếu cần thay đổi.',
+    'workflow_template_read_only' => 'Chỉ quy trình ở trạng thái bản nháp chưa sử dụng mới được chỉnh sửa trực tiếp.',
+    'workflow_template_publish_draft_only' => 'Chỉ quy trình bản nháp chưa sử dụng mới có thể được kích hoạt.',
+    'workflow_template_clone_current_only' => 'Chỉ quy trình hiện hành mới có thể tạo phiên bản mới.',
     'workflow_template_deactivate_before_edit' => 'Hãy ngừng kích hoạt workflow trước khi thay đổi cấu hình.',
     'workflow_template_deactivate_before_delete' => 'Hãy ngừng kích hoạt workflow trước khi xóa.',
     'workflow_template_requires_steps' => 'Workflow phải có ít nhất một bước duyệt trước khi kích hoạt.',

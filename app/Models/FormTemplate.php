@@ -29,7 +29,7 @@ class FormTemplate extends Model
 
     public function fields()
     {
-        return $this->hasMany(FormField::class)->orderBy('sort_order');
+        return $this->hasMany(FormField::class)->orderBy('sort_order')->orderBy('id');
     }
 
     public function workflows()

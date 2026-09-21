@@ -10,13 +10,18 @@ use App\Models\User;
 use App\Models\WorkflowStep;
 use App\Models\WorkflowTemplate;
 use App\Services\AuditLogService;
+use App\Services\Workflow\WorkflowConfigurationService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class WorkflowStepController extends Controller
 {
-    public function __construct(private AuditLogService $auditLogService) {}
+    public function __construct(
+        private AuditLogService $auditLogService,
+        private WorkflowConfigurationService $configurationService,
+    ) {}
 
     public function index(WorkflowTemplate $workflowTemplate): View
     {
@@ -27,14 +32,15 @@ class WorkflowStepController extends Controller
 
     public function create(WorkflowTemplate $workflowTemplate): View
     {
+        Gate::authorize('manageSteps', $workflowTemplate);
+
         return view('admin.workflow_steps.create', $this->viewData($workflowTemplate));
     }
 
     public function store(WorkflowStepRequest $request, WorkflowTemplate $workflowTemplate): RedirectResponse
     {
-        if ($response = $this->guardConfiguration($workflowTemplate)) {
-            return $response;
-        }
+        Gate::authorize('manageSteps', $workflowTemplate);
+        $this->configurationService->ensureWorkflowMutable($workflowTemplate);
 
         $data = $request->validated();
         $data['workflow_template_id'] = $workflowTemplate->id;
@@ -47,14 +53,15 @@ class WorkflowStepController extends Controller
 
     public function edit(WorkflowTemplate $workflowTemplate, WorkflowStep $step): View
     {
+        Gate::authorize('manageSteps', $workflowTemplate);
+
         return view('admin.workflow_steps.edit', $this->viewData($workflowTemplate, $step));
     }
 
     public function update(WorkflowStepRequest $request, WorkflowTemplate $workflowTemplate, WorkflowStep $step): RedirectResponse
     {
-        if ($response = $this->guardConfiguration($workflowTemplate)) {
-            return $response;
-        }
+        Gate::authorize('manageSteps', $workflowTemplate);
+        $this->configurationService->ensureWorkflowMutable($workflowTemplate);
 
         $old = $step->toArray();
         $step->update($request->validated());
@@ -65,9 +72,8 @@ class WorkflowStepController extends Controller
 
     public function destroy(WorkflowTemplate $workflowTemplate, WorkflowStep $step): RedirectResponse
     {
-        if ($response = $this->guardConfiguration($workflowTemplate)) {
-            return $response;
-        }
+        Gate::authorize('manageSteps', $workflowTemplate);
+        $this->configurationService->ensureWorkflowMutable($workflowTemplate);
 
         try {
             $old = $step->toArray();
@@ -78,19 +84,6 @@ class WorkflowStepController extends Controller
         }
 
         return back()->with('success', __('messages.workflow_step_deleted'));
-    }
-
-    private function guardConfiguration(WorkflowTemplate $workflowTemplate): ?RedirectResponse
-    {
-        if ($workflowTemplate->isLocked()) {
-            return back()->with('error', __('messages.workflow_template_locked'));
-        }
-
-        if ($workflowTemplate->is_active) {
-            return back()->with('error', __('messages.workflow_template_deactivate_before_edit'));
-        }
-
-        return null;
     }
 
     private function viewData(WorkflowTemplate $workflowTemplate, ?WorkflowStep $step = null): array

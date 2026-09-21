@@ -34,22 +34,27 @@
                 <td>{{ $template->fields_count }}</td>
                 <td><x-erp.lifecycle-badge :status="$template->lifecycle_status" /></td>
                 <td>
-                    @if($template->isLocked())
-                        <span class="badge text-bg-secondary"><i class="bi bi-lock-fill me-1"></i>{{ __('ui.locked') }}</span>
-                    @else
+                    @can('update', $template)
                         <span class="badge text-bg-light border">{{ __('ui.editable') }}</span>
-                    @endif
+                    @else
+                        <span class="badge erp-workflow-lock-badge">
+                            <i class="bi {{ $template->isLocked() ? 'bi-lock-fill' : 'bi-eye-fill' }} me-1"></i>
+                            {{ $template->isLocked() ? __('ui.locked') : __('ui.read_only') }}
+                        </span>
+                    @endcan
                 </td>
                 <td>
                     <div class="d-flex gap-2 flex-wrap">
-                        <a href="{{ route('admin.form-templates.show', $template) }}" class="btn btn-sm btn-outline-secondary">{{ __('ui.view') }}</a>
-                        @if(! $template->isLocked() && ! $template->is_active)
+                        <a href="{{ route('admin.form-templates.show', $template) }}" class="btn btn-sm btn-light border">{{ __('ui.view') }}</a>
+                        @can('update', $template)
                             <a href="{{ route('admin.form-templates.edit', $template) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
-                        @endif
-                        <form action="{{ route('admin.form-templates.clone-version', $template) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-sm btn-outline-primary">{{ __('ui.clone_version') }}</button>
-                        </form>
+                        @endcan
+                        @can('cloneVersion', $template)
+                            <form action="{{ route('admin.form-templates.clone-version', $template) }}" method="POST">
+                                @csrf
+                                <button class="btn btn-sm btn-outline-primary">{{ __('ui.clone_version') }}</button>
+                            </form>
+                        @endcan
                     </div>
                 </td>
             </tr>

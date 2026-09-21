@@ -10,35 +10,46 @@
     :description="__('ui.entity_code').': '.$formTemplate->code.' · '.__('ui.version').' v'.$formTemplate->version"
 >
     <x-slot:actions>
-        @if($formTemplate->is_active)
-            <form action="{{ route('admin.form-templates.deactivate', $formTemplate) }}" method="POST">
-                @csrf
-                <button class="btn btn-outline-secondary"><i class="bi bi-pause-circle"></i>{{ __('ui.deactivate') }}</button>
-            </form>
-        @else
+        @can('publish', $formTemplate)
             <form action="{{ route('admin.form-templates.activate', $formTemplate) }}" method="POST" data-confirm="{{ __('ui.confirm_publish_version') }}">
                 @csrf
                 <button class="btn btn-primary"><i class="bi bi-rocket-takeoff"></i>{{ __('ui.publish_version') }}</button>
             </form>
-        @endif
+        @endcan
 
-        <form action="{{ route('admin.form-templates.clone-version', $formTemplate) }}" method="POST">
-            @csrf
-            <button class="btn btn-outline-primary"><i class="bi bi-files"></i>{{ __('ui.clone_version') }}</button>
-        </form>
+        @can('cloneVersion', $formTemplate)
+            <form action="{{ route('admin.form-templates.clone-version', $formTemplate) }}" method="POST">
+                @csrf
+                <button class="btn btn-primary"><i class="bi bi-files"></i>{{ __('ui.clone_version') }}</button>
+            </form>
+        @endcan
 
-        @if(! $formTemplate->isLocked() && ! $formTemplate->is_active)
-            <a href="{{ route('admin.form-templates.edit', $formTemplate) }}" class="btn btn-outline-secondary"><i class="bi bi-pencil"></i>{{ __('ui.edit') }}</a>
-            <a href="{{ route('admin.form-templates.fields.create', $formTemplate) }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i>{{ __('ui.add_field') }}</a>
-        @endif
+        @can('manageFields', $formTemplate)
+            <a href="{{ route('admin.form-templates.fields.create', $formTemplate) }}" class="btn btn-outline-primary">
+                <i class="bi bi-plus-lg"></i>{{ __('ui.add_field') }}
+            </a>
+        @endcan
 
-        @if(! $formTemplate->isLocked() && ! $formTemplate->is_active)
+        @can('update', $formTemplate)
+            <a href="{{ route('admin.form-templates.edit', $formTemplate) }}" class="btn btn-light border">
+                <i class="bi bi-pencil"></i>{{ __('ui.edit') }}
+            </a>
+        @endcan
+
+        @can('deactivate', $formTemplate)
+            <form action="{{ route('admin.form-templates.deactivate', $formTemplate) }}" method="POST">
+                @csrf
+                <button class="btn btn-light border"><i class="bi bi-pause-circle"></i>{{ __('ui.deactivate') }}</button>
+            </form>
+        @endcan
+
+        @can('delete', $formTemplate)
             <form action="{{ route('admin.form-templates.destroy', $formTemplate) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_form_template') }}">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-outline-danger"><i class="bi bi-trash"></i>{{ __('ui.delete') }}</button>
             </form>
-        @endif
+        @endcan
     </x-slot:actions>
 </x-erp.page-header>
 
@@ -52,10 +63,15 @@
         <i class="bi bi-lock-fill mt-1"></i>
         <div>{{ __('ui.configuration_locked_hint') }}</div>
     </div>
-@elseif($formTemplate->is_active)
+@elseif($formTemplate->lifecycle_status === \App\Enums\LifecycleStatus::Current)
     <div class="alert alert-info d-flex gap-2 align-items-start" role="alert">
-        <i class="bi bi-info-circle mt-1"></i>
-        <div>{{ __('ui.configuration_active_hint') }}</div>
+        <i class="bi bi-shield-check mt-1"></i>
+        <div>{{ __('ui.configuration_current_hint') }}</div>
+    </div>
+@elseif(in_array($formTemplate->lifecycle_status, [\App\Enums\LifecycleStatus::Legacy, \App\Enums\LifecycleStatus::Inactive], true))
+    <div class="alert alert-secondary d-flex gap-2 align-items-start" role="alert">
+        <i class="bi bi-eye mt-1"></i>
+        <div>{{ __('ui.configuration_read_only_hint') }}</div>
     </div>
 @else
     <div class="content-card p-3 mb-3">
@@ -71,13 +87,15 @@
             </div>
 
             @if($publishWorkflow)
-                <a href="{{ route('admin.workflow-templates.show', $publishWorkflow) }}" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-pencil-square"></i>{{ __('ui.review_workflow') }}
+                <a href="{{ route('admin.workflow-templates.show', $publishWorkflow) }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-diagram-3"></i>{{ __('ui.review_workflow') }}
                 </a>
             @else
-                <a href="{{ route('admin.workflow-templates.create', ['form_template_id' => $formTemplate->id]) }}" class="btn btn-sm btn-primary">
-                    <i class="bi bi-diagram-3"></i>{{ __('ui.setup_workflow') }}
-                </a>
+                @can('createWorkflow', $formTemplate)
+                    <a href="{{ route('admin.workflow-templates.create', ['form_template_id' => $formTemplate->id]) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-diagram-3"></i>{{ __('ui.setup_workflow') }}
+                    </a>
+                @endcan
             @endif
         </div>
     </div>
@@ -134,7 +152,7 @@
                 <td>@include('partials.boolean_badge', ['value' => $field->is_required, 'trueLabel' => __('status.required'), 'falseLabel' => __('status.optional')])</td>
                 <td>{{ is_array($field->options) ? implode(', ', $field->options) : '-' }}</td>
                 <td>
-                    @if(! $formTemplate->isLocked() && ! $formTemplate->is_active)
+                    @can('manageFields', $formTemplate)
                         <div class="d-flex gap-2 flex-wrap">
                             <a href="{{ route('admin.form-templates.fields.edit', [$formTemplate, $field]) }}" class="btn btn-sm btn-outline-primary">{{ __('ui.edit') }}</a>
                             <form action="{{ route('admin.form-templates.fields.destroy', [$formTemplate, $field]) }}" method="POST" data-confirm="{{ __('ui.confirm_delete_field') }}">
@@ -144,8 +162,11 @@
                             </form>
                         </div>
                     @else
-                        <span class="text-muted small"><i class="bi bi-lock me-1"></i>{{ __('ui.locked') }}</span>
-                    @endif
+                        <span class="text-muted small">
+                            <i class="bi {{ $formTemplate->isLocked() ? 'bi-lock' : 'bi-eye' }} me-1"></i>
+                            {{ $formTemplate->isLocked() ? __('ui.locked') : __('ui.read_only') }}
+                        </span>
+                    @endcan
                 </td>
             </tr>
         @empty

@@ -7,15 +7,18 @@ use App\Models\FormTemplate;
 use App\Models\WorkflowRequest;
 use App\Models\WorkflowTemplate;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class WorkflowLifecycleService
 {
     /**
-     * Resolve lifecycle states for a collection without N+1 sibling lookups.
+     * Resolve lifecycle states for a collection without N+1 sibling/request lookups.
      */
     public function decorateWorkflows(Collection $workflows): Collection
     {
         $workflows->each(fn (WorkflowTemplate $workflow) => $workflow->loadMissing('formTemplate'));
+        $this->hydrateOpenRequestCounts($workflows);
+
         $forms = $workflows->pluck('formTemplate')->filter();
         $activeVersions = $this->activeFormVersions($forms->pluck('code')->filter()->unique()->values());
 
@@ -35,26 +38,33 @@ class WorkflowLifecycleService
 
     public function workflowStatus(WorkflowTemplate $workflow, ?Collection $activeVersions = null): LifecycleStatus
     {
+        $workflow->loadMissing('formTemplate');
         $form = $workflow->formTemplate;
+
         if (! $form) {
             return LifecycleStatus::Inactive;
         }
 
         $formStatus = $this->formStatus($form, $activeVersions);
 
+        // A workflow attached to a draft form is still draft configuration even when
+        // it is selected as the workflow that will be published with that form.
+        if ($formStatus === LifecycleStatus::Draft && ! $this->hasAnyRequests($workflow)) {
+            return LifecycleStatus::Draft;
+        }
+
         if ($formStatus === LifecycleStatus::Current && $workflow->is_active) {
             return LifecycleStatus::Current;
         }
 
-        if ($formStatus === LifecycleStatus::Legacy && $workflow->is_active) {
+        // A superseded workflow may still own in-flight requests even after a newer
+        // workflow/form version becomes current. It remains legacy until those requests finish.
+        if ($this->hasOpenRequests($workflow)) {
             return LifecycleStatus::Legacy;
         }
 
-        if ($formStatus === LifecycleStatus::Draft && ! $workflow->is_active) {
-            return LifecycleStatus::Draft;
-        }
-
-        if ($formStatus === LifecycleStatus::Current && ! $workflow->is_active && ! $workflow->requests()->exists()) {
+        // Current forms may have an unpublished workflow draft for the next approval version.
+        if ($formStatus === LifecycleStatus::Current && ! $workflow->is_active && ! $this->hasAnyRequests($workflow)) {
             return LifecycleStatus::Draft;
         }
 
@@ -75,7 +85,7 @@ class WorkflowLifecycleService
         }
 
         // A previously-used form that was explicitly deactivated is not a draft.
-        if ($form->requests()->exists()) {
+        if ($this->formHasRequests($form)) {
             return LifecycleStatus::Inactive;
         }
 
@@ -90,15 +100,12 @@ class WorkflowLifecycleService
             return false;
         }
 
-        $hasOpenRequests = $workflow->requests()
-            ->whereIn('status', [WorkflowRequest::STATUS_PENDING, WorkflowRequest::STATUS_RETURNED])
-            ->exists();
-
-        if ($hasOpenRequests) {
+        if ($this->hasOpenRequests($workflow, forceQuery: true)) {
             return false;
         }
 
         $workflow->update(['is_active' => false]);
+        $workflow->setAttribute('open_requests_count', 0);
 
         return true;
     }
@@ -115,6 +122,14 @@ class WorkflowLifecycleService
         return $workflows->sum(fn (WorkflowTemplate $workflow): int => $this->retireIfEligible($workflow) ? 1 : 0);
     }
 
+    public function retireEligibleWorkflowsForForm(FormTemplate $form): int
+    {
+        return $form->workflows()
+            ->where('is_active', true)
+            ->get()
+            ->sum(fn (WorkflowTemplate $workflow): int => $this->retireIfEligible($workflow) ? 1 : 0);
+    }
+
     private function activeFormVersions(Collection $codes): Collection
     {
         if ($codes->isEmpty()) {
@@ -126,5 +141,60 @@ class WorkflowLifecycleService
             ->where('is_active', true)
             ->get(['code', 'version'])
             ->mapWithKeys(fn (FormTemplate $form) => [$form->code => (int) $form->version]);
+    }
+
+    private function hydrateOpenRequestCounts(Collection $workflows): void
+    {
+        $missingIds = $workflows
+            ->filter(fn (WorkflowTemplate $workflow) => ! array_key_exists('open_requests_count', $workflow->getAttributes()))
+            ->pluck('id')
+            ->filter()
+            ->values();
+
+        if ($missingIds->isEmpty()) {
+            return;
+        }
+
+        $counts = WorkflowRequest::query()
+            ->select('workflow_template_id', DB::raw('COUNT(*) as aggregate'))
+            ->whereIn('workflow_template_id', $missingIds)
+            ->whereIn('status', [WorkflowRequest::STATUS_PENDING, WorkflowRequest::STATUS_RETURNED])
+            ->groupBy('workflow_template_id')
+            ->pluck('aggregate', 'workflow_template_id');
+
+        $workflows->each(function (WorkflowTemplate $workflow) use ($counts): void {
+            if (! array_key_exists('open_requests_count', $workflow->getAttributes())) {
+                $workflow->setAttribute('open_requests_count', (int) ($counts[$workflow->id] ?? 0));
+            }
+        });
+    }
+
+    private function hasOpenRequests(WorkflowTemplate $workflow, bool $forceQuery = false): bool
+    {
+        if (! $forceQuery && array_key_exists('open_requests_count', $workflow->getAttributes())) {
+            return (int) $workflow->getAttribute('open_requests_count') > 0;
+        }
+
+        return $workflow->requests()
+            ->whereIn('status', [WorkflowRequest::STATUS_PENDING, WorkflowRequest::STATUS_RETURNED])
+            ->exists();
+    }
+
+    private function hasAnyRequests(WorkflowTemplate $workflow): bool
+    {
+        if (array_key_exists('requests_count', $workflow->getAttributes())) {
+            return (int) $workflow->getAttribute('requests_count') > 0;
+        }
+
+        return $workflow->requests()->exists();
+    }
+
+    private function formHasRequests(FormTemplate $form): bool
+    {
+        if (array_key_exists('requests_count', $form->getAttributes())) {
+            return (int) $form->getAttribute('requests_count') > 0;
+        }
+
+        return $form->requests()->exists();
     }
 }
