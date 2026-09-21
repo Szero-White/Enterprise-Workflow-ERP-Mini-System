@@ -4,45 +4,28 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApprovalActionRequest;
+use App\Http\Requests\ApprovalFilterRequest;
 use App\Models\WorkflowRequest;
+use App\Services\ApprovalQueryService;
 use App\Services\ApprovalService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class ApprovalController extends Controller
 {
-    public function __construct(private ApprovalService $approvalService) {}
+    public function __construct(
+        private ApprovalService $approvalService,
+        private ApprovalQueryService $approvalQueryService,
+    ) {}
 
-    public function index(Request $request): View
+    public function index(ApprovalFilterRequest $request): View
     {
-        $user = $request->user();
+        $filters = $request->filters();
+        $requests = $this->approvalQueryService->pendingFor($request->user(), $filters);
+        $formTemplates = $this->approvalQueryService->formTemplates();
 
-        $query = WorkflowRequest::with(['formTemplate', 'creator', 'currentStep.approverRole', 'currentStep.approverDepartment'])
-            ->where('status', WorkflowRequest::STATUS_PENDING)
-            ->whereHas('currentStep', fn ($step) => $step->approverFor($user))
-            ->latest('id');
-
-        if ($request->filled('keyword')) {
-            $query->where('request_code', 'like', '%'.$request->keyword.'%');
-        }
-
-        if ($request->filled('creator_id')) {
-            $query->where('created_by', $request->creator_id);
-        }
-
-        if ($request->filled('from_date')) {
-            $query->whereDate('created_at', '>=', $request->from_date);
-        }
-
-        if ($request->filled('to_date')) {
-            $query->whereDate('created_at', '<=', $request->to_date);
-        }
-
-        $requests = $query->paginate(10)->withQueryString();
-
-        return view('manager.approvals.index', compact('requests'));
+        return view('manager.approvals.index', compact('requests', 'filters', 'formTemplates'));
     }
 
     public function show(WorkflowRequest $workflowRequest): View
@@ -89,43 +72,12 @@ class ApprovalController extends Controller
         return redirect()->route('manager.approvals.index')->with('success', __('messages.request_returned'));
     }
 
-    public function history(Request $request): View
+    public function history(ApprovalFilterRequest $request): View
     {
-        $user = $request->user();
+        $filters = $request->filters();
+        $histories = $this->approvalQueryService->historyFor($request->user(), $filters);
+        $formTemplates = $this->approvalQueryService->formTemplates();
 
-        $query = WorkflowRequest::with(['formTemplate', 'creator', 'currentStep.approverRole', 'currentStep.approverDepartment', 'histories' => function ($q) use ($user) {
-            $q->where('actor_id', $user->id)->latest('id');
-        }])
-            ->whereHas('histories', function ($q) use ($user) {
-                $q->where('actor_id', $user->id);
-            })
-            ->latest('id');
-
-        if ($request->filled('keyword')) {
-            $query->where('request_code', 'like', '%'.$request->keyword.'%');
-        }
-
-        if ($request->filled('creator_id')) {
-            $query->where('created_by', $request->creator_id);
-        }
-
-        if ($request->filled('from_date')) {
-            $query->whereDate('created_at', '>=', $request->from_date);
-        }
-
-        if ($request->filled('to_date')) {
-            $query->whereDate('created_at', '<=', $request->to_date);
-        }
-
-        if ($request->filled('action')) {
-            $query->whereHas('histories', function ($q) use ($user, $request) {
-                $q->where('actor_id', $user->id)
-                    ->where('action', $request->action);
-            });
-        }
-
-        $requests = $query->paginate(10)->withQueryString();
-
-        return view('manager.approvals.history', compact('requests'));
+        return view('manager.approvals.history', compact('histories', 'filters', 'formTemplates'));
     }
 }

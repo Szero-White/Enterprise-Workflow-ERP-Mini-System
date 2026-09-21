@@ -6,6 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class ApprovalHistory extends Model
 {
+    public const ACTION_APPROVE = 'approve';
+
+    public const ACTION_REJECT = 'reject';
+
+    public const ACTION_RETURN = 'return';
+
+    public const DECISION_ACTIONS = [
+        self::ACTION_APPROVE,
+        self::ACTION_REJECT,
+        self::ACTION_RETURN,
+    ];
+
     protected $fillable = ['request_id', 'workflow_step_id', 'actor_id', 'action', 'comment', 'acted_at'];
 
     protected function casts(): array

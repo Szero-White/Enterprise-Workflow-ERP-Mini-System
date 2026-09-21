@@ -18,14 +18,21 @@
     :description="$isPending ? __('ui.approval_request_description') : __('ui.approval_detail_description')"
 >
     <x-slot:actions>
-        <div class="d-flex gap-2 align-items-center">
-            <a href="{{ $isPending ? route('manager.approvals.index') : route('manager.approvals.history') }}" class="btn btn-light border"><i class="bi bi-arrow-left"></i>{{ __('ui.back') }}</a>
-            <span class="erp-status-pill {{ $isPending ? 'text-primary bg-primary-subtle' : 'text-secondary bg-light border' }}">{{ $workflowRequest->currentStep?->step_name ?? __('ui.no_current_step') }}</span>
+        <div class="d-flex gap-2 align-items-center flex-wrap">
+            <a href="{{ $isPending ? route('manager.approvals.index') : route('manager.approvals.history') }}" class="btn btn-light border">
+                <i class="bi bi-arrow-left"></i>{{ __('ui.back') }}
+            </a>
+            @if($isPending)
+                <span class="erp-current-step-badge">
+                    <i class="bi bi-hourglass-split"></i>
+                    {{ $workflowRequest->currentStep?->step_name ?? __('ui.no_current_step') }}
+                </span>
+            @endif
         </div>
     </x-slot:actions>
 </x-erp.page-header>
 
-<div class="row g-3">
+<div class="row g-4 align-items-start erp-approval-layout">
     <div class="col-lg-7">
         <div class="content-card p-3 p-lg-4">
             <h5 class="mb-3">{{ __('ui.request_data') }}</h5>
@@ -66,10 +73,11 @@
             @endif
         </div>
     </div>
-    <div class="col-lg-5">
+    <div class="col-lg-5 erp-approval-sidebar">
         @if($workflowRequest->status === \App\Models\WorkflowRequest::STATUS_PENDING)
-        <div class="content-card p-3 p-lg-4 mb-3">
-            <h5 class="mb-3">{{ __('ui.action') }}</h5>
+        <div class="content-card p-3 p-lg-4 mb-3 erp-approval-action-card">
+            <h5 class="mb-2">{{ __('ui.action') }}</h5>
+            <div class="erp-approval-action-card__description">{{ __('ui.approval_action_description') }}</div>
             <form method="POST" id="approvalForm">
                 @csrf
                 <div class="mb-3">
@@ -78,10 +86,16 @@
                     <div class="form-text">{{ __('ui.approval_comment_hint') }}</div>
                     @include('partials.form_error', ['field' => 'comment'])
                 </div>
-                <div class="d-flex flex-wrap gap-2">
-                    <button formaction="{{ route('manager.approvals.approve', $workflowRequest) }}" class="btn btn-success">{{ __('ui.approve') }}</button>
-                    <button formaction="{{ route('manager.approvals.return', $workflowRequest) }}" class="btn btn-warning">{{ __('ui.return') }}</button>
-                    <button formaction="{{ route('manager.approvals.reject', $workflowRequest) }}" class="btn btn-danger" data-confirm="{{ __('ui.confirm_reject_request') }}">{{ __('ui.reject') }}</button>
+                <div class="erp-approval-actions">
+                    <button formaction="{{ route('manager.approvals.approve', $workflowRequest) }}" class="btn btn-success">
+                        <i class="bi bi-check2-circle"></i>{{ __('ui.approve') }}
+                    </button>
+                    <button formaction="{{ route('manager.approvals.return', $workflowRequest) }}" class="btn btn-warning">
+                        <i class="bi bi-arrow-counterclockwise"></i>{{ __('ui.return') }}
+                    </button>
+                    <button formaction="{{ route('manager.approvals.reject', $workflowRequest) }}" class="btn btn-danger" data-confirm="{{ __('ui.confirm_reject_request') }}">
+                        <i class="bi bi-x-circle"></i>{{ __('ui.reject') }}
+                    </button>
                 </div>
             </form>
         </div>

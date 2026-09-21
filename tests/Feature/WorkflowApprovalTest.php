@@ -110,6 +110,91 @@ class WorkflowApprovalTest extends TestCase
         $this->assertSame($workflowRequest->id, (int) data_get($notification->data, 'request_id'));
     }
 
+    public function test_pending_approval_filters_use_business_fields_instead_of_raw_creator_id(): void
+    {
+        $employeeRequest = $this->submitRequest($this->employee);
+        $otherRequest = $this->submitRequest($this->otherEmployee);
+
+        $response = $this->actingAs($this->manager)->get(route('manager.approvals.index', [
+            'requester' => $this->employee->email,
+            'form_template_id' => $this->formTemplate->id,
+            'from_date' => now()->toDateString(),
+            'to_date' => now()->toDateString(),
+        ]));
+
+        $response->assertOk()
+            ->assertSee($employeeRequest->request_code)
+            ->assertDontSee($otherRequest->request_code)
+            ->assertSee(__('ui.requester'))
+            ->assertSee(__('ui.request_type'))
+            ->assertSee(__('ui.submitted_from_date'))
+            ->assertDontSee(__('ui.creator_id'));
+    }
+
+    public function test_approval_history_lists_each_decision_and_filters_by_action_context(): void
+    {
+        $workflowRequest = $this->submitRequest();
+
+        $this->actingAs($this->manager)
+            ->post(route('manager.approvals.return', $workflowRequest), [
+                'comment' => 'Please clarify the request.',
+            ])
+            ->assertRedirect(route('manager.approvals.index'));
+
+        $this->actingAs($this->employee)
+            ->put(route('employee.requests.update', $workflowRequest), [
+                'reason' => 'Updated reason after manager feedback.',
+            ])
+            ->assertRedirect();
+
+        $this->actingAs($this->manager)
+            ->post(route('manager.approvals.approve', $workflowRequest->fresh()), [
+                'comment' => 'Approved after clarification.',
+            ])
+            ->assertRedirect(route('manager.approvals.index'));
+
+        $response = $this->actingAs($this->manager)->get(route('manager.approvals.history', [
+            'requester' => $this->employee->email,
+            'form_template_id' => $this->formTemplate->id,
+            'from_date' => now()->toDateString(),
+            'to_date' => now()->toDateString(),
+        ]));
+
+        $response->assertOk()
+            ->assertViewHas('histories', function ($histories) use ($workflowRequest): bool {
+                return $histories->count() === 2
+                    && $histories->every(fn ($history) => $history->request_id === $workflowRequest->id)
+                    && $histories->pluck('action')->sort()->values()->all() === ['approve', 'return'];
+            })
+            ->assertSee(__('ui.action_from_date'))
+            ->assertSee(__('ui.processed_at'))
+            ->assertDontSee(__('ui.creator_id'));
+
+        $this->actingAs($this->manager)
+            ->get(route('manager.approvals.history', [
+                'action' => 'return',
+                'requester' => $this->employee->name,
+            ]))
+            ->assertOk()
+            ->assertViewHas('histories', function ($histories) use ($workflowRequest): bool {
+                return $histories->count() === 1
+                    && $histories->first()->request_id === $workflowRequest->id
+                    && $histories->first()->action === 'return';
+            });
+    }
+
+    public function test_approval_filters_reject_reversed_date_range(): void
+    {
+        $this->actingAs($this->manager)
+            ->from(route('manager.approvals.history'))
+            ->get(route('manager.approvals.history', [
+                'from_date' => now()->addDay()->toDateString(),
+                'to_date' => now()->toDateString(),
+            ]))
+            ->assertRedirect(route('manager.approvals.history'))
+            ->assertSessionHasErrors('to_date');
+    }
+
     public function test_manager_approval_moves_request_to_hr_step(): void
     {
         $workflowRequest = $this->submitRequest();
