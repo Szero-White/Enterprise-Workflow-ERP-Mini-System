@@ -74,7 +74,7 @@ Connect from PowerShell:
 ssh workflow-erp@ssh-workflow-erp.alwaysdata.net
 ```
 
-On the server, create a manual pre-release database backup before the one intentional `migrate:fresh` used to replace the obsolete demo schema:
+On the server, create a manual pre-release database backup before applying production migrations:
 
 ```bash
 mkdir -p ~/release-backups
@@ -190,22 +190,24 @@ cd Enterprise-Workflow-ERP-Mini-System
 
 The site configuration does not need to change because the final directory name and `/public` path are unchanged.
 
-## 8. Replace the obsolete demo database once
+## 8. Apply schema changes without resetting data
 
-This project has changed domain/schema substantially from the old public demo. After the manual backup, the first replacement deployment may intentionally rebuild this disposable demo database:
+Use normal forward-only Laravel migrations for the public demo and production-style deployments:
 
 ```bash
 php artisan optimize:clear
-php artisan migrate:fresh --seed --force
-```
-
-For every normal deployment after this initial replacement, use only:
-
-```bash
 php artisan migrate --force
 ```
 
-Never use `migrate:fresh` for data that must be preserved.
+Do **not** use `migrate:fresh`, `db:wipe`, or a database reset as part of normal deployment. If a migration fails, keep the application in maintenance mode, inspect the failing migration/database state, and reconcile it before retrying. Do not destroy live data to make a deployment pass.
+
+Seed only when the target environment explicitly needs demo/reference data and the seeder is safe for the existing database:
+
+```bash
+php artisan db:seed --force
+```
+
+For an already populated public demo, skip seeding unless the release notes explicitly require it.
 
 ## 9. Warm production caches and bring the application up
 
@@ -217,17 +219,17 @@ php artisan up
 
 `route:cache` is intentionally not part of this runbook: run it only after verifying that every route in the current release is cache-compatible.
 
-## 10. Public-demo reset
+## 10. Optional disposable public-demo reset
 
-The application provides a guarded command:
+The application provides a guarded reset command for a deliberately disposable recruiter sandbox:
 
 ```bash
 php artisan demo:reset --force
 ```
 
-It only runs when `DEMO_MODE=true`, deletes private workflow demo attachments and rebuilds/seed the disposable demo database.
+It only runs when `DEMO_MODE=true`, deletes private workflow demo attachments and rebuilds/seeds the disposable demo database. **Do not run or schedule this command when the deployed database must be preserved.** It is not part of the normal release procedure above.
 
-For a public recruiter demo, register this directly in alwaysdata `Scheduled Tasks` at an off-hours daily time chosen for the account:
+Only for an intentionally disposable public recruiter sandbox, you may register this directly in alwaysdata `Scheduled Tasks` at an off-hours daily time chosen for the account:
 
 ```bash
 cd /home/workflow-erp/Enterprise-Workflow-ERP-Mini-System && php artisan demo:reset --force

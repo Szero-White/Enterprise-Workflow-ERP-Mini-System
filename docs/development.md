@@ -155,13 +155,7 @@ Seed demo/reference data:
 php artisan db:seed
 ```
 
-Reset all local data only when intentional:
-
-```powershell
-php artisan migrate:fresh --seed
-```
-
-`migrate:fresh` drops all existing tables before recreating them.
+For normal development, keep the existing database and apply only pending migrations. `migrate:fresh` is intentionally not part of the standard workflow because it destroys all existing tables and data. Use a disposable database if destructive schema experiments are ever required.
 
 ## Demo Accounts
 
@@ -256,8 +250,11 @@ php artisan test --filter=DynamicFieldTypeTest
 php artisan test --filter=DynamicConditionalFieldTest
 php artisan test --filter=WorkflowConfigurationVersioningTest
 php artisan test --filter=WorkflowLifecycleTest
+php artisan test --filter=RequestNotificationFilterExperienceTest
 php artisan test --filter=WorkflowApprovalTest
 ```
+
+The workflow/versioning tests also verify the lifecycle action matrix: only drafts are directly editable, current configuration is changed through a new version, and legacy/inactive configuration remains read-only.
 
 Notification changes that touch Procurement/Asset hand-offs should also run:
 

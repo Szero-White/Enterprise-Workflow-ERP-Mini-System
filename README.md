@@ -193,6 +193,17 @@ Legacy     -> no new requests; existing in-flight requests continue
 Inactive   -> retired from active processing
 ```
 
+Configuration actions follow the same lifecycle rules in both the UI and backend authorization layer:
+
+| Lifecycle | Direct edit | Fields / steps | Publish | Create new version | Historical view |
+|---|---:|---:|---:|---:|---:|
+| Draft | Yes | Yes | Yes | No | Yes |
+| Current | No | No | Already published | Yes | Yes |
+| Legacy | No | No | No | No | Yes |
+| Inactive | No | No | No | No | Yes |
+
+Direct URLs cannot bypass these rules; controllers authorize through Policies and configuration Services enforce the same domain invariants.
+
 ## Notification Architecture
 
 Notification content is built from business context instead of exposing internal request codes as the primary message. The notification layer is organized around reusable content builders/presenters so workflow and operations modules follow the same user-facing standard.
